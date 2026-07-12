@@ -142,6 +142,7 @@ export const ColouringMap: FC<ColouringMapProps> = ({
                     mapColourScaleDefinitions={categoryMapDefinitions}
                     mapColourScale={mapColourScale}
                     onMapColourScale={onMapColourScale}
+                    revisionId={revisionId}
                 />
             )}
 

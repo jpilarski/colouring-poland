@@ -13,6 +13,8 @@ export interface LegendConfig {
     title: string;
     description?: string;
     disclaimer?: string;
+    isDynamicGradient?: boolean;
+    isDynamicDistinct?: boolean;
     elements: LegendElement[];
 }
 
@@ -24,7 +26,23 @@ export interface CategoryMapDefinition {
 export const defaultMapCategory = Category.Location;
 
 export const categoryMapsConfig: { [key in Category]: CategoryMapDefinition[] } = {
-    [Category.Location]: [],
+    [Category.Location]: [
+        {
+            mapStyle: 'lokalizacja_wysokosc_npm',
+            legend: {
+                title: 'Wzniesienie m n.p.m.',
+                isDynamicGradient: true,
+                elements: [
+                    { color: "#FF0093", text: "Min (wczytywanie...)" },
+                    { color: "#FF33A9", text: "" },
+                    { color: "#FF66BF", text: "" },
+                    { color: "#FF99D4", text: "" },
+                    { color: "#FFCCE9", text: "" },
+                    { color: "#FFFFFF", text: "Max (wczytywanie...)" }
+                ]
+            },
+        },
+    ],
     [Category.LandUse]: [
         {
             mapStyle: 'uzytkowanie_funkcja_ogolna',
@@ -83,6 +101,44 @@ export const categoryMapsConfig: { [key in Category]: CategoryMapDefinition[] } 
                     { color: "#D2E0EC", text: "4" },
                     { color: "#FFFFFF", text: "5" }
                 ]
+            },
+        },
+        {
+            mapStyle: 'typologia_powierzchnia_parteru',
+            legend: {
+                title: 'Powierzchnia parteru',
+                isDynamicGradient: true,
+                elements: [
+                    { color: "#00EDFF", text: "Min (wczytywanie...)" },
+                    { color: "#33F0FF", text: "" },
+                    { color: "#66F4FF", text: "" },
+                    { color: "#99F7FF", text: "" },
+                    { color: "#CCFBFF", text: "" },
+                    { color: "#FFFFFF", text: "Max (wczytywanie...)" }
+                ]
+            },
+        },
+        {
+            mapStyle: 'typologia_wysokosc_maksymalna',
+            legend: {
+                title: 'Wysokość całkowita',
+                isDynamicGradient: true,
+                elements: [
+                    { color: "#FF0093", text: "Min (wczytywanie...)" },
+                    { color: "#FF33A9", text: "" },
+                    { color: "#FF66BF", text: "" },
+                    { color: "#FF99D4", text: "" },
+                    { color: "#FFCCE9", text: "" },
+                    { color: "#FFFFFF", text: "Max (wczytywanie...)" }
+                ]
+            },
+        },
+        {
+            mapStyle: 'typologia_ilosc_kondygnacji',
+            legend: {
+                title: 'Ilość kondygnacji',
+                isDynamicDistinct: true,
+                elements: []
             },
         },
     ],
@@ -190,6 +246,21 @@ export const categoryMapsConfig: { [key in Category]: CategoryMapDefinition[] } 
                 elements: [
                     { color: "#9C9DA1", text: "Dach płaski" },
                     { color: "#F28E2B", text: "Dach skośny" }
+                ]
+            },
+        },
+        {
+            mapStyle: 'kdf_nachylenie_dachu',
+            legend: {
+                title: 'Nachylenie dachu',
+                isDynamicGradient: true,
+                elements: [
+                    { color: "#00EDFF", text: "Min (wczytywanie...)" },
+                    { color: "#33F0FF", text: "" },
+                    { color: "#66F4FF", text: "" },
+                    { color: "#99F7FF", text: "" },
+                    { color: "#CCFBFF", text: "" },
+                    { color: "#FFFFFF", text: "Max (wczytywanie...)" }
                 ]
             },
         },

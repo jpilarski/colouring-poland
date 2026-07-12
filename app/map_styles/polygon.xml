@@ -876,4 +876,60 @@
             <LineSymbolizer stroke="#888" stroke-width="3.0"/>
         </Rule>
     </Style>
+    <Style name="lokalizacja_wysokosc_npm">
+        <Rule><Filter>[bucket] = 1</Filter><PolygonSymbolizer fill="#FF0093" /><LineSymbolizer stroke="#FF0093" stroke-width="2.0"/></Rule>
+        <Rule><Filter>[bucket] = 2</Filter><PolygonSymbolizer fill="#FF33A9" /><LineSymbolizer stroke="#FF33A9" stroke-width="2.0"/></Rule>
+        <Rule><Filter>[bucket] = 3</Filter><PolygonSymbolizer fill="#FF66BF" /><LineSymbolizer stroke="#FF66BF" stroke-width="2.0"/></Rule>
+        <Rule><Filter>[bucket] = 4</Filter><PolygonSymbolizer fill="#FF99D4" /><LineSymbolizer stroke="#FF99D4" stroke-width="2.0"/></Rule>
+        <Rule><Filter>[bucket] = 5</Filter><PolygonSymbolizer fill="#FFCCE9" /><LineSymbolizer stroke="#FFCCE9" stroke-width="2.0"/></Rule>
+        <Rule><Filter>[bucket] = 6</Filter><PolygonSymbolizer fill="#FFFFFF" /><LineSymbolizer stroke="#FFFFFF" stroke-width="2.0"/></Rule>
+        
+        <Rule><MaxScaleDenominator>17061</MaxScaleDenominator><MinScaleDenominator>4264</MinScaleDenominator><LineSymbolizer stroke="#888" stroke-width="1.0"/></Rule>
+        <Rule><MaxScaleDenominator>4264</MaxScaleDenominator><MinScaleDenominator>0</MinScaleDenominator><LineSymbolizer stroke="#888" stroke-width="3.0"/></Rule>
+    </Style>
+
+    <Style name="typologia_powierzchnia_parteru">
+        <Rule><Filter>[bucket] = 1</Filter><PolygonSymbolizer fill="#00EDFF" /><LineSymbolizer stroke="#00EDFF" stroke-width="2.0"/></Rule>
+        <Rule><Filter>[bucket] = 2</Filter><PolygonSymbolizer fill="#33F0FF" /><LineSymbolizer stroke="#33F0FF" stroke-width="2.0"/></Rule>
+        <Rule><Filter>[bucket] = 3</Filter><PolygonSymbolizer fill="#66F4FF" /><LineSymbolizer stroke="#66F4FF" stroke-width="2.0"/></Rule>
+        <Rule><Filter>[bucket] = 4</Filter><PolygonSymbolizer fill="#99F7FF" /><LineSymbolizer stroke="#99F7FF" stroke-width="2.0"/></Rule>
+        <Rule><Filter>[bucket] = 5</Filter><PolygonSymbolizer fill="#CCFBFF" /><LineSymbolizer stroke="#CCFBFF" stroke-width="2.0"/></Rule>
+        <Rule><Filter>[bucket] = 6</Filter><PolygonSymbolizer fill="#FFFFFF" /><LineSymbolizer stroke="#FFFFFF" stroke-width="2.0"/></Rule>
+
+        <Rule><MaxScaleDenominator>17061</MaxScaleDenominator><MinScaleDenominator>4264</MinScaleDenominator><LineSymbolizer stroke="#888" stroke-width="1.0"/></Rule>
+        <Rule><MaxScaleDenominator>4264</MaxScaleDenominator><MinScaleDenominator>0</MinScaleDenominator><LineSymbolizer stroke="#888" stroke-width="3.0"/></Rule>
+    </Style>
+
+    <Style name="typologia_wysokosc_maksymalna">
+        <Rule><Filter>[bucket] = 1</Filter><PolygonSymbolizer fill="#FF0093" /><LineSymbolizer stroke="#FF0093" stroke-width="2.0"/></Rule>
+        <Rule><Filter>[bucket] = 2</Filter><PolygonSymbolizer fill="#FF33A9" /><LineSymbolizer stroke="#FF33A9" stroke-width="2.0"/></Rule>
+        <Rule><Filter>[bucket] = 3</Filter><PolygonSymbolizer fill="#FF66BF" /><LineSymbolizer stroke="#FF66BF" stroke-width="2.0"/></Rule>
+        <Rule><Filter>[bucket] = 4</Filter><PolygonSymbolizer fill="#FF99D4" /><LineSymbolizer stroke="#FF99D4" stroke-width="2.0"/></Rule>
+        <Rule><Filter>[bucket] = 5</Filter><PolygonSymbolizer fill="#FFCCE9" /><LineSymbolizer stroke="#FFCCE9" stroke-width="2.0"/></Rule>
+        <Rule><Filter>[bucket] = 6</Filter><PolygonSymbolizer fill="#FFFFFF" /><LineSymbolizer stroke="#FFFFFF" stroke-width="2.0"/></Rule>
+
+        <Rule><MaxScaleDenominator>17061</MaxScaleDenominator><MinScaleDenominator>4264</MinScaleDenominator><LineSymbolizer stroke="#888" stroke-width="1.0"/></Rule>
+        <Rule><MaxScaleDenominator>4264</MaxScaleDenominator><MinScaleDenominator>0</MinScaleDenominator><LineSymbolizer stroke="#888" stroke-width="3.0"/></Rule>
+    </Style>
+
+    <Style name="kdf_nachylenie_dachu">
+        <Rule><Filter>[bucket] = 1</Filter><PolygonSymbolizer fill="#00EDFF" /><LineSymbolizer stroke="#00EDFF" stroke-width="2.0"/></Rule>
+        <Rule><Filter>[bucket] = 2</Filter><PolygonSymbolizer fill="#33F0FF" /><LineSymbolizer stroke="#33F0FF" stroke-width="2.0"/></Rule>
+        <Rule><Filter>[bucket] = 3</Filter><PolygonSymbolizer fill="#66F4FF" /><LineSymbolizer stroke="#66F4FF" stroke-width="2.0"/></Rule>
+        <Rule><Filter>[bucket] = 4</Filter><PolygonSymbolizer fill="#99F7FF" /><LineSymbolizer stroke="#99F7FF" stroke-width="2.0"/></Rule>
+        <Rule><Filter>[bucket] = 5</Filter><PolygonSymbolizer fill="#CCFBFF" /><LineSymbolizer stroke="#CCFBFF" stroke-width="2.0"/></Rule>
+        <Rule><Filter>[bucket] = 6</Filter><PolygonSymbolizer fill="#FFFFFF" /><LineSymbolizer stroke="#FFFFFF" stroke-width="2.0"/></Rule>
+
+        <Rule><MaxScaleDenominator>17061</MaxScaleDenominator><MinScaleDenominator>4264</MinScaleDenominator><LineSymbolizer stroke="#888" stroke-width="1.0"/></Rule>
+        <Rule><MaxScaleDenominator>4264</MaxScaleDenominator><MinScaleDenominator>0</MinScaleDenominator><LineSymbolizer stroke="#888" stroke-width="3.0"/></Rule>
+    </Style>
+    <Style name="typologia_ilosc_kondygnacji">
+        <Rule>
+            <PolygonSymbolizer fill="[fill_color]" />
+            <LineSymbolizer stroke="[fill_color]" stroke-width="2.0"/>
+        </Rule>
+
+        <Rule><MaxScaleDenominator>17061</MaxScaleDenominator><MinScaleDenominator>4264</MinScaleDenominator><LineSymbolizer stroke="#888" stroke-width="1.0"/></Rule>
+        <Rule><MaxScaleDenominator>4264</MaxScaleDenominator><MinScaleDenominator>0</MinScaleDenominator><LineSymbolizer stroke="#888" stroke-width="3.0"/></Rule>
+    </Style>
 </Map>
