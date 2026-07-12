@@ -1,0 +1,879 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Map minimum-version="2.0.0">
+    <Style name="base_light">
+        <Rule>
+            <PolygonSymbolizer fill="#cccccc" />
+            <LineSymbolizer stroke="#cccccc" stroke-width="2.0" />
+        </Rule>
+        <Rule>
+            <LineSymbolizer stroke="#222222aa" stroke-width="0.5" />
+        </Rule>
+    </Style>
+    <Style name="base_night">
+        <Rule>
+            <PolygonSymbolizer fill="#303044" />
+            <LineSymbolizer stroke="#303044" stroke-width="2.0" />
+        </Rule>
+        <Rule>
+            <LineSymbolizer stroke="#ccccccaa" stroke-width="0.5" />
+            <MaxScaleDenominator>17000</MaxScaleDenominator>
+            <MinScaleDenominator>0</MinScaleDenominator>
+        </Rule>
+    </Style>
+    <Style name="base_night_outlines">
+        <Rule>
+            <MaxScaleDenominator>20000</MaxScaleDenominator>
+            <MinScaleDenominator>1200</MinScaleDenominator>
+            <LineSymbolizer stroke="#0081AF" stroke-width="0.5" />
+        </Rule>
+        <Rule>
+            <MaxScaleDenominator>12000</MaxScaleDenominator>
+            <MinScaleDenominator>8000</MinScaleDenominator>
+            <LineSymbolizer stroke="#0081AF" stroke-width="1.8" />
+        </Rule>
+        <Rule>
+            <MaxScaleDenominator>8000</MaxScaleDenominator>
+            <MinScaleDenominator>0</MinScaleDenominator>
+            <LineSymbolizer stroke="#0081AF" stroke-width="4.0" />
+        </Rule>
+    </Style>
+    <Style name="base_boroughs">
+        <Rule>
+            <TextSymbolizer face-name="DejaVu Sans Condensed Bold" fill="#eee" size="24" halo-radius="2" halo-fill="#333" wrap-width="40" clip="false" margin="20">[name]</TextSymbolizer>
+            <MinScaleDenominator>10000</MinScaleDenominator>
+            <MaxScaleDenominator>20000</MaxScaleDenominator>
+        </Rule>
+        <Rule>
+            <TextSymbolizer face-name="DejaVu Sans Condensed Bold" fill="#eee" size="21" halo-radius="2" halo-fill="#333" wrap-width="35" clip="false" margin="20">[name]</TextSymbolizer>
+            <MinScaleDenominator>20000</MinScaleDenominator>
+            <MaxScaleDenominator>80000</MaxScaleDenominator>
+        </Rule>
+        <Rule>
+            <TextSymbolizer face-name="DejaVu Sans Condensed Bold" fill="#eee" size="15" halo-radius="2" halo-fill="#333" wrap-width="35" clip="false" margin="20">[name]</TextSymbolizer>
+            <MinScaleDenominator>80000</MinScaleDenominator>
+            <MaxScaleDenominator>400000</MaxScaleDenominator>
+        </Rule>
+    </Style>
+    <Style name="number_labels">
+        <Rule>
+            <TextSymbolizer face-name="DejaVu Sans Condensed Bold" fill="#eee" size="21" halo-radius="1" halo-fill="#333">[lokalizacja_numer]</TextSymbolizer>
+            <MaxScaleDenominator>2132</MaxScaleDenominator>
+            <MinScaleDenominator>0</MinScaleDenominator>
+        </Rule>
+    </Style>
+    <Style name="highlight">
+        <Rule>
+            <Filter>@base_data_layer = 'location'</Filter>
+            <LineSymbolizer stroke="#ff0000aa" stroke-width="4.5" />
+            <LineSymbolizer stroke="#ff0000ff" stroke-width="2.5" />
+        </Rule>
+        <Rule>
+            <ElseFilter />
+            <LineSymbolizer stroke="#00ffffaa" stroke-width="4.5" />
+            <LineSymbolizer stroke="#00ffffff" stroke-width="2.5" />
+        </Rule>
+    </Style>
+
+    <!-- START STYLÓW -->
+
+    <Style name="uzytkowanie_funkcja_ogolna">
+        <Rule>
+            <Filter>[uzytkowanie_funkcja_ogolna] = 'Budynki mieszkalne'</Filter>
+            <PolygonSymbolizer fill="#E9C46A" />
+            <LineSymbolizer stroke="#E9C46A" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[uzytkowanie_funkcja_ogolna] = 'Budynki biurowe'</Filter>
+            <PolygonSymbolizer fill="#4E79A7" />
+            <LineSymbolizer stroke="#4E79A7" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[uzytkowanie_funkcja_ogolna] = 'Budynki handlowo-usługowe'</Filter>
+            <PolygonSymbolizer fill="#F28E2B" />
+            <LineSymbolizer stroke="#F28E2B" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[uzytkowanie_funkcja_ogolna] = 'Budynki przemysłowe'</Filter>
+            <PolygonSymbolizer fill="#B07AA1" />
+            <LineSymbolizer stroke="#B07AA1" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[uzytkowanie_funkcja_ogolna] = 'Budynki produkcyjne, usługowe i gospodarcze dla rolnictwa'</Filter>
+            <PolygonSymbolizer fill="#8C6D31" />
+            <LineSymbolizer stroke="#8C6D31" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[uzytkowanie_funkcja_ogolna] = 'Zbiorniki, silosy i budynki magazynowe'</Filter>
+            <PolygonSymbolizer fill="#76B7B2" />
+            <LineSymbolizer stroke="#76B7B2" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[uzytkowanie_funkcja_ogolna] = 'Budynki transportu i łączności'</Filter>
+            <PolygonSymbolizer fill="#59A14F" />
+            <LineSymbolizer stroke="#59A14F" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[uzytkowanie_funkcja_ogolna] = 'Budynki szpitali i inne budynki opieki zdrowotnej'</Filter>
+            <PolygonSymbolizer fill="#E15759" />
+            <LineSymbolizer stroke="#E15759" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[uzytkowanie_funkcja_ogolna] = 'Budynki oświaty, nauki i kultury oraz budynki sportowe'</Filter>
+            <PolygonSymbolizer fill="#EDC948" />
+            <LineSymbolizer stroke="#EDC948" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[uzytkowanie_funkcja_ogolna] = 'Pozostałe budynki niemieszkalne'</Filter>
+            <PolygonSymbolizer fill="#9C9DA1" />
+            <LineSymbolizer stroke="#9C9DA1" stroke-width="2.0"/>
+        </Rule>
+        
+        <Rule>
+            <MaxScaleDenominator>17061</MaxScaleDenominator>
+            <MinScaleDenominator>4264</MinScaleDenominator>
+            <LineSymbolizer stroke="#888" stroke-width="1.0"/>
+        </Rule>
+        <Rule>
+            <MaxScaleDenominator>4264</MaxScaleDenominator>
+            <MinScaleDenominator>0</MinScaleDenominator>
+            <LineSymbolizer stroke="#888" stroke-width="3.0"/>
+        </Rule>
+    </Style>
+    <Style name="typologia_dominanta">
+        <Rule>
+            <Filter>[typologia_dominanta] = true</Filter>
+            <PolygonSymbolizer fill="#59A14F" />
+            <LineSymbolizer stroke="#59A14F" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[typologia_dominanta] = false</Filter>
+            <PolygonSymbolizer fill="#E15759" />
+            <LineSymbolizer stroke="#E15759" stroke-width="2.0"/>
+        </Rule>
+        
+        <Rule>
+            <MaxScaleDenominator>17061</MaxScaleDenominator>
+            <MinScaleDenominator>4264</MinScaleDenominator>
+            <LineSymbolizer stroke="#888" stroke-width="1.0"/>
+        </Rule>
+        <Rule>
+            <MaxScaleDenominator>4264</MaxScaleDenominator>
+            <MinScaleDenominator>0</MinScaleDenominator>
+            <LineSymbolizer stroke="#888" stroke-width="3.0"/>
+        </Rule>
+    </Style>
+    <Style name="typologia_rodzaj_dominanty">
+        <Rule>
+            <Filter>[typologia_rodzaj_dominanty] = 'Ikoniczna'</Filter>
+            <PolygonSymbolizer fill="#C65D3A" />
+            <LineSymbolizer stroke="#C65D3A" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[typologia_rodzaj_dominanty] = 'Wysokościowa'</Filter>
+            <PolygonSymbolizer fill="#4E79A7" />
+            <LineSymbolizer stroke="#4E79A7" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[typologia_rodzaj_dominanty] = 'Płaszczyznowa'</Filter>
+            <PolygonSymbolizer fill="#76B7B2" />
+            <LineSymbolizer stroke="#76B7B2" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[typologia_rodzaj_dominanty] = 'Domykająca'</Filter>
+            <PolygonSymbolizer fill="#59A14F" />
+            <LineSymbolizer stroke="#59A14F" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[typologia_rodzaj_dominanty] = 'Funkcjonalno-użytkowa'</Filter>
+            <PolygonSymbolizer fill="#B07AA1" />
+            <LineSymbolizer stroke="#B07AA1" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[typologia_rodzaj_dominanty] = 'Krajobrazowa'</Filter>
+            <PolygonSymbolizer fill="#8FBC6B" />
+            <LineSymbolizer stroke="#8FBC6B" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[typologia_rodzaj_dominanty] = 'Wybitny element krajobrazu'</Filter>
+            <PolygonSymbolizer fill="#D4A017" />
+            <LineSymbolizer stroke="#D4A017" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[typologia_rodzaj_dominanty] = 'Znak szczególny'</Filter>
+            <PolygonSymbolizer fill="#E15759" />
+            <LineSymbolizer stroke="#E15759" stroke-width="2.0"/>
+        </Rule>
+        
+        <Rule>
+            <MaxScaleDenominator>17061</MaxScaleDenominator>
+            <MinScaleDenominator>4264</MinScaleDenominator>
+            <LineSymbolizer stroke="#888" stroke-width="1.0"/>
+        </Rule>
+        <Rule>
+            <MaxScaleDenominator>4264</MaxScaleDenominator>
+            <MinScaleDenominator>0</MinScaleDenominator>
+            <LineSymbolizer stroke="#888" stroke-width="3.0"/>
+        </Rule>
+    </Style>
+    <Style name="typologia_aktywny_parter">
+        <Rule>
+            <Filter>[typologia_aktywny_parter] = 1</Filter>
+            <PolygonSymbolizer fill="#4E79A7" />
+            <LineSymbolizer stroke="#4E79A7" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[typologia_aktywny_parter] = 2</Filter>
+            <PolygonSymbolizer fill="#7A9BC0" />
+            <LineSymbolizer stroke="#7A9BC0" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[typologia_aktywny_parter] = 3</Filter>
+            <PolygonSymbolizer fill="#A6BED8" />
+            <LineSymbolizer stroke="#A6BED8" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[typologia_aktywny_parter] = 4</Filter>
+            <PolygonSymbolizer fill="#D2E0EC" />
+            <LineSymbolizer stroke="#D2E0EC" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[typologia_aktywny_parter] = 5</Filter>
+            <PolygonSymbolizer fill="#FFFFFF" />
+            <LineSymbolizer stroke="#FFFFFF" stroke-width="2.0"/>
+        </Rule>
+        
+        <Rule>
+            <MaxScaleDenominator>17061</MaxScaleDenominator>
+            <MinScaleDenominator>4264</MinScaleDenominator>
+            <LineSymbolizer stroke="#888" stroke-width="1.0"/>
+        </Rule>
+        <Rule>
+            <MaxScaleDenominator>4264</MaxScaleDenominator>
+            <MinScaleDenominator>0</MinScaleDenominator>
+            <LineSymbolizer stroke="#888" stroke-width="3.0"/>
+        </Rule>
+    </Style>
+    <Style name="kdf_material_elewacji">
+        <Rule>
+            <Filter>[kdf_material_elewacji] = 'Cegła'</Filter>
+            <PolygonSymbolizer fill="#B55239" />
+            <LineSymbolizer stroke="#B55239" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_elewacji] = 'Klinkier'</Filter>
+            <PolygonSymbolizer fill="#8C3B2A" />
+            <LineSymbolizer stroke="#8C3B2A" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_elewacji] = 'Kamień'</Filter>
+            <PolygonSymbolizer fill="#8E8B83" />
+            <LineSymbolizer stroke="#8E8B83" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_elewacji] = 'Beton'</Filter>
+            <PolygonSymbolizer fill="#B7B7B7" />
+            <LineSymbolizer stroke="#B7B7B7" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_elewacji] = 'Tynk'</Filter>
+            <PolygonSymbolizer fill="#E8DCCB" />
+            <LineSymbolizer stroke="#E8DCCB" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_elewacji] = 'Drewno'</Filter>
+            <PolygonSymbolizer fill="#A06A3B" />
+            <LineSymbolizer stroke="#A06A3B" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_elewacji] = 'Szkło'</Filter>
+            <PolygonSymbolizer fill="#7FCBE8" />
+            <LineSymbolizer stroke="#7FCBE8" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_elewacji] = 'Aluminium'</Filter>
+            <PolygonSymbolizer fill="#C8CDD3" />
+            <LineSymbolizer stroke="#C8CDD3" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_elewacji] = 'Stal'</Filter>
+            <PolygonSymbolizer fill="#6E7B8B" />
+            <LineSymbolizer stroke="#6E7B8B" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_elewacji] = 'Miedź'</Filter>
+            <PolygonSymbolizer fill="#B87333" />
+            <LineSymbolizer stroke="#B87333" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_elewacji] = 'Ceramika'</Filter>
+            <PolygonSymbolizer fill="#D97757" />
+            <LineSymbolizer stroke="#D97757" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_elewacji] = 'Płyty włókno-cementowe'</Filter>
+            <PolygonSymbolizer fill="#9EA7A0" />
+            <LineSymbolizer stroke="#9EA7A0" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_elewacji] = 'Tworzywo sztuczne (PVC)'</Filter>
+            <PolygonSymbolizer fill="#F2F2F2" />
+            <LineSymbolizer stroke="#F2F2F2" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_elewacji] = 'Panele kompozytowe'</Filter>
+            <PolygonSymbolizer fill="#5F6F7A" />
+            <LineSymbolizer stroke="#5F6F7A" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_elewacji] = 'Płyty warstwowe'</Filter>
+            <PolygonSymbolizer fill="#7A8D9A" />
+            <LineSymbolizer stroke="#7A8D9A" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_elewacji] = 'Mur pruski'</Filter>
+            <PolygonSymbolizer fill="#5A3A22" />
+            <LineSymbolizer stroke="#5A3A22" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_elewacji] = 'Strzecha'</Filter>
+            <PolygonSymbolizer fill="#C8A95B" />
+            <LineSymbolizer stroke="#C8A95B" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_elewacji] = 'Materiał mieszany'</Filter>
+            <PolygonSymbolizer fill="#8B7AA8" />
+            <LineSymbolizer stroke="#8B7AA8" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_elewacji] = 'Inny materiał'</Filter>
+            <PolygonSymbolizer fill="#D46AA0" />
+            <LineSymbolizer stroke="#D46AA0" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_elewacji] = 'Nieznany materiał'</Filter>
+            <PolygonSymbolizer fill="#D9D9D9" />
+            <LineSymbolizer stroke="#D9D9D9" stroke-width="2.0"/>
+        </Rule>
+        
+        <Rule>
+            <MaxScaleDenominator>17061</MaxScaleDenominator>
+            <MinScaleDenominator>4264</MinScaleDenominator>
+            <LineSymbolizer stroke="#888" stroke-width="1.0"/>
+        </Rule>
+        <Rule>
+            <MaxScaleDenominator>4264</MaxScaleDenominator>
+            <MinScaleDenominator>0</MinScaleDenominator>
+            <LineSymbolizer stroke="#888" stroke-width="3.0"/>
+        </Rule>
+    </Style>
+    <Style name="kdf_material_dachu">
+        <Rule>
+            <Filter>[kdf_material_dachu] = 'Dachówka ceramiczna'</Filter>
+            <PolygonSymbolizer fill="#B24A3A" />
+            <LineSymbolizer stroke="#B24A3A" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_dachu] = 'Dachówka betonowa'</Filter>
+            <PolygonSymbolizer fill="#A35C4A" />
+            <LineSymbolizer stroke="#A35C4A" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_dachu] = 'Blachodachówka'</Filter>
+            <PolygonSymbolizer fill="#6E7B8B" />
+            <LineSymbolizer stroke="#6E7B8B" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_dachu] = 'Blacha'</Filter>
+            <PolygonSymbolizer fill="#5F6F7A" />
+            <LineSymbolizer stroke="#5F6F7A" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_dachu] = 'Papa'</Filter>
+            <PolygonSymbolizer fill="#3F3F3F" />
+            <LineSymbolizer stroke="#3F3F3F" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_dachu] = 'Gont bitumiczny'</Filter>
+            <PolygonSymbolizer fill="#4B4B4B" />
+            <LineSymbolizer stroke="#4B4B4B" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_dachu] = 'Łupek'</Filter>
+            <PolygonSymbolizer fill="#6C6A6A" />
+            <LineSymbolizer stroke="#6C6A6A" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_dachu] = 'Płyty włókno-cementowe'</Filter>
+            <PolygonSymbolizer fill="#9AA3A0" />
+            <LineSymbolizer stroke="#9AA3A0" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_dachu] = 'Drewno (gont)'</Filter>
+            <PolygonSymbolizer fill="#8B5A2B" />
+            <LineSymbolizer stroke="#8B5A2B" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_dachu] = 'Strzecha'</Filter>
+            <PolygonSymbolizer fill="#C2A45A" />
+            <LineSymbolizer stroke="#C2A45A" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_dachu] = 'Szkło'</Filter>
+            <PolygonSymbolizer fill="#7FCBE8" />
+            <LineSymbolizer stroke="#7FCBE8" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_dachu] = 'Dach zielony'</Filter>
+            <PolygonSymbolizer fill="#5FAF5A" />
+            <LineSymbolizer stroke="#5FAF5A" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_dachu] = 'Płyty warstwowe'</Filter>
+            <PolygonSymbolizer fill="#7A8D9A" />
+            <LineSymbolizer stroke="#7A8D9A" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_dachu] = 'Tworzywo sztuczne'</Filter>
+            <PolygonSymbolizer fill="#D9D9D9" />
+            <LineSymbolizer stroke="#D9D9D9" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_dachu] = 'Materiał mieszany'</Filter>
+            <PolygonSymbolizer fill="#8B7AA8" />
+            <LineSymbolizer stroke="#8B7AA8" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_dachu] = 'Inny materiał'</Filter>
+            <PolygonSymbolizer fill="#D46AA0" />
+            <LineSymbolizer stroke="#D46AA0" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_dachu] = 'Nieznany materiał'</Filter>
+            <PolygonSymbolizer fill="#CFCFCF" />
+            <LineSymbolizer stroke="#CFCFCF" stroke-width="2.0"/>
+        </Rule>
+        
+        <Rule>
+            <MaxScaleDenominator>17061</MaxScaleDenominator>
+            <MinScaleDenominator>4264</MinScaleDenominator>
+            <LineSymbolizer stroke="#888" stroke-width="1.0"/>
+        </Rule>
+        <Rule>
+            <MaxScaleDenominator>4264</MaxScaleDenominator>
+            <MinScaleDenominator>0</MinScaleDenominator>
+            <LineSymbolizer stroke="#888" stroke-width="3.0"/>
+        </Rule>
+    </Style>
+    <Style name="kdf_material_okien">
+        <Rule>
+            <Filter>[kdf_material_okien] = 'Drewno'</Filter>
+            <PolygonSymbolizer fill="#8B5A2B" />
+            <LineSymbolizer stroke="#8B5A2B" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_okien] = 'PVC'</Filter>
+            <PolygonSymbolizer fill="#EAEAEA" />
+            <LineSymbolizer stroke="#EAEAEA" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_okien] = 'Aluminium'</Filter>
+            <PolygonSymbolizer fill="#C5C9CD" />
+            <LineSymbolizer stroke="#C5C9CD" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_okien] = 'Stal'</Filter>
+            <PolygonSymbolizer fill="#6E7B8B" />
+            <LineSymbolizer stroke="#6E7B8B" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_okien] = 'Szkło'</Filter>
+            <PolygonSymbolizer fill="#7FCBE8" />
+            <LineSymbolizer stroke="#7FCBE8" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_okien] = 'Drewno-Aluminium'</Filter>
+            <PolygonSymbolizer fill="#A07C55" />
+            <LineSymbolizer stroke="#A07C55" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_okien] = 'Materiał mieszany'</Filter>
+            <PolygonSymbolizer fill="#8B7AA8" />
+            <LineSymbolizer stroke="#8B7AA8" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_okien] = 'Inny materiał'</Filter>
+            <PolygonSymbolizer fill="#D46AA0" />
+            <LineSymbolizer stroke="#D46AA0" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_okien] = 'Nieznany materiał'</Filter>
+            <PolygonSymbolizer fill="#CFCFCF" />
+            <LineSymbolizer stroke="#CFCFCF" stroke-width="2.0"/>
+        </Rule>
+        
+        <Rule>
+            <MaxScaleDenominator>17061</MaxScaleDenominator>
+            <MinScaleDenominator>4264</MinScaleDenominator>
+            <LineSymbolizer stroke="#888" stroke-width="1.0"/>
+        </Rule>
+        <Rule>
+            <MaxScaleDenominator>4264</MaxScaleDenominator>
+            <MinScaleDenominator>0</MinScaleDenominator>
+            <LineSymbolizer stroke="#888" stroke-width="3.0"/>
+        </Rule>
+    </Style>
+    <Style name="kdf_material_drzwi">
+        <Rule>
+            <Filter>[kdf_material_drzwi] = 'Drewno'</Filter>
+            <PolygonSymbolizer fill="#8B5A2B" />
+            <LineSymbolizer stroke="#8B5A2B" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_drzwi] = 'PVC'</Filter>
+            <PolygonSymbolizer fill="#EAEAEA" />
+            <LineSymbolizer stroke="#EAEAEA" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_drzwi] = 'Aluminium'</Filter>
+            <PolygonSymbolizer fill="#C5C9CD" />
+            <LineSymbolizer stroke="#C5C9CD" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_drzwi] = 'Stal'</Filter>
+            <PolygonSymbolizer fill="#6E7B8B" />
+            <LineSymbolizer stroke="#6E7B8B" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_drzwi] = 'Szkło'</Filter>
+            <PolygonSymbolizer fill="#7FCBE8" />
+            <LineSymbolizer stroke="#7FCBE8" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_drzwi] = 'Drewno-Aluminium'</Filter>
+            <PolygonSymbolizer fill="#A07C55" />
+            <LineSymbolizer stroke="#A07C55" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_drzwi] = 'Materiał mieszany'</Filter>
+            <PolygonSymbolizer fill="#8B7AA8" />
+            <LineSymbolizer stroke="#8B7AA8" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_drzwi] = 'Inny materiał'</Filter>
+            <PolygonSymbolizer fill="#D46AA0" />
+            <LineSymbolizer stroke="#D46AA0" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_material_drzwi] = 'Nieznany materiał'</Filter>
+            <PolygonSymbolizer fill="#CFCFCF" />
+            <LineSymbolizer stroke="#CFCFCF" stroke-width="2.0"/>
+        </Rule>
+        
+        <Rule>
+            <MaxScaleDenominator>17061</MaxScaleDenominator>
+            <MinScaleDenominator>4264</MinScaleDenominator>
+            <LineSymbolizer stroke="#888" stroke-width="1.0"/>
+        </Rule>
+        <Rule>
+            <MaxScaleDenominator>4264</MaxScaleDenominator>
+            <MinScaleDenominator>0</MinScaleDenominator>
+            <LineSymbolizer stroke="#888" stroke-width="3.0"/>
+        </Rule>
+    </Style>
+    <Style name="kdf_kolor_dachu_rgb">
+        <Rule>
+            <PolygonSymbolizer fill="[kdf_kolor_dachu_rgb]" />
+            <LineSymbolizer stroke="[kdf_kolor_dachu_rgb]" stroke-width="2.0"/>
+        </Rule>
+        
+        <Rule>
+            <MaxScaleDenominator>17061</MaxScaleDenominator>
+            <MinScaleDenominator>4264</MinScaleDenominator>
+            <LineSymbolizer stroke="#888" stroke-width="1.0"/>
+        </Rule>
+        <Rule>
+            <MaxScaleDenominator>4264</MaxScaleDenominator>
+            <MinScaleDenominator>0</MinScaleDenominator>
+            <LineSymbolizer stroke="#888" stroke-width="3.0"/>
+        </Rule>
+    </Style>
+    <Style name="kdf_typ_dachu">
+        <Rule>
+            <Filter>[kdf_typ_dachu] = 'Dach płaski'</Filter>
+            <PolygonSymbolizer fill="#9C9DA1" />
+            <LineSymbolizer stroke="#9C9DA1" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[kdf_typ_dachu] = 'Dach skośny'</Filter>
+            <PolygonSymbolizer fill="#F28E2B" />
+            <LineSymbolizer stroke="#F28E2B" stroke-width="2.0"/>
+        </Rule>
+        
+        <Rule>
+            <MaxScaleDenominator>17061</MaxScaleDenominator>
+            <MinScaleDenominator>4264</MinScaleDenominator>
+            <LineSymbolizer stroke="#888" stroke-width="1.0"/>
+        </Rule>
+        <Rule>
+            <MaxScaleDenominator>4264</MaxScaleDenominator>
+            <MinScaleDenominator>0</MinScaleDenominator>
+            <LineSymbolizer stroke="#888" stroke-width="3.0"/>
+        </Rule>
+    </Style>
+    <Style name="planowanie_typ_krajobrazu">
+        <Rule>
+            <Filter>[planowanie_typ_krajobrazu] = '11. Wodnogospodarcze'</Filter>
+            <PolygonSymbolizer fill="#1F78B4" />
+            <LineSymbolizer stroke="#1F78B4" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[planowanie_typ_krajobrazu] = '12. Przemysłowe i energetyczne'</Filter>
+            <PolygonSymbolizer fill="#6E6E6E" />
+            <LineSymbolizer stroke="#6E6E6E" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[planowanie_typ_krajobrazu] = '14. Komunikacyjne'</Filter>
+            <PolygonSymbolizer fill="#E31A1C" />
+            <LineSymbolizer stroke="#E31A1C" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[planowanie_typ_krajobrazu] = '2. Bagienno-łąkowe - głównie bezleśne'</Filter>
+            <PolygonSymbolizer fill="#66C2A5" />
+            <LineSymbolizer stroke="#66C2A5" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[planowanie_typ_krajobrazu] = '3. Leśne'</Filter>
+            <PolygonSymbolizer fill="#228B22" />
+            <LineSymbolizer stroke="#228B22" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[planowanie_typ_krajobrazu] = '6. Wiejskie'</Filter>
+            <PolygonSymbolizer fill="#F2C94C" />
+            <LineSymbolizer stroke="#F2C94C" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[planowanie_typ_krajobrazu] = '7. Mozaikowe'</Filter>
+            <PolygonSymbolizer fill="#984EA3" />
+            <LineSymbolizer stroke="#984EA3" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[planowanie_typ_krajobrazu] = '8. Podmiejskie i osadnicze'</Filter>
+            <PolygonSymbolizer fill="#FDB462" />
+            <LineSymbolizer stroke="#FDB462" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[planowanie_typ_krajobrazu] = '9. Miejskie'</Filter>
+            <PolygonSymbolizer fill="#4D4D4D" />
+            <LineSymbolizer stroke="#4D4D4D" stroke-width="2.0"/>
+        </Rule>
+
+        <Rule>
+            <MaxScaleDenominator>17061</MaxScaleDenominator>
+            <MinScaleDenominator>4264</MinScaleDenominator>
+            <LineSymbolizer stroke="#888" stroke-width="1.0"/>
+        </Rule>
+        <Rule>
+            <MaxScaleDenominator>4264</MaxScaleDenominator>
+            <MinScaleDenominator>0</MinScaleDenominator>
+            <LineSymbolizer stroke="#888" stroke-width="3.0"/>
+        </Rule>
+    </Style>
+    <Style name="planowanie_krajobraz_priorytetowy">
+        <Rule>
+            <Filter>[planowanie_krajobraz_priorytetowy] = true</Filter>
+            <PolygonSymbolizer fill="#59A14F" />
+            <LineSymbolizer stroke="#59A14F" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[planowanie_krajobraz_priorytetowy] = false</Filter>
+            <PolygonSymbolizer fill="#E15759" />
+            <LineSymbolizer stroke="#E15759" stroke-width="2.0"/>
+        </Rule>
+        
+        <Rule>
+            <MaxScaleDenominator>17061</MaxScaleDenominator>
+            <MinScaleDenominator>4264</MinScaleDenominator>
+            <LineSymbolizer stroke="#888" stroke-width="1.0"/>
+        </Rule>
+        <Rule>
+            <MaxScaleDenominator>4264</MaxScaleDenominator>
+            <MinScaleDenominator>0</MinScaleDenominator>
+            <LineSymbolizer stroke="#888" stroke-width="3.0"/>
+        </Rule>
+    </Style>
+    <Style name="za_dostepnosc_niepelnosprawni">
+        <Rule>
+            <Filter>[za_dostepnosc_niepelnosprawni] = true</Filter>
+            <PolygonSymbolizer fill="#59A14F" />
+            <LineSymbolizer stroke="#59A14F" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[za_dostepnosc_niepelnosprawni] = false</Filter>
+            <PolygonSymbolizer fill="#E15759" />
+            <LineSymbolizer stroke="#E15759" stroke-width="2.0"/>
+        </Rule>
+        
+        <Rule>
+            <MaxScaleDenominator>17061</MaxScaleDenominator>
+            <MinScaleDenominator>4264</MinScaleDenominator>
+            <LineSymbolizer stroke="#888" stroke-width="1.0"/>
+        </Rule>
+        <Rule>
+            <MaxScaleDenominator>4264</MaxScaleDenominator>
+            <MinScaleDenominator>0</MinScaleDenominator>
+            <LineSymbolizer stroke="#888" stroke-width="3.0"/>
+        </Rule>
+    </Style>
+    <Style name="spoleczenstwo_bezpieczenstwo">
+        <Rule>
+            <Filter>[spoleczenstwo_bezpieczenstwo] = 1</Filter>
+            <PolygonSymbolizer fill="#E15759" />
+            <LineSymbolizer stroke="#E15759" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[spoleczenstwo_bezpieczenstwo] = 2</Filter>
+            <PolygonSymbolizer fill="#E98284" />
+            <LineSymbolizer stroke="#E98284" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[spoleczenstwo_bezpieczenstwo] = 3</Filter>
+            <PolygonSymbolizer fill="#F0ADAE" />
+            <LineSymbolizer stroke="#F0ADAE" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[spoleczenstwo_bezpieczenstwo] = 4</Filter>
+            <PolygonSymbolizer fill="#F7D7D7" />
+            <LineSymbolizer stroke="#F7D7D7" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[spoleczenstwo_bezpieczenstwo] = 5</Filter>
+            <PolygonSymbolizer fill="#FFFFFF" />
+            <LineSymbolizer stroke="#FFFFFF" stroke-width="2.0"/>
+        </Rule>
+        
+        <Rule>
+            <MaxScaleDenominator>17061</MaxScaleDenominator>
+            <MinScaleDenominator>4264</MinScaleDenominator>
+            <LineSymbolizer stroke="#888" stroke-width="1.0"/>
+        </Rule>
+        <Rule>
+            <MaxScaleDenominator>4264</MaxScaleDenominator>
+            <MinScaleDenominator>0</MinScaleDenominator>
+            <LineSymbolizer stroke="#888" stroke-width="3.0"/>
+        </Rule>
+    </Style>
+    <Style name="spoleczenstwo_percepcja_obrazowosc">
+        <Rule>
+            <Filter>[spoleczenstwo_percepcja_obrazowosc] = 1</Filter>
+            <PolygonSymbolizer fill="#F28E2B" />
+            <LineSymbolizer stroke="#F28E2B" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[spoleczenstwo_percepcja_obrazowosc] = 2</Filter>
+            <PolygonSymbolizer fill="#F5AD63" />
+            <LineSymbolizer stroke="#F5AD63" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[spoleczenstwo_percepcja_obrazowosc] = 3</Filter>
+            <PolygonSymbolizer fill="#F8CB9A" />
+            <LineSymbolizer stroke="#F8CB9A" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[spoleczenstwo_percepcja_obrazowosc] = 4</Filter>
+            <PolygonSymbolizer fill="#FBE8D0" />
+            <LineSymbolizer stroke="#FBE8D0" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[spoleczenstwo_percepcja_obrazowosc] = 5</Filter>
+            <PolygonSymbolizer fill="#FFFFFF" />
+            <LineSymbolizer stroke="#FFFFFF" stroke-width="2.0"/>
+        </Rule>
+        
+        <Rule>
+            <MaxScaleDenominator>17061</MaxScaleDenominator>
+            <MinScaleDenominator>4264</MinScaleDenominator>
+            <LineSymbolizer stroke="#888" stroke-width="1.0"/>
+        </Rule>
+        <Rule>
+            <MaxScaleDenominator>4264</MaxScaleDenominator>
+            <MinScaleDenominator>0</MinScaleDenominator>
+            <LineSymbolizer stroke="#888" stroke-width="3.0"/>
+        </Rule>
+    </Style>
+    <Style name="spoleczenstwo_percepcja_atrakcyjnosc">
+        <Rule>
+            <Filter>[spoleczenstwo_percepcja_atrakcyjnosc] = 1</Filter>
+            <PolygonSymbolizer fill="#FFFFFF" />
+            <LineSymbolizer stroke="#FFFFFF" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[spoleczenstwo_percepcja_atrakcyjnosc] = 2</Filter>
+            <PolygonSymbolizer fill="#D5ECD2" />
+            <LineSymbolizer stroke="#D5ECD2" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[spoleczenstwo_percepcja_atrakcyjnosc] = 3</Filter>
+            <PolygonSymbolizer fill="#ABD3A5" />
+            <LineSymbolizer stroke="#ABD3A5" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[spoleczenstwo_percepcja_atrakcyjnosc] = 4</Filter>
+            <PolygonSymbolizer fill="#82BA7A" />
+            <LineSymbolizer stroke="#82BA7A" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[spoleczenstwo_percepcja_atrakcyjnosc] = 5</Filter>
+            <PolygonSymbolizer fill="#59A14F" />
+            <LineSymbolizer stroke="#59A14F" stroke-width="2.0"/>
+        </Rule>
+        
+        <Rule>
+            <MaxScaleDenominator>17061</MaxScaleDenominator>
+            <MinScaleDenominator>4264</MinScaleDenominator>
+            <LineSymbolizer stroke="#888" stroke-width="1.0"/>
+        </Rule>
+        <Rule>
+            <MaxScaleDenominator>4264</MaxScaleDenominator>
+            <MinScaleDenominator>0</MinScaleDenominator>
+            <LineSymbolizer stroke="#888" stroke-width="3.0"/>
+        </Rule>
+    </Style>
+    <Style name="spoleczenstwo_percepcja_czytelnosc">
+        <Rule>
+            <Filter>[spoleczenstwo_percepcja_czytelnosc] = 1</Filter>
+            <PolygonSymbolizer fill="#FFFFFF" />
+            <LineSymbolizer stroke="#FFFFFF" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[spoleczenstwo_percepcja_czytelnosc] = 2</Filter>
+            <PolygonSymbolizer fill="#E3DAE2" />
+            <LineSymbolizer stroke="#E3DAE2" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[spoleczenstwo_percepcja_czytelnosc] = 3</Filter>
+            <PolygonSymbolizer fill="#C7B4C5" />
+            <LineSymbolizer stroke="#C7B4C5" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[spoleczenstwo_percepcja_czytelnosc] = 4</Filter>
+            <PolygonSymbolizer fill="#AB8FA8" />
+            <LineSymbolizer stroke="#AB8FA8" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[spoleczenstwo_percepcja_czytelnosc] = 5</Filter>
+            <PolygonSymbolizer fill="#8E6C8A" />
+            <LineSymbolizer stroke="#8E6C8A" stroke-width="2.0"/>
+        </Rule>
+        
+        <Rule>
+            <MaxScaleDenominator>17061</MaxScaleDenominator>
+            <MinScaleDenominator>4264</MinScaleDenominator>
+            <LineSymbolizer stroke="#888" stroke-width="1.0"/>
+        </Rule>
+        <Rule>
+            <MaxScaleDenominator>4264</MaxScaleDenominator>
+            <MinScaleDenominator>0</MinScaleDenominator>
+            <LineSymbolizer stroke="#888" stroke-width="3.0"/>
+        </Rule>
+    </Style>
+</Map>

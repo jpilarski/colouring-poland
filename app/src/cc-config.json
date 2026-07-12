@@ -1,0 +1,23 @@
+{
+    "cityName": "Poland",
+    "institution": "Poznan University of Technology",
+    "projectBlurb": "Colouring Poland is part of Colouring Cities.",
+    "githubURL": "https://github.com/jpilarski/colouring-poland",
+    "manualURL": "https://github.com/colouring-cities/manual/wiki/M3.-COLOURING-BRITAIN",
+    "privacyStatement": "Colouring Poland - ask PUT about data & privacy",
+    "initialMapPosition": [
+        51.356105,
+        21.585259
+    ],
+    "initialZoomLevel": 16,
+    "postcode": "Postcode",
+    "energy_rating": "Energy rating",
+    "bbox": [
+        2398995.24,
+        6680691.81,
+        2406581.61,
+        6687915.11
+    ],
+    "basemapTileUrl": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+    "baseAttribution": ""
+}

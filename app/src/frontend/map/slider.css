@@ -1,0 +1,108 @@
+/* Stylowanie kontenera suwaka żeby zachował proporcje kafelków (min-width: 310px zdefiniowane dla .btn) */
+.slider-box {
+    min-width: 310px;
+    padding: 10px 15px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Kolor tekstu dostosowany do trybu - .map-button tło jest nadawane przez klasy mapy */
+.slider-box.night {
+    color: #fff;
+}
+
+.slider-box:not(.night) {
+    color: #191b1d;
+}
+
+.slider-inner {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.slider-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+    font-weight: bold;
+}
+
+/* Reset systemowego wyglądu suwaka i aplikacja niestandardowego motywu */
+.slider-box input[type="range"] {
+    -webkit-appearance: none;
+    width: 100%;
+    background: transparent;
+    margin: 0;
+}
+
+.slider-box input[type="range"]:focus {
+    outline: none;
+}
+
+/* --- Ścieżka (track) --- */
+.slider-box input[type="range"]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 6px;
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 3px;
+}
+
+.slider-box.night input[type="range"]::-webkit-slider-runnable-track {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.slider-box input[type="range"]::-moz-range-track {
+    width: 100%;
+    height: 6px;
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 3px;
+}
+
+.slider-box.night input[type="range"]::-moz-range-track {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+/* --- Gałka (thumb) --- */
+.slider-box input[type="range"]::-webkit-slider-thumb {
+    height: 18px;
+    width: 18px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid #333;
+    cursor: pointer;
+    -webkit-appearance: none;
+    margin-top: -6px;
+    /* Wyśrodkowanie w pionie ze ścieżką o wys 6px */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.slider-box.night input[type="range"]::-webkit-slider-thumb {
+    border: 2px solid #fff;
+    background: #343a40;
+}
+
+.slider-box input[type="range"]::-moz-range-thumb {
+    height: 18px;
+    width: 18px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid #333;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.slider-box.night input[type="range"]::-moz-range-thumb {
+    border: 2px solid #fff;
+    background: #343a40;
+}
+
+.slider-box.night .slider-labels {
+    color: #ffffff !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
