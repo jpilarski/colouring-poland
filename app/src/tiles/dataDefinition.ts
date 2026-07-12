@@ -112,16 +112,11 @@ const LAYER_QUERIES: Record<string, string> = {
         WHERE b.konstrukcja_detal_forma_nachylenie_dachu IS NOT NULL`,
     typologia_ilosc_kondygnacji: `
         SELECT
-            b.lokalizacja_id_geometrii,
-            '#' || 'ff' || 
-            lpad(to_hex( COALESCE( (255.0 * (b.typologia_ilosc_kondygnacji - s.min_val) / NULLIF(s.max_val - s.min_val, 0))::int, 0 ) ), 2, '0') ||
-            lpad(to_hex( COALESCE( 147 + (108.0 * (b.typologia_ilosc_kondygnacji - s.min_val) / NULLIF(s.max_val - s.min_val, 0))::int, 147 ) ), 2, '0') AS fill_color
-        FROM 
-            buildings b
-        CROSS JOIN (
-            SELECT MIN(typologia_ilosc_kondygnacji) AS min_val, MAX(typologia_ilosc_kondygnacji) AS max_val FROM buildings
-        ) s
-        WHERE b.typologia_ilosc_kondygnacji IS NOT NULL`,
+            lokalizacja_id_geometrii,
+            COALESCE(LEAST(typologia_ilosc_kondygnacji, 10), 1)::int AS bucket
+        FROM
+            buildings
+        WHERE typologia_ilosc_kondygnacji IS NOT NULL`,
     kdf_material_elewacji: `
         SELECT
             lokalizacja_id_geometrii,

@@ -924,10 +924,16 @@
         <Rule><MaxScaleDenominator>4264</MaxScaleDenominator><MinScaleDenominator>0</MinScaleDenominator><LineSymbolizer stroke="#888" stroke-width="3.0"/></Rule>
     </Style>
     <Style name="typologia_ilosc_kondygnacji">
-        <Rule>
-            <PolygonSymbolizer fill="[fill_color]" />
-            <LineSymbolizer stroke="[fill_color]" stroke-width="2.0"/>
-        </Rule>
+        <Rule><Filter>[bucket] = 1</Filter><PolygonSymbolizer fill="#FF0093" /><LineSymbolizer stroke="#FF0093" stroke-width="2.0"/></Rule>
+        <Rule><Filter>[bucket] = 2</Filter><PolygonSymbolizer fill="#FF1C9F" /><LineSymbolizer stroke="#FF1C9F" stroke-width="2.0"/></Rule>
+        <Rule><Filter>[bucket] = 3</Filter><PolygonSymbolizer fill="#FF39AB" /><LineSymbolizer stroke="#FF39AB" stroke-width="2.0"/></Rule>
+        <Rule><Filter>[bucket] = 4</Filter><PolygonSymbolizer fill="#FF55B7" /><LineSymbolizer stroke="#FF55B7" stroke-width="2.0"/></Rule>
+        <Rule><Filter>[bucket] = 5</Filter><PolygonSymbolizer fill="#FF71C3" /><LineSymbolizer stroke="#FF71C3" stroke-width="2.0"/></Rule>
+        <Rule><Filter>[bucket] = 6</Filter><PolygonSymbolizer fill="#FF8ECF" /><LineSymbolizer stroke="#FF8ECF" stroke-width="2.0"/></Rule>
+        <Rule><Filter>[bucket] = 7</Filter><PolygonSymbolizer fill="#FFAADB" /><LineSymbolizer stroke="#FFAADB" stroke-width="2.0"/></Rule>
+        <Rule><Filter>[bucket] = 8</Filter><PolygonSymbolizer fill="#FFC6E7" /><LineSymbolizer stroke="#FFC6E7" stroke-width="2.0"/></Rule>
+        <Rule><Filter>[bucket] = 9</Filter><PolygonSymbolizer fill="#FFE3F3" /><LineSymbolizer stroke="#FFE3F3" stroke-width="2.0"/></Rule>
+        <Rule><Filter>[bucket] = 10</Filter><PolygonSymbolizer fill="#FFFFFF" /><LineSymbolizer stroke="#FFFFFF" stroke-width="2.0"/></Rule>
 
         <Rule><MaxScaleDenominator>17061</MaxScaleDenominator><MinScaleDenominator>4264</MinScaleDenominator><LineSymbolizer stroke="#888" stroke-width="1.0"/></Rule>
         <Rule><MaxScaleDenominator>4264</MaxScaleDenominator><MinScaleDenominator>0</MinScaleDenominator><LineSymbolizer stroke="#888" stroke-width="3.0"/></Rule>

@@ -137,8 +137,18 @@ export const categoryMapsConfig: { [key in Category]: CategoryMapDefinition[] } 
             mapStyle: 'typologia_ilosc_kondygnacji',
             legend: {
                 title: 'Ilość kondygnacji',
-                isDynamicDistinct: true,
-                elements: []
+                elements: [
+                    { color: "#FF0093", text: "1" },
+                    { color: "#FF1C9F", text: "2" },
+                    { color: "#FF39AB", text: "3" },
+                    { color: "#FF55B7", text: "4" },
+                    { color: "#FF71C3", text: "5" },
+                    { color: "#FF8ECF", text: "6" },
+                    { color: "#FFAADB", text: "7" },
+                    { color: "#FFC6E7", text: "8" },
+                    { color: "#FFE3F3", text: "9" },
+                    { color: "#FFFFFF", text: "10+" }
+                ]
             },
         },
     ],

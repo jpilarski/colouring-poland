@@ -15,23 +15,23 @@ router.get('/', asyncController(async (req: express.Request, res: express.Respon
         FROM buildings
     `);
 
-    const distinctStoreys = await db.any(`
-        SELECT DISTINCT typologia_ilosc_kondygnacji 
-        FROM buildings 
-        WHERE typologia_ilosc_kondygnacji IS NOT NULL 
-        ORDER BY typologia_ilosc_kondygnacji ASC
-    `);
+    // const distinctStoreys = await db.any(`
+    //     SELECT DISTINCT typologia_ilosc_kondygnacji 
+    //     FROM buildings 
+    //     WHERE typologia_ilosc_kondygnacji IS NOT NULL 
+    //     ORDER BY typologia_ilosc_kondygnacji ASC
+    // `);
 
     res.json({
         lokalizacja_wysokosc_npm: { min: stats.loc_min, max: stats.loc_max },
         typologia_powierzchnia_parteru: { min: stats.pow_min, max: stats.pow_max },
         typologia_wysokosc_maksymalna: { min: stats.wys_min, max: stats.wys_max },
         kdf_nachylenie_dachu: { min: stats.dach_min, max: stats.dach_max },
-        typologia_ilosc_kondygnacji: {
-            min: stats.kond_min,
-            max: stats.kond_max,
-            distinct_values: distinctStoreys.map((row: any) => row.typologia_ilosc_kondygnacji)
-        }
+        // typologia_ilosc_kondygnacji: {
+        //     min: stats.kond_min,
+        //     max: stats.kond_max,
+        //     distinct_values: distinctStoreys.map((row: any) => row.typologia_ilosc_kondygnacji)
+        // }
     });
 }));
 
