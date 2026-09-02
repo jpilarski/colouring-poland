@@ -66,8 +66,9 @@ export const Legend: FC<LegendProps> = ({
             const step = (max - min) / 6;
             elements = elements.map((item, idx) => {
                 if ('subtitle' in item) return item;
-                const bucketMin = (min + step * idx).toFixed(1);
-                const bucketMax = (min + step * (idx + 1)).toFixed(1);
+                const bucketIdx = legendConfig?.reverseOrder ? (5 - idx) : idx;
+                const bucketMin = (min + step * bucketIdx).toFixed(1);
+                const bucketMax = (min + step * (bucketIdx + 1)).toFixed(1);
                 return {
                     ...item,
                     text: `${bucketMin} - ${bucketMax}`

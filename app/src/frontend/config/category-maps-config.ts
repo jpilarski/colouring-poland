@@ -15,6 +15,7 @@ export interface LegendConfig {
     disclaimer?: string;
     isDynamicGradient?: boolean;
     isDynamicDistinct?: boolean;
+    reverseOrder?: boolean;
     elements: LegendElement[];
 }
 
@@ -32,13 +33,14 @@ export const categoryMapsConfig: { [key in Category]: CategoryMapDefinition[] } 
             legend: {
                 title: 'Wzniesienie m n.p.m.',
                 isDynamicGradient: true,
+                reverseOrder: true,
                 elements: [
-                    { color: "#FF0093", text: "Min (wczytywanie...)" },
-                    { color: "#FF33A9", text: "" },
-                    { color: "#FF66BF", text: "" },
-                    { color: "#FF99D4", text: "" },
+                    { color: "#FFFFFF", text: "Max (wczytywanie...)" },
                     { color: "#FFCCE9", text: "" },
-                    { color: "#FFFFFF", text: "Max (wczytywanie...)" }
+                    { color: "#FF99D4", text: "" },
+                    { color: "#FF66BF", text: "" },
+                    { color: "#FF33A9", text: "" },
+                    { color: "#FF0093", text: "Min (wczytywanie...)" }
                 ]
             },
         },
@@ -95,11 +97,11 @@ export const categoryMapsConfig: { [key in Category]: CategoryMapDefinition[] } 
             legend: {
                 title: 'Aktywny parter',
                 elements: [
-                    { color: "#4E79A7", text: "1" },
-                    { color: "#7A9BC0", text: "2" },
-                    { color: "#A6BED8", text: "3" },
+                    { color: "#FFFFFF", text: "5" },
                     { color: "#D2E0EC", text: "4" },
-                    { color: "#FFFFFF", text: "5" }
+                    { color: "#A6BED8", text: "3" },
+                    { color: "#7A9BC0", text: "2" },
+                    { color: "#4E79A7", text: "1" }
                 ]
             },
         },
@@ -107,14 +109,13 @@ export const categoryMapsConfig: { [key in Category]: CategoryMapDefinition[] } 
             mapStyle: 'typologia_powierzchnia_parteru',
             legend: {
                 title: 'Powierzchnia parteru',
-                isDynamicGradient: true,
                 elements: [
-                    { color: "#00EDFF", text: "Min (wczytywanie...)" },
-                    { color: "#33F0FF", text: "" },
-                    { color: "#66F4FF", text: "" },
-                    { color: "#99F7FF", text: "" },
-                    { color: "#CCFBFF", text: "" },
-                    { color: "#FFFFFF", text: "Max (wczytywanie...)" }
+                    { color: "#FFFFFF", text: "> 2000" },
+                    { color: "#CCFBFF", text: "1001 – 2000" },
+                    { color: "#99F7FF", text: "501 – 1000" },
+                    { color: "#66F4FF", text: "151 – 500" },
+                    { color: "#33F0FF", text: "71 – 150" },
+                    { color: "#00EDFF", text: "<= 70" }
                 ]
             },
         },
@@ -123,13 +124,14 @@ export const categoryMapsConfig: { [key in Category]: CategoryMapDefinition[] } 
             legend: {
                 title: 'Wysokość całkowita',
                 isDynamicGradient: true,
+                reverseOrder: true,
                 elements: [
-                    { color: "#FF0093", text: "Min (wczytywanie...)" },
-                    { color: "#FF33A9", text: "" },
-                    { color: "#FF66BF", text: "" },
-                    { color: "#FF99D4", text: "" },
+                    { color: "#FFFFFF", text: "Max (wczytywanie...)" },
                     { color: "#FFCCE9", text: "" },
-                    { color: "#FFFFFF", text: "Max (wczytywanie...)" }
+                    { color: "#FF99D4", text: "" },
+                    { color: "#FF66BF", text: "" },
+                    { color: "#FF33A9", text: "" },
+                    { color: "#FF0093", text: "Min (wczytywanie...)" }
                 ]
             },
         },
@@ -138,16 +140,16 @@ export const categoryMapsConfig: { [key in Category]: CategoryMapDefinition[] } 
             legend: {
                 title: 'Ilość kondygnacji',
                 elements: [
-                    { color: "#FF0093", text: "1" },
-                    { color: "#FF1C9F", text: "2" },
-                    { color: "#FF39AB", text: "3" },
-                    { color: "#FF55B7", text: "4" },
-                    { color: "#FF71C3", text: "5" },
-                    { color: "#FF8ECF", text: "6" },
-                    { color: "#FFAADB", text: "7" },
-                    { color: "#FFC6E7", text: "8" },
+                    { color: "#FFFFFF", text: "10+" },
                     { color: "#FFE3F3", text: "9" },
-                    { color: "#FFFFFF", text: "10+" }
+                    { color: "#FFC6E7", text: "8" },
+                    { color: "#FFAADB", text: "7" },
+                    { color: "#FF8ECF", text: "6" },
+                    { color: "#FF71C3", text: "5" },
+                    { color: "#FF55B7", text: "4" },
+                    { color: "#FF39AB", text: "3" },
+                    { color: "#FF1C9F", text: "2" },
+                    { color: "#FF0093", text: "1" }
                 ]
             },
         },
@@ -264,13 +266,14 @@ export const categoryMapsConfig: { [key in Category]: CategoryMapDefinition[] } 
             legend: {
                 title: 'Nachylenie dachu',
                 isDynamicGradient: true,
+                reverseOrder: true,
                 elements: [
-                    { color: "#00EDFF", text: "Min (wczytywanie...)" },
-                    { color: "#33F0FF", text: "" },
-                    { color: "#66F4FF", text: "" },
-                    { color: "#99F7FF", text: "" },
+                    { color: "#FFFFFF", text: "Max (wczytywanie...)" },
                     { color: "#CCFBFF", text: "" },
-                    { color: "#FFFFFF", text: "Max (wczytywanie...)" }
+                    { color: "#99F7FF", text: "" },
+                    { color: "#66F4FF", text: "" },
+                    { color: "#33F0FF", text: "" },
+                    { color: "#00EDFF", text: "Min (wczytywanie...)" }
                 ]
             },
         },
@@ -327,11 +330,11 @@ export const categoryMapsConfig: { [key in Category]: CategoryMapDefinition[] } 
             legend: {
                 title: 'Poczucie bezpieczeństwa',
                 elements: [
-                    { color: "#E15759", text: "1" },
-                    { color: "#E98284", text: "2" },
-                    { color: "#F0ADAE", text: "3" },
+                    { color: "#FFFFFF", text: "5" },
                     { color: "#F7D7D7", text: "4" },
-                    { color: "#FFFFFF", text: "5" }
+                    { color: "#F0ADAE", text: "3" },
+                    { color: "#E98284", text: "2" },
+                    { color: "#E15759", text: "1" }
                 ]
             },
         },
@@ -340,11 +343,11 @@ export const categoryMapsConfig: { [key in Category]: CategoryMapDefinition[] } 
             legend: {
                 title: 'Obrazowość',
                 elements: [
-                    { color: "#F28E2B", text: "1" },
-                    { color: "#F5AD63", text: "2" },
-                    { color: "#F8CB9A", text: "3" },
+                    { color: "#FFFFFF", text: "5" },
                     { color: "#FBE8D0", text: "4" },
-                    { color: "#FFFFFF", text: "5" }
+                    { color: "#F8CB9A", text: "3" },
+                    { color: "#F5AD63", text: "2" },
+                    { color: "#F28E2B", text: "1" }
                 ]
             },
         },
@@ -353,11 +356,11 @@ export const categoryMapsConfig: { [key in Category]: CategoryMapDefinition[] } 
             legend: {
                 title: 'Atrakcyjnosć',
                 elements: [
-                    { color: "#FFFFFF", text: "1" },
-                    { color: "#D5ECD2", text: "2" },
-                    { color: "#ABD3A5", text: "3" },
+                    { color: "#59A14F", text: "5" },
                     { color: "#82BA7A", text: "4" },
-                    { color: "#59A14F", text: "5" }
+                    { color: "#ABD3A5", text: "3" },
+                    { color: "#D5ECD2", text: "2" },
+                    { color: "#FFFFFF", text: "1" }
                 ]
             },
         },
@@ -366,11 +369,11 @@ export const categoryMapsConfig: { [key in Category]: CategoryMapDefinition[] } 
             legend: {
                 title: 'Czytelność',
                 elements: [
-                    { color: "#FFFFFF", text: "1" },
-                    { color: "#E3DAE2", text: "2" },
-                    { color: "#C7B4C5", text: "3" },
+                    { color: "#8E6C8A", text: "5" },
                     { color: "#AB8FA8", text: "4" },
-                    { color: "#8E6C8A", text: "5" }
+                    { color: "#C7B4C5", text: "3" },
+                    { color: "#E3DAE2", text: "2" },
+                    { color: "#FFFFFF", text: "1" }
                 ]
             },
         },

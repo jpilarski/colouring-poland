@@ -80,14 +80,18 @@ const LAYER_QUERIES: Record<string, string> = {
 
     typologia_powierzchnia_parteru: `
         SELECT
-            b.lokalizacja_id_geometrii,
-            COALESCE(LEAST(FLOOR(6 * (b.typologia_powierzchnia_parteru - s.min_val) / NULLIF(s.max_val - s.min_val, 0)) + 1, 6), 1)::int AS bucket
+            lokalizacja_id_geometrii,
+            CASE
+                WHEN typologia_powierzchnia_parteru <= 70 THEN 1
+                WHEN typologia_powierzchnia_parteru <= 150 THEN 2
+                WHEN typologia_powierzchnia_parteru <= 500 THEN 3
+                WHEN typologia_powierzchnia_parteru <= 1000 THEN 4
+                WHEN typologia_powierzchnia_parteru <= 2000 THEN 5
+                ELSE 6
+            END AS bucket
         FROM
-            buildings b
-        CROSS JOIN (
-            SELECT MIN(typologia_powierzchnia_parteru) AS min_val, MAX(typologia_powierzchnia_parteru) AS max_val FROM buildings
-        ) s
-        WHERE b.typologia_powierzchnia_parteru IS NOT NULL`,
+            buildings
+        WHERE typologia_powierzchnia_parteru IS NOT NULL`,
 
     typologia_wysokosc_maksymalna: `
         SELECT
