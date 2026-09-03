@@ -13,8 +13,14 @@ export interface MultiSelectDataEntryProps extends BaseDataEntryProps {
 export const MultiSelectDataEntry: React.FunctionComponent<MultiSelectDataEntryProps> = (props) => {
     const slugWithModifier = props.slug + (props.slugModifier ?? '');
 
-    // Zabezpieczenie, by zawsze pracować na tablicy, nawet jeśli przyjdzie null
-    const currentValues = props.value || [];
+    // Zabezpieczenie przed błędem backendu - parsowanie tekstu z bazy na natywną tablicę JS
+    let currentValues: string[];
+    if (typeof props.value === 'string') {
+        const cleaned = (props.value as string).replace(/^\{|\}$/g, '');
+        currentValues = cleaned.trim() === '' ? [] : cleaned.split(',').map(s => s.trim().replace(/^"|"$/g, ''));
+    } else {
+        currentValues = props.value || [];
+    }
 
     function handleChange(e: ChangeEvent<HTMLInputElement>) {
         const changedKey = e.target.name;
@@ -29,8 +35,11 @@ export const MultiSelectDataEntry: React.FunctionComponent<MultiSelectDataEntryP
             newVal = currentValues.filter(v => v !== changedKey);
         }
 
+        // Usuwamy ewentualne duplikaty
+        const uniqueVal = Array.from(new Set(newVal));
+
         // Zwracamy zaktualizowaną tablicę (lub null jeśli jest pusta)
-        props.onChange(slugWithModifier, newVal.length > 0 ? newVal : null);
+        props.onChange(slugWithModifier, uniqueVal.length > 0 ? uniqueVal : null);
     }
 
     return (

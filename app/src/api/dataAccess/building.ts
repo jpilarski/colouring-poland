@@ -75,6 +75,13 @@ export async function updateBuildingData(
     revisionId: string,
     t?: ITask<any>
 ): Promise<BuildingAttributes> {
+    // Usunięcie ewentualnych duplikatów z pól będących tablicami
+    for (const key of Object.keys(forwardPatch)) {
+        if (Array.isArray((forwardPatch as any)[key])) {
+            (forwardPatch as any)[key] = Array.from(new Set((forwardPatch as any)[key]));
+        }
+    }
+
     const columnConfig = Object.entries(forwardPatch).map(([key]) => columnConfigLookup[key]);
     const sets = db.$config.pgp.helpers.sets(forwardPatch, columnConfig);
 
@@ -143,6 +150,13 @@ export async function updateBuildingUserData(
     t?: ITask<any>
 ): Promise<BuildingUserAttributes> {
     await ensureBuildingUserRecord(buildingId, userId, t);
+
+    // Usunięcie ewentualnych duplikatów z pól będących tablicami
+    for (const key of Object.keys(forwardPatch)) {
+        if (Array.isArray((forwardPatch as any)[key])) {
+            (forwardPatch as any)[key] = Array.from(new Set((forwardPatch as any)[key]));
+        }
+    }
 
     const columnConfig = Object.entries(forwardPatch).map(([key]) => columnConfigLookup[key]);
     const sets = db.$config.pgp.helpers.sets(forwardPatch, columnConfig);
