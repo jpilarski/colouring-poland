@@ -19,8 +19,9 @@ export function LokalneFormyLayer() {
                 data={geojson}
                 style={{
                     color: '#8f5015',
-                    fill: false,
-                    weight: 1,
+                    fill: true,
+                    fillColor: '#e0985c',
+                    weight: 1.5,
                     fillOpacity: lokalneFormyOpacity,
                     opacity: lokalneFormyOpacity
                 }}

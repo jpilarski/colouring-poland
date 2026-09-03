@@ -14,7 +14,7 @@ export const LokalneFormySwitcher: React.FC = () => {
         <>
             <form className={`switcher map-button ${lokalneFormy}-state ${darkLightTheme}`} onSubmit={lokalneFormySwitch}>
                 <button className="btn btn-outline btn-outline-dark" type="submit">
-                    {(lokalneFormy === 'enabled') ? 'LFA włączone' : 'LFA wyłączone'}
+                    {(lokalneFormy === 'enabled') ? 'Lokalne formy arch. włączone' : 'Lokalne formy arch. wyłączone'}
                 </button>
             </form>
 
