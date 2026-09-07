@@ -36,6 +36,22 @@ const LAYER_QUERIES: Record<string, string> = {
             buildings
         WHERE lokalizacja_id_budynku = !@highlight!`,
 
+    lokalizacja_kompletnosc: `
+        SELECT
+            lokalizacja_id_geometrii,
+            (
+                case when lokalizacja_id_gml IS NULL then 0 else 1 end +
+                case when lokalizacja_lat IS NULL then 0 else 1 end +
+                case when lokalizacja_lon IS NULL then 0 else 1 end +
+                case when lokalizacja_crs IS NULL then 0 else 1 end +
+                case when lokalizacja_wysokosc_npm IS NULL then 0 else 1 end +
+                case when lokalizacja_ulica IS NULL then 0 else 1 end +
+                case when lokalizacja_numer IS NULL then 0 else 1 end +
+                case when lokalizacja_kod_pocztowy IS NULL then 0 else 1 end
+            ) AS location_info_count
+        FROM
+            buildings`,
+
     // START DEFINICJI
     uzytkowanie_funkcja_ogolna: `
         SELECT

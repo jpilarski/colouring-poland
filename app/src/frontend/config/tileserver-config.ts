@@ -25,7 +25,8 @@ export type BuildingMapTileset =
     'typologia_powierzchnia_parteru' |
     'typologia_wysokosc_maksymalna' |
     'typologia_ilosc_kondygnacji' |
-    'kdf_nachylenie_dachu';
+    'kdf_nachylenie_dachu' |
+    'lokalizacja_kompletnosc';
 
 export type SpecialMapTileset = 'base_light' | 'base_night' | 'base_night_outlines' | 'highlight' | 'number_labels' | 'base_boroughs';
 

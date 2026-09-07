@@ -938,4 +938,46 @@
         <Rule><MaxScaleDenominator>17061</MaxScaleDenominator><MinScaleDenominator>4264</MinScaleDenominator><LineSymbolizer stroke="#888" stroke-width="1.0"/></Rule>
         <Rule><MaxScaleDenominator>4264</MaxScaleDenominator><MinScaleDenominator>0</MinScaleDenominator><LineSymbolizer stroke="#888" stroke-width="3.0"/></Rule>
     </Style>
+    <Style name="lokalizacja_kompletnosc">
+        <Rule>
+            <Filter>[location_info_count] &gt;= 8</Filter>
+            <PolygonSymbolizer fill="#084594" />
+            <LineSymbolizer stroke="#084594" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[location_info_count] &gt;= 6 and [location_info_count] &lt; 8</Filter>
+            <PolygonSymbolizer fill="#2171b5" />
+            <LineSymbolizer stroke="#2171b5" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[location_info_count] &gt;= 5 and [location_info_count] &lt; 6</Filter>
+            <PolygonSymbolizer fill="#4292c6" />
+            <LineSymbolizer stroke="#4292c6" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[location_info_count] &gt;= 3 and [location_info_count] &lt; 5</Filter>
+            <PolygonSymbolizer fill="#6baed6" />
+            <LineSymbolizer stroke="#6baed6" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[location_info_count] &gt;= 1 and [location_info_count] &lt; 3</Filter>
+            <PolygonSymbolizer fill="#9ecae1" />
+            <LineSymbolizer stroke="#9ecae1" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[location_info_count] = 0</Filter>
+            <PolygonSymbolizer fill="#c6dbef" />
+            <LineSymbolizer stroke="#c6dbef" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <MaxScaleDenominator>17061</MaxScaleDenominator>
+            <MinScaleDenominator>4264</MinScaleDenominator>
+            <LineSymbolizer stroke="#888" stroke-width="1.0"/>
+        </Rule>
+        <Rule>
+            <MaxScaleDenominator>4264</MaxScaleDenominator>
+            <MinScaleDenominator>0</MinScaleDenominator>
+            <LineSymbolizer stroke="#888" stroke-width="3.0"/>
+        </Rule>
+    </Style>
 </Map>

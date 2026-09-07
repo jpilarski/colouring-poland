@@ -29,6 +29,20 @@ export const defaultMapCategory = Category.Location;
 export const categoryMapsConfig: { [key in Category]: CategoryMapDefinition[] } = {
     [Category.Location]: [
         {
+            mapStyle: 'lokalizacja_kompletnosc',
+            legend: {
+                title: 'Kompletność danych',
+                elements: [
+                    { color: '#084594', text: 'powyżej 90%' },
+                    { color: '#2171b5', text: 'do 90%' },
+                    { color: '#4292c6', text: 'do 70%' },
+                    { color: '#6baed6', text: 'do 50%' },
+                    { color: '#9ecae1', text: 'do 30%' },
+                    { color: '#c6dbef', text: 'do 10%' }
+                ]
+            },
+        },
+        {
             mapStyle: 'lokalizacja_wysokosc_npm',
             legend: {
                 title: 'Wzniesienie m n.p.m.',
