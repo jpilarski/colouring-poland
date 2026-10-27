@@ -1,49 +1,31 @@
 import path from 'path';
 
-import db from '../../db';
+import {
+    DataExtractRow,
+    selectAllDataExtracts,
+    selectDataExtractById
+} from '../dataAccess/dataExtract';
 
-interface DataExtractRow {
-    extract_id: number;
-    extracted_on: Date;
-    extract_path: string;
-}
-
-interface DataExtract {
+export interface DataExtract {
     extract_id: number;
     extracted_on: Date;
     download_path: string;
 }
 
 async function listDataExtracts(): Promise<DataExtract[]> {
-    try {
-        const extractRecords = await db.manyOrNone<DataExtractRow>(
-            `SELECT
-                extract_id, extracted_on, extract_path
-            FROM bulk_extracts
-            ORDER BY extracted_on DESC`
-        );
-
-        return extractRecords.map(getDataExtractFromRow);
-    } catch (err) {
-        console.error('Error:', err);
+    const extractRecords = await selectAllDataExtracts();
+    if (!extractRecords) {
         return undefined;
     }
+    return extractRecords.map(getDataExtractFromRow);
 }
 
 async function getDataExtractById(extractId: number): Promise<DataExtract> {
-    try {
-        const extractRecord = await db.one<DataExtractRow>(
-            `SELECT 
-                extract_id, extracted_on, extract_path
-            FROM bulk_extracts
-            WHERE extract_id = $1
-            `, [extractId]);
-
-        return getDataExtractFromRow(extractRecord);
-    } catch (err) {
-        console.error('Error:', err);
+    const extractRecord = await selectDataExtractById(extractId);
+    if (!extractRecord) {
         return undefined;
     }
+    return getDataExtractFromRow(extractRecord);
 }
 
 function getDataExtractFromRow(er: DataExtractRow): DataExtract {
@@ -55,8 +37,8 @@ function getDataExtractFromRow(er: DataExtractRow): DataExtract {
 }
 
 function getDownloadLinkForExtract(extract: DataExtractRow): string {
-    const file_name = path.basename(extract.extract_path);
-    return `/downloads/${file_name}`; // TODO: potentially move base path to env var
+    const fileName = path.basename(extract.extract_path);
+    return `/downloads/${fileName}`; // TODO: potentially move base path to env var
 }
 
 export {
