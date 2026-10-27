@@ -21,3 +21,4 @@ coverage/
 .env
 
 qba-files/
+AGENTS.md
