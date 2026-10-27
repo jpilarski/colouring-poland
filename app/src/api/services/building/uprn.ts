@@ -1,13 +1,5 @@
-import db from '../../../db';
+import { selectBuildingUPRNsById, BuildingUPRNRow } from '../../dataAccess/building';
 
-export async function getBuildingUPRNsById(id: number) {
-    try {
-        return await db.any(
-            'SELECT uprn, parent_uprn FROM building_properties WHERE lokalizacja_id_budynku = $1',
-            [id]
-        );
-    } catch (error) {
-        console.error(error);
-        return undefined;
-    }
+export async function getBuildingUPRNsById(id: number): Promise<BuildingUPRNRow[]> {
+    return selectBuildingUPRNsById(id);
 }

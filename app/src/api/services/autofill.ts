@@ -1,5 +1,3 @@
-import db from '../../db';
-
 interface AutofillOption {
     id: string;
     value: string;

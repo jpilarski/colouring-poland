@@ -93,3 +93,37 @@ export async function getIdNewerThan(id: string): Promise<string> {
         throw new DatabaseError(err);
     }
 }
+
+
+/**
+ * Pobiera najwyższy identyfikator logu rewizji (najświeższą rewizję w systemie)
+ */
+export async function selectLatestRevisionId(): Promise<string> {
+    try {
+        const data = await db.oneOrNone<{ max: string }>(
+            `SELECT MAX(log_id) from logs`
+        );
+        return data == undefined ? undefined : data.max;
+    } catch (err) {
+        console.error('Error in selectLatestRevisionId:', err);
+        return undefined;
+    }
+}
+
+/**
+ * Pobiera pełną historię edycji danego budynku, posortowaną malejąco po czasie
+ */
+export async function selectBuildingEditHistory(id: number): Promise<EditHistoryEntry[]> {
+    try {
+        return await db.manyOrNone<EditHistoryEntry>(
+            `SELECT log_id as revision_id, forward_patch, reverse_patch, date_trunc('minute', log_timestamp) as revision_timestamp, username, lokalizacja_id_budynku
+            FROM logs, users
+            WHERE lokalizacja_id_budynku = $1 AND logs.user_id = users.user_id
+            ORDER BY log_timestamp DESC`,
+            [id]
+        );
+    } catch (error) {
+        console.error('Error in selectBuildingEditHistory:', error);
+        return [];
+    }
+}
