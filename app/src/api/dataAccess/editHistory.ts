@@ -1,6 +1,6 @@
 import db from '../../db';
 import { EditHistoryEntry } from '../../frontend/models/edit-history-entry';
-import { DatabaseError } from '../errors/general';
+import { DatabaseError } from '../common/errors/general';
 
 const baseQuery = `
         SELECT

@@ -2,7 +2,7 @@ import { ITask } from 'pg-promise';
 import format from 'pg-format';
 
 import db from '../../db';
-import { DatabaseError } from '../errors/general';
+import { DatabaseError } from '../common/errors/general';
 import { AggregationMethod } from '../config/aggregationsConfig';
 
 export type AggregationMethodFunction = (buildingId: number, attributeName: string, t?: ITask<any>) => Promise<number>;
