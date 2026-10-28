@@ -1,7 +1,6 @@
 import express from 'express';
 
-import { ApiUserError } from '../../common/errors/api';
-import { UserError } from '../../common/errors/general';
+import { ApiUserError, UserError } from '../../errors';
 import { parsePositiveIntParam, processParam } from '../../common/parameters';
 import asyncController from '../../common/asyncController';
 import * as buildingService from '../services/base';
@@ -49,4 +48,3 @@ export default {
     getUserVerifiedAttributes,
     verifyBuildingAttributes
 };
-
