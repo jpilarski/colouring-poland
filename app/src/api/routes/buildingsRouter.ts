@@ -1,38 +1,39 @@
 import express from 'express';
 
-import buildingController from '../controllers/buildingController';
+import buildingCoreController from '../controllers/buildingCoreController';
+import buildingExternalController from '../controllers/buildingExternalController';
+import buildingSpatialController from '../controllers/buildingSpatialController';
+import buildingVerifyController from '../controllers/buildingVerifyController';
 
 const router = express.Router();
 
-// GET buildings
-// not implemented - may be useful to GET all buildings, paginated
-
-// GET buildings at point
-router.get('/locate', buildingController.getBuildingsByLocation);
+// GET buildings at point (lokalizacja przestrzenna)
+router.get('/locate', buildingSpatialController.getBuildingsByLocation);
 
 // GET buildings by reference (UPRN/TOID or other identifier)
-router.get('/reference', buildingController.getBuildingsByReference);
+router.get('/reference', buildingSpatialController.getBuildingsByReference);
 
-router.get('/revision', buildingController.getLatestRevisionId);
+// GET latest revision id
+router.get('/revision', buildingCoreController.getLatestRevisionId);
 
+// GET individual building & POST building updates
 router.route('/:lokalizacja_id_budynku.json')
-    // GET individual building
-    .get(buildingController.getBuildingById)
-    // POST building updates
-    .post(buildingController.updateBuildingById);
-
+    .get(buildingCoreController.getBuildingById)
+    .post(buildingCoreController.updateBuildingById);
 
 // GET building UPRNs
-router.get('/:lokalizacja_id_budynku/uprns.json', buildingController.getBuildingUPRNsById);
+router.get('/:lokalizacja_id_budynku/uprns.json', buildingExternalController.getBuildingUPRNsById);
 
-router.get('/:lokalizacja_id_budynku/planning_data.json', buildingController.getBuildingPlanningDataById);
+// GET building planning data
+router.get('/:lokalizacja_id_budynku/planning_data.json', buildingExternalController.getBuildingPlanningDataById);
 
-// POST verify building attribute
+// GET / POST verify building attribute (crowdsourcing)
 router.route('/:lokalizacja_id_budynku/verify.json')
-    .get(buildingController.getUserVerifiedAttributes)
-    .post(buildingController.verifyBuildingAttributes);
+    .get(buildingVerifyController.getUserVerifiedAttributes)
+    .post(buildingVerifyController.verifyBuildingAttributes);
 
+// GET building edit history
 router.route('/:lokalizacja_id_budynku/history.json')
-    .get(buildingController.getBuildingEditHistoryById);
+    .get(buildingCoreController.getBuildingEditHistoryById);
 
 export default router;
