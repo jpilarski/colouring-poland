@@ -2,7 +2,7 @@ import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import _ from 'lodash';
 
-import { InvalidFieldError, FieldTypeError } from '../../../common/errors/general';
+import { InvalidFieldError, FieldTypeError } from '../../../errors';
 import { allAttributesConfig } from '../../../config/dataFields';
 import { BuildingAttributes, BuildingUserAttributes } from '../../../models/building';
 import { fieldSchemaConfig } from '../../../config/fieldSchemaConfig';

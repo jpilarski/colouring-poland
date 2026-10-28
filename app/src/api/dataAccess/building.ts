@@ -5,7 +5,7 @@ import _ from 'lodash';
 import db from '../../db';
 import { allAttributesConfig, buildingUserAttributesConfig } from '../config/dataFields';
 import { BaseBuilding, BuildingAttributes, BuildingUserAttributes } from '../models/building';
-import { ArgumentError, DatabaseError } from '../common/errors/general';
+import { ArgumentError, DatabaseError } from '../errors';
 
 export async function getBuildingData(
     buildingId: number,

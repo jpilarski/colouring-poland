@@ -4,7 +4,7 @@ import { ITask } from 'pg-promise';
 import { hasAnyOwnProperty } from '../../../../helpers';
 import { BaseBuilding, BuildingAttributes, BuildingUpdate } from '../../../models/building';
 import { getBuildingData } from '../../../dataAccess/building';
-import { ArgumentError } from '../../../common/errors/general';
+import { ArgumentError } from '../../../errors';
 
 /**
  * Define any custom processing logic for specific building attributes

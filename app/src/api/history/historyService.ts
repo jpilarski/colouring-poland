@@ -1,7 +1,7 @@
 import { EditHistoryEntry } from '../../frontend/models/edit-history-entry';
 import { decBigInt, incBigInt } from '../../helpers';
 import { getHistoryAfterId, getHistoryBeforeId, getIdNewerThan, getIdOlderThan } from '../dataAccess/editHistory';
-import { ArgumentError } from '../common/errors/general';
+import { ArgumentError } from '../errors';
 
 async function getGlobalEditHistory(
     beforeId?: string,

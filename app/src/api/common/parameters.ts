@@ -6,7 +6,7 @@
  * (pochodzących z req.params lub req.query).
  */
 import { strictParseInt } from '../../parse';
-import { ApiParamError, ApiParamInvalidFormatError, ApiParamRequiredError } from './errors/api';
+import { ApiParamError, ApiParamInvalidFormatError, ApiParamRequiredError } from '../errors';
 
 export function processParam<T>(
     params: object,

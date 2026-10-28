@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { BuildingAttributes, BuildingUpdate, BuildingUserAttributes } from '../../models/building';
 import * as buildingDataAccess from '../../dataAccess/building';
 import { startUpdateTransaction } from '../../dataAccess/transaction';
-import { UserError } from '../../common/errors/general';
+import { UserError } from '../../errors';
 import { aggregateUserAttributes } from './domainLogic/aggregateUserAttributes';
 import { processBuildingUpdate } from './domainLogic/processBuildingUpdate';
 import { validateChangeSet } from './domainLogic/validateUpdate';

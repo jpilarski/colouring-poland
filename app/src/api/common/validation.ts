@@ -5,13 +5,7 @@
  * - format i długość nazwy użytkownika (username)
  * - minimalna i maksymalna długość hasła (podstawa pod Zadanie 1.1 z TODO_MASTER.md - politykę haseł PP)
  */
-
-class ValidationError extends Error {
-    constructor(message: string) {
-        super(message);
-        this.name = 'ValidationError';
-    }
-}
+import { ValidationError } from '../errors';
 
 function validateUsername(username: string): void {
     if (username == undefined) throw new ValidationError('Username is required');

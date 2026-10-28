@@ -1,5 +1,5 @@
 import db from '../../db';
-import { DatabaseError, InvalidOperationError } from '../common/errors/general';
+import { DatabaseError, InvalidOperationError } from '../errors';
 
 export async function getBuildingVerifiedAttributes(buildingId: number): Promise<any[]> {
     try {

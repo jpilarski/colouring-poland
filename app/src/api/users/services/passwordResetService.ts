@@ -2,6 +2,7 @@ import nodemailer from 'nodemailer';
 import url, { URL } from 'url';
 
 import { validatePassword } from '../../common/validation';
+import { TokenVerificationError } from '../../errors';
 import { transporter } from './emailService';
 import * as userService from './userService';
 import {
@@ -37,13 +38,6 @@ async function resetPassword(passwordResetToken: string, newPassword: string): P
         //TODO: expire other tokens of the user?
     } else {
         throw new TokenVerificationError('Password reset token could not be verified');
-    }
-}
-
-class TokenVerificationError extends Error {
-    constructor(message: string) {
-        super(message);
-        this.name = 'TokenVerificationError';
     }
 }
 

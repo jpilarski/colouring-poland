@@ -1,7 +1,6 @@
 import express from 'express';
 
-import { ApiParamError, ApiUserError } from '../common/errors/api';
-import { ArgumentError } from '../common/errors/general';
+import { ApiParamError, ApiUserError, ArgumentError } from '../errors';
 import { checkRegexParam, parsePositiveIntParam, processParam, parseBooleanParam } from '../common/parameters';
 import asyncController from '../common/asyncController';
 import * as editHistoryService from './historyService';

@@ -2,7 +2,7 @@ import { buildingAttributesConfig } from '../../config/dataFields';
 import { BaseBuilding } from '../../models/building';
 import * as buildingDataAccess from '../../dataAccess/building';
 import * as verifyDataAccess from '../../dataAccess/verify';
-import { DatabaseError } from '../../common/errors/general';
+import { DatabaseError } from '../../errors';
 
 function canVerify(key: string) {
     return buildingAttributesConfig[key].verify === true;
