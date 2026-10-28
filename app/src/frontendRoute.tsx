@@ -10,11 +10,11 @@ import {
     getBuildingPlanningDataById,
     getLatestRevisionId,
     getUserVerifiedAttributes
-} from './api/services/building/base';
-import { getUserById } from './api/services/user';
+} from './api/buildings/services/base';
+import { getUserById } from './api/users/services/userService';
 import { App } from './frontend/app';
 import { parseBuildingURL } from './parse';
-import asyncController from './api/routes/asyncController';
+import asyncController from './api/common/asyncController';
 
 import { CCConfig } from './cc-config';
 let config: CCConfig = require('./cc-config.json')

@@ -5,7 +5,7 @@
  */
 import express from 'express';
 
-import asyncController from '../api/routes/asyncController';
+import asyncController from '../api/common/asyncController';
 import { strictParseInt } from '../parse';
 
 import { allTilesets, renderTile } from './rendererDefinition';
