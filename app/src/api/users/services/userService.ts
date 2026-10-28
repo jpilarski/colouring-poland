@@ -24,65 +24,43 @@ async function createUser(user: any): Promise<{ user_id?: string; error?: string
         validatePassword(user.password);
     } catch (err) {
         if (err instanceof ValidationError) {
-            return { error: err.message };
+            throw { error: err.message };
+        } else {
+            throw err;
         }
-        return { error: 'Invalid registration parameters' };
     }
 
-    try {
-        const result = await insertUser(user.username, user.email, user.password);
-        return { user_id: result.user_id };
-    } catch (error) {
-        if (error.code === '23505') {
-            return { error: 'User already exists' };
-        }
-        return { error: 'Failed to create user' };
-    }
+    return await insertUser(user.username, user.email, user.password);
 }
 
-async function authUser(username: string, passwordAttempt: string): Promise<any> {
-    const user = await selectUserAuthData(username);
+async function authUser(username: string, password: string): Promise<{ user_id?: string; error?: string }> {
+    const user = await selectUserAuthData(username, password);
 
-    if (!user) {
-        return { error: 'Username or password incorrect' };
-    }
-
-    if (user.is_blocked) {
-        return {
-            error: 'Account has been blocked',
-            blocked_reason: user.blocked_reason,
-            blocked_on: user.blocked_on
-        };
-    }
-
-    const argon2 = require('argon2');
-    const authOk = await argon2.verify(user.password_hash, passwordAttempt);
-
-    if (authOk) {
-        return {
-            user_id: user.user_id,
-            username: user.username,
-            email: user.email,
-            is_admin: user.is_admin
-        };
+    if (user == undefined) {
+        return { error: 'The username does not exist in the system' };
+    } else if (user.auth_ok) {
+        if (user.is_blocked) {
+            return {
+                error: `Account temporarily blocked.${user.blocked_reason == undefined ? '' : ' Reason: ' + user.blocked_reason}`
+            };
+        }
+        return { user_id: user.user_id };
     } else {
-        return { error: 'Username or password incorrect' };
+        console.error(`Authentication failed for user ${username}`);
+        return { error: 'Username / password pair not recognised' };
     }
 }
 
-async function getUserById(id: string): Promise<UserProfileRow> {
+async function getUserById(id: string): Promise<UserProfileRow | undefined> {
     return selectUserById(id);
 }
 
-async function getUserByEmail(email: string): Promise<UserEmailRow> {
+async function getUserByEmail(email: string): Promise<UserEmailRow | undefined> {
     return selectUserByEmail(email);
 }
 
-async function getNewUserAPIKey(id: string): Promise<{ api_key: string }> {
-    const crypto = require('crypto');
-    const newKey = crypto.randomBytes(16).toString('hex');
-    await updateUserAPIKey(id, newKey);
-    return { api_key: newKey };
+async function getNewUserAPIKey(id: string): Promise<{ api_key?: string; error?: string }> {
+    return updateUserAPIKey(id);
 }
 
 async function authAPIUser(key: string): Promise<string | undefined> {

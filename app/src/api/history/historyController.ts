@@ -7,6 +7,7 @@ import asyncController from '../common/asyncController';
 import * as editHistoryService from './historyService';
 
 const getGlobalEditHistory = asyncController(async (req: express.Request, res: express.Response) => {
+
     const revisionIdRegex = /^[1-9]\d*$/;
     const afterId: string = processParam(req.query, 'after_id', x => checkRegexParam(x, revisionIdRegex));
     const beforeId: string = processParam(req.query, 'before_id', x => checkRegexParam(x, revisionIdRegex));
@@ -29,6 +30,6 @@ const getGlobalEditHistory = asyncController(async (req: express.Request, res: e
     }
 });
 
-export default {
+export {
     getGlobalEditHistory
 };

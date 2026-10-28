@@ -4,6 +4,7 @@ import { parsePositiveIntParam, processParam } from '../common/parameters';
 import asyncController from '../common/asyncController';
 import * as dataExtractService from './dataExtractService';
 
+
 const getAllDataExtracts = asyncController(async function (req: express.Request, res: express.Response) {
     try {
         const dataExtracts = await dataExtractService.listDataExtracts();

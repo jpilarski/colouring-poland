@@ -8,3 +8,4 @@ router.post('/logout', authController.logout);
 router.post('/api/key', authController.generateApiKey);
 
 export default router;
+

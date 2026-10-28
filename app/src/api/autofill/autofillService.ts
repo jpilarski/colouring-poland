@@ -9,6 +9,13 @@ type GetAutofillOptionsFn = (value: string, all?: boolean) => Promise<AutofillOp
 const autofillFunctionMap: { [fieldName: string]: GetAutofillOptionsFn } = {
 };
 
+function buildPartialMatchQuery(value: string) {
+    return tokenizeValue(value).map(x => `${x}:*`).join(' & ');
+}
+function tokenizeValue(value: string) {
+    return value.split(/[^\w]+/).filter(x => x !== '');
+}
+
 export function getAutofillOptions(fieldName: string, fieldValue: any, allValues: boolean) {
     const optionsFn = autofillFunctionMap[fieldName];
 

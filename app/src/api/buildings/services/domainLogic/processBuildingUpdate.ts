@@ -10,6 +10,8 @@ import { ArgumentError } from '../../../common/errors/general';
  * Define any custom processing logic for specific building attributes
  */
 export async function processBuildingUpdate(buildingId: number, { attributes, userAttributes }: BuildingUpdate, t?: ITask<any>): Promise<BuildingUpdate> {
+
+
     return {
         attributes,
         userAttributes

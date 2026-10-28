@@ -49,3 +49,4 @@ export default {
     getUserVerifiedAttributes,
     verifyBuildingAttributes
 };
+

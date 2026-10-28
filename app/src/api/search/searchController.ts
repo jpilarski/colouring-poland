@@ -38,3 +38,4 @@ const searchLocations = asyncController(async (req: express.Request, res: expres
 export default {
     searchLocations
 };
+
