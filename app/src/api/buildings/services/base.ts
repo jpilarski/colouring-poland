@@ -1,9 +1,16 @@
+/**
+ * Building data access
+ *
+ */
 import _ from 'lodash';
 
 import * as buildingDataAccess from '../../dataAccess/building';
 import { Building, BuildingUserAttributes } from '../../models/building';
 import { getBuildingEditHistory } from './history';
 import { getBuildingVerifications } from './verify';
+
+// data type note: PostgreSQL bigint (64-bit) is handled as string in JavaScript, because of
+// JavaScript numerics are 64-bit double, giving only partial coverage.
 
 export interface BuildingMetadataOptions {
     editHistory?: boolean;

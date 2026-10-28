@@ -14,10 +14,12 @@ export async function editBuilding(
     userId: string,
     { attributes, userAttributes }: BuildingUpdate
 ): Promise<BuildingUpdate> {
+    // Validate externally provided attributes
     if (attributes) {
         validateChangeSet(attributes, true);
     }
 
+    // Validate externally provided user attributes
     if (userAttributes) {
         validateChangeSet(userAttributes, true);
     }
@@ -47,6 +49,7 @@ export async function editBuilding(
         );
 
         let resultAttributes: BuildingAttributes = null;
+
         let revisionId: string;
 
         if (processedAttributes) {
@@ -79,6 +82,16 @@ export async function editBuilding(
     return finalUpdate;
 }
 
+/**
+ * Compare old and new data objects, generate shallow merge patch of changed fields
+ * - forward patch is object with {keys: new_values}
+ * - reverse patch is object with {keys: old_values}
+ *
+ * @param {object} oldObj
+ * @param {object} newObj
+ * @param {Set} whitelist
+ * @returns {[object, object]}
+ */
 function compare(oldObj: object, newObj: object): [object, object] {
     const reverse = {};
     const forward = {};

@@ -28,18 +28,11 @@ const getBuildingById = asyncController(async (req: express.Request, res: expres
         if (!userId) {
             return res.send({ error: 'Must be logged in' });
         }
-
-        userDataOptions = {
-            userId,
-            userAttributes: true
-        };
+        userDataOptions = { userId: req.session.user_id, userAttributes: true };
     }
 
     try {
         const result = await buildingService.getBuildingById(buildingId, { userDataOptions });
-        if (typeof result === 'undefined') {
-            return res.send({ error: 'Database error' });
-        }
         res.send(result);
     } catch (error) {
         console.error(error);
@@ -47,17 +40,37 @@ const getBuildingById = asyncController(async (req: express.Request, res: expres
     }
 });
 
-// POST update to individual building
+// POST building attribute updates
 const updateBuildingById = asyncController(async (req: express.Request, res: express.Response) => {
-    if (!req.session.user_id) {
+    let userId: string;
+
+    try {
+        userId = req.session.user_id ?? (
+            req.query.api_key && await userService.authAPIUser(String(req.query.api_key))
+        );
+    } catch (error) {
+        console.error(error);
+    }
+
+    if (!userId) {
         return res.send({ error: 'Must be logged in' });
     }
 
     const buildingId = processParam(req.params, 'lokalizacja_id_budynku', parsePositiveIntParam, true);
 
+    const {
+        attributes = null,
+        user_attributes: userAttributes = null
+    } = req.body;
+
     try {
-        const resultUpdate = await buildingService.editBuilding(buildingId, req.session.user_id, req.body);
-        res.send(resultUpdate);
+        const resultUpdate = await buildingService.editBuilding(buildingId, userId, { attributes, userAttributes });
+
+        res.send({
+            attributes: resultUpdate.attributes,
+            user_attributes: resultUpdate.userAttributes,
+            revision_id: resultUpdate.revisionId
+        });
     } catch (error) {
         if (error instanceof UserError) {
             throw new ApiUserError(error.message, error);
@@ -66,10 +79,10 @@ const updateBuildingById = asyncController(async (req: express.Request, res: exp
     }
 });
 
-// GET user specific attributes for individual building
+// GET building user attributes
 const getBuildingUserAttributesById = asyncController(async (req: express.Request, res: express.Response) => {
     if (!req.session.user_id) {
-        return res.send({ error: 'Not logged in' });
+        return res.send({ error: 'Must be logged in' });
     }
 
     const buildingId = processParam(req.params, 'lokalizacja_id_budynku', parsePositiveIntParam, true);
@@ -78,7 +91,6 @@ const getBuildingUserAttributesById = asyncController(async (req: express.Reques
         const userAttributes = await buildingService.getBuildingUserAttributesById(buildingId, req.session.user_id);
         res.send(userAttributes);
     } catch (error) {
-        console.error(error);
         res.send({ error: 'Database error' });
     }
 });
@@ -89,28 +101,18 @@ const getBuildingEditHistoryById = asyncController(async (req: express.Request, 
 
     try {
         const editHistory = await buildingService.getBuildingEditHistory(buildingId);
-
-        if (typeof editHistory === 'undefined') {
-            return res.send({ error: 'Database error' });
-        }
         res.send({ history: editHistory });
     } catch (error) {
-        console.error(error);
         res.send({ error: 'Database error' });
     }
 });
 
-// GET latest revision id
+// GET latest revision id of any building
 const getLatestRevisionId = asyncController(async (req: express.Request, res: express.Response) => {
     try {
         const revisionId = await buildingService.getLatestRevisionId();
-
-        if (typeof revisionId === 'undefined') {
-            return res.send({ error: 'Database error' });
-        }
-        res.send({ revision_id: revisionId });
+        res.send({ latestRevisionId: revisionId });
     } catch (error) {
-        console.error(error);
         res.send({ error: 'Database error' });
     }
 });
@@ -122,3 +124,4 @@ export default {
     getBuildingEditHistoryById,
     getLatestRevisionId
 };
+

@@ -1,8 +1,9 @@
 import express from 'express';
-import historyController from './historyController';
+import * as editHistoryController from './historyController';
 
 const router = express.Router();
 
-router.get('/', historyController.getGlobalEditHistory);
+router.get('/', editHistoryController.getGlobalEditHistory);
 
 export default router;
+

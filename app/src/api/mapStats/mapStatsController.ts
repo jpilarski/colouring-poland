@@ -15,3 +15,4 @@ const getMapStats = asyncController(async (req: express.Request, res: express.Re
 export default {
     getMapStats
 };
+

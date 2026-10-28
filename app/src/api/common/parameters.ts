@@ -1,58 +1,62 @@
+/**
+ * Request Parameter Parser & Sanitizer (Warstwa Kontrolerów HTTP)
+ * 
+ * Moduł pomocniczy dla kontrolerów API odpowiedzialny za odczyt,
+ * walidację obecności oraz konwersję typów parametrów żądań HTTP
+ * (pochodzących z req.params lub req.query).
+ */
+import { strictParseInt } from '../../parse';
 import { ApiParamError, ApiParamInvalidFormatError, ApiParamRequiredError } from './errors/api';
 
-/**
- * Przetwarza i waliduje pojedynczy parametr (query, params lub body)
- */
 export function processParam<T>(
-    source: Record<string, any>,
+    params: object,
     paramName: string,
-    transformFn: (val: string) => T | undefined,
+    processingFn: (x: string) => T,
     required: boolean = false
-): T | undefined {
-    const rawValue = source ? source[paramName] : undefined;
+): T {
+    const stringValue = params[paramName];
 
-    if (rawValue === undefined || rawValue === null || rawValue === '') {
-        if (required) {
-            throw new ApiParamRequiredError(`Parametr '${paramName}' jest wymagany.`, paramName);
+    if (stringValue == undefined && required) {
+        const err = new ApiParamRequiredError('Parameter required but not supplied');
+        err.paramName = paramName;
+        throw err;
+    }
+
+    try {
+        return processingFn(stringValue);
+    } catch (error) {
+        if (error instanceof ApiParamError) {
+            error.paramName = paramName;
         }
-        return undefined;
+        throw error;
     }
-
-    const transformed = transformFn(String(rawValue));
-    if (transformed === undefined) {
-        throw new ApiParamInvalidFormatError(`Nieprawidłowy format parametru '${paramName}'.`, paramName);
-    }
-
-    return transformed;
 }
 
-/**
- * Parsuje parametr jako dodatnią liczbę całkowitą (np. ID, limit)
- */
 export function parsePositiveIntParam(param: string): number | undefined {
-    const num = Number(param);
-    if (!Number.isInteger(num) || num <= 0) {
-        return undefined;
+    if (param == undefined) return undefined;
+
+    const result = strictParseInt(param);
+    if (isNaN(result)) {
+        throw new ApiParamInvalidFormatError('Invalid format: not a positive integer');
     }
-    return num;
+    return result;
 }
 
-/**
- * Parsuje wartości logiczne z URL ('true', 'false', '1', '0')
- */
 export function parseBooleanParam(param: string): boolean | undefined {
-    const lower = param.trim().toLowerCase();
-    if (lower === 'true' || lower === '1') return true;
-    if (lower === 'false' || lower === '0') return false;
-    return undefined;
+    if (param == undefined) return undefined;
+
+    if (param === 'true') return true;
+    if (param === 'false') return false;
+
+    throw new ApiParamInvalidFormatError('Invalid format: not a true/false value');
 }
 
-/**
- * Waliduje parametr za pomocą wyrażenia regularnego
- */
 export function checkRegexParam(param: string, regex: RegExp): string | undefined {
-    if (regex.test(param)) {
-        return param;
+    if (param == undefined) return undefined;
+
+    if (param.match(regex) == undefined) {
+        throw new ApiParamInvalidFormatError(`Invalid format: does not match regular expression ${regex}`);
     }
-    return undefined;
+
+    return param;
 }

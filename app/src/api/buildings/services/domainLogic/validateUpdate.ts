@@ -18,33 +18,33 @@ function isDefined(key: string) {
 
 function canEdit(key: string, allowDerived: boolean = false) {
     const config = allAttributesConfig[key];
-    if (config == undefined) return false;
-    return allowDerived || config.derived !== true;
+
+    return config.edit || (allowDerived && config.derivedEdit);
 }
 
 export function validateFieldChange(field: string, value: any, isExternal: boolean = true) {
     if (!isDefined(field)) {
-        throw new InvalidFieldError(`Attribute ${field} not recognised.`);
+        console.log('Field does not exist', field);
+        throw new InvalidFieldError('Field does not exist', field);
     }
 
-    if (!canEdit(field, !isExternal)) {
-        throw new InvalidFieldError(`Attribute ${field} cannot be directly edited.`);
+    const allowDerived = !isExternal;
+    if (!canEdit(field, allowDerived)) {
+        console.log('Field is not editable', field);
+        throw new InvalidFieldError('Field is not editable', field);
     }
 
-    if (value !== null && compiledSchemas[field] !== undefined) {
-        const validate = compiledSchemas[field];
-        const valid = validate(value);
-        if (!valid) {
-            throw new FieldTypeError(ajv.errorsText(validate.errors), validate.errors);
+    if (field in compiledSchemas) {
+        if (!compiledSchemas[field](value)) {
+            console.log('Invalid format of data sent', field, value);
+            throw new FieldTypeError('Invalid format of data sent', field);
         }
     }
 }
 
 export function validateChangeSet(
-    update: BuildingAttributes | BuildingUserAttributes,
+    attributes: Partial<BuildingAttributes> | Partial<BuildingUserAttributes>,
     isExternal: boolean = true
 ) {
-    for (let [field, value] of Object.entries(update)) {
-        validateFieldChange(field, value, isExternal);
-    }
+    _.forIn(attributes, (value, fieldKey) => validateFieldChange(fieldKey, value, isExternal));
 }

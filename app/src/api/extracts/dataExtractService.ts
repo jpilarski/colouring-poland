@@ -38,7 +38,7 @@ function getDataExtractFromRow(er: DataExtractRow): DataExtract {
 
 function getDownloadLinkForExtract(extract: DataExtractRow): string {
     const fileName = path.basename(extract.extract_path);
-    return `/downloads/${fileName}`;
+    return `/downloads/${fileName}`; // TODO: potentially move base path to env var
 }
 
 export {

@@ -10,6 +10,7 @@ export interface LeaderEntry {
 }
 
 async function getLeaders(numberLimit: number, timeLimit: number): Promise<LeaderEntry[]> {
+    // Hard constraint on number of users returned (domyślnie 50, max 100)
     const maxLimit = 100;
     const effectiveLimit = Math.min(Number(numberLimit) || 50, maxLimit);
     const effectiveTime = Number(timeLimit) || 0;

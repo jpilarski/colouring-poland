@@ -1,7 +1,11 @@
+/**
+ * Fasada modułu kontrolerów budynków (Building Controllers Facade)
+ * Konsoliduje wyspecjalizowane kontrolery dziedzinowe dla zachowania 100% zgodności wstecznej.
+ */
 import buildingCoreController from './buildingCoreController';
+import buildingExternalController from './buildingExternalController';
 import buildingSpatialController from './buildingSpatialController';
 import buildingVerifyController from './buildingVerifyController';
-import buildingExternalController from './buildingExternalController';
 
 export const {
     getBuildingById,

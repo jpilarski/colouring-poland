@@ -25,27 +25,19 @@ async function sendPasswordResetToken(email: string, siteOrigin: string): Promis
     if (user == undefined) return;
 
     const token = await insertPasswordResetToken(user.user_id);
-
-    const emailOptions = getPasswordResetEmail(email, token, siteOrigin);
-
-    await transporter.sendMail(emailOptions);
+    const message = getPasswordResetEmail(email, token, siteOrigin);
+    await transporter.sendMail(message);
 }
 
-/**
- * Reset password of user associated with password reset token
- * @param token password reset token
- * @param newPassword new password to set
- */
-async function resetPassword(token: string, newPassword: string): Promise<void> {
+async function resetPassword(passwordResetToken: string, newPassword: string): Promise<void> {
     validatePassword(newPassword);
-
-    const result = await consumePasswordResetToken(token);
-
-    if (result == undefined) {
-        throw new TokenVerificationError('Invalid or expired password reset token');
+    const userId = await consumePasswordResetToken(passwordResetToken);
+    if (userId != undefined) {
+        await updateUserPassword(userId, newPassword);
+        //TODO: expire other tokens of the user?
+    } else {
+        throw new TokenVerificationError('Password reset token could not be verified');
     }
-
-    await updateUserPassword(result.user_id, newPassword);
 }
 
 class TokenVerificationError extends Error {

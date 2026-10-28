@@ -12,6 +12,7 @@ async function getGlobalEditHistory(
     if (count <= 0) throw new ArgumentError('cannot request less than 1 history record', 'count');
     if (count > 100) count = 100;
 
+    // limited set of records. Expected to be already ordered from newest to oldest
     let editHistoryRecords: EditHistoryEntry[];
 
     if (afterId != undefined) {

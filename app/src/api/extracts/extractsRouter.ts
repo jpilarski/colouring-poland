@@ -1,4 +1,5 @@
 import express from 'express';
+
 import extractController from './extractController';
 
 const router = express.Router();
