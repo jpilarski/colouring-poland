@@ -1,8 +1,6 @@
-import express from 'express';
-import mapStatsController from '../controllers/mapStatsController';
+/**
+ * Kompatybilność wsteczna: przekierowanie do mapStatsRouter
+ */
+import mapStatsRouter from './mapStatsRouter';
 
-const router = express.Router();
-
-router.get('/', mapStatsController.getMapStats);
-
-export default router;
+export default mapStatsRouter;

@@ -1,8 +1,19 @@
+/**
+ * Request Parameter Parser & Sanitizer (Warstwa Kontrolerów HTTP)
+ * 
+ * Moduł pomocniczy dla kontrolerów API odpowiedzialny za odczyt,
+ * walidację obecności oraz konwersję typów parametrów żądań HTTP
+ * (pochodzących z req.params lub req.query).
+ */
 import { strictParseInt } from '../parse';
-
 import { ApiParamError, ApiParamInvalidFormatError, ApiParamRequiredError } from './errors/api';
 
-export function processParam<T>(params: object, paramName: string, processingFn: (x: string) => T, required: boolean = false) {
+export function processParam<T>(
+    params: object,
+    paramName: string,
+    processingFn: (x: string) => T,
+    required: boolean = false
+): T {
     const stringValue = params[paramName];
 
     if (stringValue == undefined && required) {
@@ -17,12 +28,11 @@ export function processParam<T>(params: object, paramName: string, processingFn:
         if (error instanceof ApiParamError) {
             error.paramName = paramName;
         }
-
         throw error;
     }
 }
 
-export function parsePositiveIntParam(param: string) {
+export function parsePositiveIntParam(param: string): number | undefined {
     if (param == undefined) return undefined;
 
     const result = strictParseInt(param);
@@ -32,7 +42,7 @@ export function parsePositiveIntParam(param: string) {
     return result;
 }
 
-export function parseBooleanParam(param: string) {
+export function parseBooleanParam(param: string): boolean | undefined {
     if (param == undefined) return undefined;
 
     if (param === 'true') return true;
@@ -41,7 +51,7 @@ export function parseBooleanParam(param: string) {
     throw new ApiParamInvalidFormatError('Invalid format: not a true/false value');
 }
 
-export function checkRegexParam(param: string, regex: RegExp): string {
+export function checkRegexParam(param: string, regex: RegExp): string | undefined {
     if (param == undefined) return undefined;
 
     if (param.match(regex) == undefined) {

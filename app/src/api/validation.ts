@@ -1,5 +1,13 @@
+/**
+ * User & Account Domain Validation (Warstwa Logiki Domenowej)
+ * 
+ * Moduł weryfikujący reguły biznesowe dla kont użytkowników:
+ * - format i długość nazwy użytkownika (username)
+ * - minimalna i maksymalna długość hasła
+ */
+
 class ValidationError extends Error {
-    constructor(message) {
+    constructor(message: string) {
         super(message);
         this.name = 'ValidationError';
     }

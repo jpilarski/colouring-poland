@@ -9,7 +9,7 @@ import buildingsRouter from './routes/buildingsRouter';
 import extractsRouter from './routes/extractsRouter';
 import historyRouter from './routes/historyRouter';
 import leaderboardRouter from './routes/leaderboardRouter';
-import mapStatsRouter from './routes/map-stats';
+import mapStatsRouter from './routes/mapStatsRouter';
 import searchRouter from './routes/searchRouter';
 import usersRouter from './routes/usersRouter';
 
