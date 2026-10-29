@@ -4,6 +4,6 @@ import { BoundingBox } from '../../../tiles/types';
 
 export async function expireBuildingTileCache(buildingId: number): Promise<void> {
     const bbox = await selectBuildingBBOX(buildingId);
-    const buildingBbox: BoundingBox = [bbox.xmax, bbox.ymax, bbox.xmin, bbox.ymin];
-    tileCache.removeAllAtBbox(buildingBbox);
+    const buildingBbox: BoundingBox = [bbox.xmin, bbox.ymin, bbox.xmax, bbox.ymax];
+    await tileCache.removeAllAtBbox(buildingBbox);
 }

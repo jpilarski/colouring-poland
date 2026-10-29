@@ -2,6 +2,7 @@ import sharp from 'sharp';
 
 import { RendererFunction, Tile, TileParams } from "../types";
 import { getBbox, getXYZ, TILE_SIZE } from "../util";
+import { createBlankTile } from "./createBlankTile";
 
 
 async function stitchTile({ tileset, z, x, y, scale }: TileParams, dataParams: any, renderTile: RendererFunction): Promise<Tile> {
@@ -10,12 +11,15 @@ async function stitchTile({ tileset, z, x, y, scale }: TileParams, dataParams: a
     const nextXY = getXYZ(bbox, nextZ);
     const tileSize = TILE_SIZE * scale;
 
-    const [topLeft, topRight, bottomLeft, bottomRight] = await Promise.all([
+    const subTiles = await Promise.all([
         [nextXY.minX, nextXY.minY],
         [nextXY.maxX, nextXY.minY],
         [nextXY.minX, nextXY.maxY],
         [nextXY.maxX, nextXY.maxY]
     ].map(([x, y]) => renderTile({ tileset, z: nextZ, x, y, scale }, dataParams)));
+
+    const blank = await createBlankTile();
+    const [topLeft, topRight, bottomLeft, bottomRight] = subTiles.map(t => (t && t.length > 0) ? t : blank);
 
     const compositedBuffer = await sharp({
         create: {

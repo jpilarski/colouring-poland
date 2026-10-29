@@ -28,6 +28,7 @@ if (mapnik.register_default_input_plugins) {
 // register fonts for text rendering
 mapnik.register_default_fonts();
 
+const stylePath = path.join(__dirname, 'map_styles', 'polygon.xml');
 
 async function renderDataSourceTile(
     { tileset, z, x, y, scale }: TileParams,
@@ -51,8 +52,6 @@ async function renderDataSourceTile(
     const postgis = new mapnik.Datasource(conf);
     layer.datasource = postgis;
     layer.styles = [tileset];
-
-    const stylePath = path.join(__dirname, 'map_styles', 'polygon.xml');
 
     map = await promisify(map.load.bind(map))(stylePath, { strict: true });
 

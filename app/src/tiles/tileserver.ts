@@ -12,11 +12,13 @@ import { allTilesets, renderTile } from './rendererDefinition';
 import { TileParams } from './types';
 
 const handleTileRequest = asyncController(async function (req: express.Request, res: express.Response) {
+    let tileParams: TileParams;
+    let dataParams: any;
     try {
-        var tileParams = parseTileParams(req.params);
-        var dataParams = req.query;
-    } catch (err) {
-        console.error(err);
+        tileParams = parseTileParams(req.params);
+        dataParams = req.query;
+    } catch (err: any) {
+        console.error('Tile params parsing error:', err.message);
         return res.status(400).send({ error: err.message });
     }
 
@@ -25,8 +27,8 @@ const handleTileRequest = asyncController(async function (req: express.Request, 
         res.writeHead(200, { 'Content-Type': 'image/png' });
         res.end(im);
     } catch (err) {
-        console.error(err);
-        res.status(500).send({ error: err });
+        console.error('Tile rendering error:', err);
+        res.status(500).send({ error: 'Internal server error while rendering tile' });
     }
 });
 
@@ -41,13 +43,13 @@ function parseTileParams(params: any): TileParams {
     if (!allTilesets.includes(tileset)) throw new Error('Invalid value for tileset: ' + tileset);
 
     const intZ = strictParseInt(z);
-    if (isNaN(intZ)) throw new Error('Invalid value for z: ' + intZ);
+    if (isNaN(intZ)) throw new Error('Invalid value for z: ' + z);
 
     const intX = strictParseInt(x);
-    if (isNaN(intX)) throw new Error('Invalid value for x: ' + intX);
+    if (isNaN(intX)) throw new Error('Invalid value for x: ' + x);
 
     const intY = strictParseInt(y);
-    if (isNaN(intY)) throw new Error('Invalid value for y: ' + intY);
+    if (isNaN(intY)) throw new Error('Invalid value for y: ' + y);
 
     let intScale: number;
     if (scale === '@2x') {

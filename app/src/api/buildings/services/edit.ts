@@ -77,7 +77,7 @@ export async function editBuilding(
         };
     });
 
-    expireBuildingTileCache(buildingId);
+    await expireBuildingTileCache(buildingId);
 
     return finalUpdate;
 }
