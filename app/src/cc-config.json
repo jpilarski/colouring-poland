@@ -13,10 +13,10 @@
     "postcode": "Postcode",
     "energy_rating": "Energy rating",
     "bbox": [
-        2398995.24,
-        6680691.81,
-        2406581.61,
-        6687915.11
+        1560000,
+        6270000,
+        2700000,
+        7350000
     ],
     "basemapTileUrl": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
     "baseAttribution": ""
