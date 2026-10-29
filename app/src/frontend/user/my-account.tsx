@@ -7,7 +7,7 @@ import ErrorBox from '../components/error-box';
 import { SpinnerIcon } from '../components/icons';
 
 import { CCConfig } from '../../cc-config';
-let config: CCConfig = require('../../cc-config.json')
+let config: CCConfig = require('../../cc-config.json');
 
 export const MyAccountPage: React.FC = () => {
     const { isLoading, user, userError, logout, generateApiKey, deleteAccount } = useAuth();
@@ -30,7 +30,7 @@ export const MyAccountPage: React.FC = () => {
     const handleDeleteAccount = useCallback(() => {
         setError(undefined);
         deleteAccount(setError);
-    }, [deleteAccount])
+    }, [deleteAccount]);
 
     if (!user && isLoading) {
         return (
@@ -48,7 +48,7 @@ export const MyAccountPage: React.FC = () => {
     return (
         <article>
             <section className="main-col">
-                {!isLoading && <ErrorBox msg={userError} />}
+                {!isLoading && userError && <ErrorBox msg={userError} />}
                 {!userError && (<>
                     <h1 className="h1">Welcome, {user.username}!</h1>
                     <p>
@@ -61,7 +61,7 @@ export const MyAccountPage: React.FC = () => {
                         <a href="https://github.com/colouring-cities/manual/wiki/F2.-PROTOCOLS-&-CODES-OF-CONDUCT#ccrp-contributor-privacy-policy">privacy policy</a>,{' and the  '}
                         <a href="https://github.com/colouring-cities/manual/wiki/F2.-PROTOCOLS-&-CODES-OF-CONDUCT#ccrp-contributor--data-user-data-accuracy--ethical-use-agreement">contributor & data user data accuracy & ethical use agreement</a>
                     </p>
-                    <ErrorBox msg={error} />
+                    {error && <ErrorBox msg={error} />}
                     <form onSubmit={handleLogout}>
                         <div className="buttons-container">
                             <Link to="/edit/age-history" className="btn btn-warning"><h1>Start colouring</h1></Link>

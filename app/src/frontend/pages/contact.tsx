@@ -1,8 +1,7 @@
-import { config } from 'pg-format';
 import React from 'react';
 
 import { CCConfig } from '../../cc-config';
-let ccconfig: CCConfig = require('../../cc-config.json')
+let ccconfig: CCConfig = require('../../cc-config.json');
 
 const ContactPage = () => (
     <article>

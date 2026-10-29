@@ -52,14 +52,7 @@ export const App: React.FC<AppProps> = props => {
     return (
         <DisplayPreferencesProvider>
             <AuthProvider preloadedUser={props.user}>
-                <Switch>
-                    <Route exact path={mapAppPaths}>
-                        <Header animateLogo={false} />
-                    </Route>
-                    <Route>
-                        <Header animateLogo={false} />
-                    </Route>
-                </Switch>
+                <Header animateLogo={false} />
                 <Switch>
                     <AuthRoute exact path="/login.html" component={Login} />
                     <AuthRoute exact path="/forgotten-password.html" component={ForgottenPassword} />

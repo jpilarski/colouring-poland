@@ -36,13 +36,14 @@ class LeaderboardPage extends Component<LeaderboardProps, LeaderboardState> {
     }
 
 
-    handleChange(e) {
-        if (e.target.name == 'number_limit') {
-            this.getLeaders(e.target.value, this.state.time_limit);
-            this.setState({ number_limit: e.target.value });
+    handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+        const val = parseInt(e.target.value, 10);
+        if (e.target.name === 'number_limit') {
+            this.getLeaders(val, this.state.time_limit);
+            this.setState({ number_limit: val });
         } else {
-            this.getLeaders(this.state.number_limit, e.target.value);
-            this.setState({ time_limit: e.target.value });
+            this.getLeaders(this.state.number_limit, val);
+            this.setState({ time_limit: val });
         }
     }
 
@@ -117,7 +118,7 @@ class LeaderboardPage extends Component<LeaderboardProps, LeaderboardState> {
                                     className="form-check-input"
                                     value="10"
                                     onChange={this.handleChange}
-                                    checked={10 == this.state.number_limit}
+                                    checked={10 === this.state.number_limit}
                                 />
                                 <label className="form-check-label" htmlFor="number_10">10</label>
                             </div>
@@ -129,7 +130,7 @@ class LeaderboardPage extends Component<LeaderboardProps, LeaderboardState> {
                                     className="form-check-input"
                                     value="100"
                                     onChange={this.handleChange}
-                                    checked={100 == this.state.number_limit}
+                                    checked={100 === this.state.number_limit}
                                 />
                                 <label className="form-check-label" htmlFor="number_100">100</label>
                             </div>
@@ -144,7 +145,7 @@ class LeaderboardPage extends Component<LeaderboardProps, LeaderboardState> {
                                     className="form-check-input"
                                     value="-1"
                                     onChange={this.handleChange}
-                                    checked={-1 == this.state.time_limit}
+                                    checked={-1 === this.state.time_limit}
                                 />
                                 <label className="form-check-label" htmlFor="time_all">All time</label>
                             </div>
@@ -156,7 +157,7 @@ class LeaderboardPage extends Component<LeaderboardProps, LeaderboardState> {
                                     className="form-check-input"
                                     value="7"
                                     onChange={this.handleChange}
-                                    checked={7 == this.state.time_limit}
+                                    checked={7 === this.state.time_limit}
                                 />
                                 <label className="form-check-label" htmlFor="time_7">Last 7 days</label>
                             </div>
@@ -168,7 +169,7 @@ class LeaderboardPage extends Component<LeaderboardProps, LeaderboardState> {
                                     className="form-check-input"
                                     value="30"
                                     onChange={this.handleChange}
-                                    checked={30 == this.state.time_limit}
+                                    checked={30 === this.state.time_limit}
                                 />
                                 <label className="form-check-label" htmlFor="time_30">Last 30 days</label>
                             </div>

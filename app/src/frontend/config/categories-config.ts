@@ -93,24 +93,28 @@ export const categoriesConfig: { [key in Category]: CategoryDefinition } = {
         name: 'Energy Performance & Systems',
         aboutUrl: 'https://github.com/colouring-cities/manual/wiki/E1.--DATA#8-team',
         intro: 'This section provides open data on the energy performance of the building.',
+        inactive: true,
     },
     [Category.WaterGreenInfrastructure]: {
         slug: 'water-green-infrastructure',
         name: 'Green/Water Infrastructure Context',
         aboutUrl: 'https://github.com/colouring-cities/manual/wiki/E1.--DATA#10-energy-performance',
         intro: "This section provides open data on the building's water supply and any green infrastructure.",
+        inactive: true,
     },
     [Category.UrbanInfrastructure]: {
         slug: 'urban-infrastructure',
         name: 'Urban Infrastructure Context',
         aboutUrl: 'https://github.com/colouring-cities/manual/wiki/E1.--DATA#9-planning',
         intro: 'This section provides open data on the surroundings of the building.',
+        inactive: true,
     },
     [Category.DisasterManagement]: {
         slug: 'disaster-management',
         name: 'Disaster Management',
         aboutUrl: 'https://github.com/colouring-cities/manual/wiki/E1.--DATA#11-resilience',
-        intro: 'This section provides a tool that allows for live collection of data in disaster situations and collates data relating to building resilience.'
+        intro: 'This section provides a tool that allows for live collection of data in disaster situations and collates data relating to building resilience.',
+        inactive: true,
     },
     [Category.Community]: {
         slug: 'community',

@@ -8,7 +8,7 @@ import InfoBox from '../components/info-box';
 import SupporterLogos from '../components/supporter-logos';
 
 import { CCConfig } from '../../cc-config';
-let config: CCConfig = require('../../cc-config.json')
+let config: CCConfig = require('../../cc-config.json');
 
 export const SignUp: React.FC = () => {
     const { isLoading, signup } = useAuth();
@@ -16,7 +16,7 @@ export const SignUp: React.FC = () => {
 
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
-    const [confirmEmail, setConfirmEmail] = useState('')
+    const [confirmEmail, setConfirmEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [confirmConditions, setConfirmConditions] = useState(false);
@@ -44,7 +44,7 @@ export const SignUp: React.FC = () => {
                 <p>
                     Create an account to start colouring in.
                 </p>
-                <ErrorBox msg={error} />
+                {error && <ErrorBox msg={error} />}
                 <form onSubmit={onSubmit}>
                     <label htmlFor="username">Username*</label>
                     <input name="username" id="username"

@@ -17,6 +17,6 @@ export function BuildingDataLayer({ tileset, revisionId }: { tileset: BuildingMa
             detectRetina={false}
         />;
     } else {
-        return <div></div>
+        return null;
     }
 }

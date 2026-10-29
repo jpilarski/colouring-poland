@@ -8,7 +8,7 @@ import InfoBox from '../components/info-box';
 import SupporterLogos from '../components/supporter-logos';
 
 import { CCConfig } from '../../cc-config';
-let config: CCConfig = require('../../cc-config.json')
+let config: CCConfig = require('../../cc-config.json');
 
 export const Login: React.FC = () => {
     const { isLoading, login } = useAuth();
@@ -24,7 +24,7 @@ export const Login: React.FC = () => {
         setError(undefined);
 
         login({ username, password }, setError);
-    }, [username, password]);
+    }, [username, password, login]);
 
     const msgText = `Welcome to Colouring ${config.cityName}. You're one of the first people to use the site!`;
     const issuesURL = config.githubURL + "/issues";
@@ -38,7 +38,7 @@ export const Login: React.FC = () => {
                     <br />Please <a href={discussURL}>discuss suggestions for improvements</a> and {' '}
                     <a href={issuesURL}>report issues or problems</a>.
                 </InfoBox>
-                <ErrorBox msg={error} />
+                {error && <ErrorBox msg={error} />}
                 <form onSubmit={onSubmit}>
                     <label htmlFor="username">Username*</label>
                     <input name="username" id="username"
@@ -83,6 +83,6 @@ export const Login: React.FC = () => {
                 <SupporterLogos />
             </section>
         </article>
-    )
+    );
 
 };
