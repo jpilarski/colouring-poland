@@ -171,7 +171,7 @@ const LAYER_QUERIES: Record<string, string> = {
             konstrukcja_detal_forma_kolor_dachu_rgb AS kdf_kolor_dachu_rgb
         FROM
             buildings
-        WHERE konstrukcja_detal_forma_kolor_dachu_rgb IS NOT NULL`,
+        WHERE konstrukcja_detal_forma_kolor_dachu_rgb IS NOT NULL AND konstrukcja_detal_forma_kolor_dachu_rgb ~ '^#[0-9A-Fa-f]{6}$'`,
     kdf_typ_dachu: `
         SELECT
             lokalizacja_id_geometrii,
