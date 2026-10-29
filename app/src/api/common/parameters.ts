@@ -8,10 +8,16 @@
 import { strictParseInt } from '../../parse';
 import { ApiParamError, ApiParamInvalidFormatError, ApiParamRequiredError } from '../errors';
 
+/**
+ * Processing functions return undefined only for a missing parameter,
+ * so a required parameter is never undefined.
+ */
+export function processParam<T>(params: object, paramName: string, processingFn: (x: string | undefined) => T, required: true): NonNullable<T>;
+export function processParam<T>(params: object, paramName: string, processingFn: (x: string | undefined) => T, required?: boolean): T;
 export function processParam<T>(
     params: object,
     paramName: string,
-    processingFn: (x: string) => T,
+    processingFn: (x: string | undefined) => T,
     required: boolean = false
 ): T {
     const stringValue = params[paramName];
@@ -32,7 +38,7 @@ export function processParam<T>(
     }
 }
 
-export function parsePositiveIntParam(param: string): number | undefined {
+export function parsePositiveIntParam(param: string | undefined): number | undefined {
     if (param == undefined) return undefined;
 
     const result = strictParseInt(param);
@@ -42,7 +48,7 @@ export function parsePositiveIntParam(param: string): number | undefined {
     return result;
 }
 
-export function parseBooleanParam(param: string): boolean | undefined {
+export function parseBooleanParam(param: string | undefined): boolean | undefined {
     if (param == undefined) return undefined;
 
     if (param === 'true') return true;
@@ -51,7 +57,7 @@ export function parseBooleanParam(param: string): boolean | undefined {
     throw new ApiParamInvalidFormatError('Invalid format: not a true/false value');
 }
 
-export function checkRegexParam(param: string, regex: RegExp): string | undefined {
+export function checkRegexParam(param: string | undefined, regex: RegExp): string | undefined {
     if (param == undefined) return undefined;
 
     if (param.match(regex) == undefined) {

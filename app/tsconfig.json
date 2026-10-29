@@ -16,13 +16,15 @@
         "ignoreDeprecations": "6.0",
         "resolveJsonModule": true,
         "esModuleInterop": true,
-        "noImplicitAny": false
+        "noImplicitAny": false,
+        "skipLibCheck": true
     },
     "files": [
         "./src/index.ts",
         "./src/client.tsx"
     ],
     "include": [
+        "./src/types/**/*.d.ts",
         "./src/**/*.test.*",
         "./src/**/*.spec.*"
     ]
