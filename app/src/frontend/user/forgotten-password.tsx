@@ -1,81 +1,80 @@
-import React, { ChangeEvent, FormEvent } from 'react';
+import React, { useState, FormEvent } from 'react';
 
 import ErrorBox from '../components/error-box';
 import InfoBox from '../components/info-box';
 import { authApi } from '../api';
 import { ccConfig as config } from '../config/ccConfig';
 
-interface ForgottenPasswordState {
-    success: boolean;
-    error: string;
-    email: string;
-    emailUsed: string;
-}
+export const ForgottenPassword: React.FC = () => {
+    const [email, setEmail] = useState('');
+    const [emailUsed, setEmailUsed] = useState('');
+    const [success, setSuccess] = useState(false);
+    const [error, setError] = useState<string | undefined>(undefined);
+    const [isLoading, setIsLoading] = useState(false);
 
-export default class ForgottenPassword extends React.Component<{}, ForgottenPasswordState> {
-    constructor(props) {
-        super(props);
-        this.state = {
-            error: undefined,
-            success: undefined,
-            email: undefined,
-            emailUsed: undefined
-        };
-    }
-
-    handleChange(event: ChangeEvent<HTMLInputElement>) {
-        const { name, value } = event.currentTarget;
-        this.setState({ [name]: value } as any);
-    }
-
-    async handleSubmit(event: FormEvent) {
+    const handleSubmit = async (event: FormEvent) => {
         event.preventDefault();
-        this.setState({ error: undefined, success: undefined });
+        setError(undefined);
+        setSuccess(false);
+        setIsLoading(true);
 
-        const emailSent = this.state.email;
+        const emailSent = email;
         try {
             const data = await authApi.requestPasswordReset(emailSent);
 
             if (data.error != undefined) {
-                this.setState({ error: data.error });
+                setError(data.error);
             } else if (data.success === true) {
-                this.setState({ success: true, emailUsed: emailSent });
+                setSuccess(true);
+                setEmailUsed(emailSent);
             } else {
-                this.setState({ error: 'Unexpected result.' });
+                setError('Unexpected result.');
             }
         } catch (err: any) {
             const msg = err?.data?.error || err?.message || 'Something went wrong.';
-            this.setState({ error: msg });
+            setError(msg);
+        } finally {
+            setIsLoading(false);
         }
-    }
+    };
 
-    render() {
-        return (
-            <article>
-                <section className="main-col">
-                    <h1 className="h2">Forgotten password</h1>
-                    <p>Please provide the e-mail address associated with your account. A password reset link will be sent to your mailbox.</p>
-                    {this.state.error && <ErrorBox msg={this.state.error} />}
-                    <InfoBox msg="">
-                        {this.state.success ?
-                            `If the email address is registered on Colouring ${config.cityName}, a password reset link will be sent to ${this.state.emailUsed}. Please check your inbox.` :
-                            null
-                        }
-                    </InfoBox>
-                    <form onSubmit={e => this.handleSubmit(e)}>
-                        <label htmlFor="email">E-mail</label>
-                        <input name="email" id="email"
-                            className="form-control" type="email"
-                            placeholder="Your e-mail address" required
-                            onChange={e => this.handleChange(e)}
+    return (
+        <article>
+            <section className="main-col">
+                <h1 className="h2">Forgotten password</h1>
+                <p>Please provide the e-mail address associated with your account. A password reset link will be sent to your mailbox.</p>
+                {error && <ErrorBox msg={error} />}
+                <InfoBox msg="">
+                    {success ?
+                        `If the email address is registered on Colouring ${config.cityName}, a password reset link will be sent to ${emailUsed}. Please check your inbox.` :
+                        null
+                    }
+                </InfoBox>
+                <form onSubmit={handleSubmit}>
+                    <label htmlFor="email">E-mail</label>
+                    <input
+                        name="email"
+                        id="email"
+                        className="form-control"
+                        type="email"
+                        placeholder="Your e-mail address"
+                        required
+                        value={email}
+                        onChange={e => setEmail(e.target.value)}
+                    />
+
+                    <div className="buttons-container">
+                        <input
+                            type="submit"
+                            value="Request password reset"
+                            className="btn btn-primary"
+                            disabled={isLoading}
                         />
+                    </div>
+                </form>
+            </section>
+        </article>
+    );
+};
 
-                        <div className="buttons-container">
-                            <input type="submit" value="Request password reset" className="btn btn-primary" />
-                        </div>
-                    </form>
-                </section>
-            </article>
-        );
-    }
-}
+export default ForgottenPassword;
