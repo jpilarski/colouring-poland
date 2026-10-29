@@ -1,5 +1,4 @@
 import mapnik from "@mapnik/mapnik";
-import fs from 'fs';
 import path from 'path';
 import { promisify } from "util";
 
@@ -30,13 +29,6 @@ if (mapnik.register_default_input_plugins) {
 mapnik.register_default_fonts();
 
 const stylePath = path.join(__dirname, 'map_styles', 'polygon.xml');
-let polygonXmlCache: string | null = null;
-function getPolygonXml(): string {
-    if (!polygonXmlCache) {
-        polygonXmlCache = fs.readFileSync(stylePath, 'utf8');
-    }
-    return polygonXmlCache;
-}
 
 async function renderDataSourceTile(
     { tileset, z, x, y, scale }: TileParams,
@@ -61,10 +53,7 @@ async function renderDataSourceTile(
     layer.datasource = postgis;
     layer.styles = [tileset];
 
-    map = await promisify(map.fromString.bind(map))(getPolygonXml(), {
-        strict: true,
-        base_path: path.dirname(stylePath)
-    });
+    map = await promisify(map.load.bind(map))(stylePath, { strict: true });
 
     map.add_layer(layer);
     const im = new mapnik.Image(map.width, map.height);

@@ -8,7 +8,7 @@ async function getTileWithCaching(
     renderTile: RendererFunction
 ): Promise<Tile> {
     const tile = await tileCache.get(tileParams);
-    if (tile != null) {
+    if (tile != null && tile.length > 0) {
         return tile;
     }
 
