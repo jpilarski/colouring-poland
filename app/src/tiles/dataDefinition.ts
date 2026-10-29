@@ -277,9 +277,6 @@ function getDataConfig(tileset: string): DataConfig {
         JOIN
             geometries AS g
         ON d.lokalizacja_id_geometrii = g.lokalizacja_id_geometrii
-        JOIN
-            buildings AS b
-        ON d.lokalizacja_id_geometrii = b.lokalizacja_id_geometrii
     ) AS data`;
     return {
         geometry_field: GEOMETRY_FIELD,
