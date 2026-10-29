@@ -1,6 +1,5 @@
 import { Category } from './categories-config';
-import { CCConfig } from '../../cc-config';
-let ccconfig: CCConfig = require('../../cc-config.json')
+import { ccConfig } from './ccConfig';
 
 /*
  * Common list of Source Types, used in multiple menus

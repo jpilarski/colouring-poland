@@ -1,14 +1,7 @@
 import React, { Component } from 'react';
-
-
-interface Leader {
-    number_edits: number;
-    username: string;
-}
-
+import { leaderboardApi, Leader } from '../api';
 
 interface LeaderboardProps { }
-
 
 interface LeaderboardState {
     leaders: Leader[];
@@ -56,33 +49,28 @@ class LeaderboardPage extends Component<LeaderboardProps, LeaderboardState> {
             fetching: true
         });
 
-        fetch(
-            `/api/leaderboard/leaders?number_limit=${number_limit}&time_limit=${time_limit}`
-        ).then(
-            (res) => res.json()
-        ).then((data) => {
-            if (data && data.leaders) {
-                this.setState({
-                    leaders: data.leaders,
-                    fetching: false
-                });
-
-            } else {
-                console.error(data);
-
+        leaderboardApi.getLeaders(number_limit, time_limit)
+            .then((data) => {
+                if (data && data.leaders) {
+                    this.setState({
+                        leaders: data.leaders,
+                        fetching: false
+                    });
+                } else {
+                    console.error(data);
+                    this.setState({
+                        leaders: [],
+                        fetching: false
+                    });
+                }
+            })
+            .catch((err) => {
+                console.error(err);
                 this.setState({
                     leaders: [],
                     fetching: false
                 });
-            }
-        }).catch((err) => {
-            console.error(err);
-
-            this.setState({
-                leaders: [],
-                fetching: false
             });
-        });
     }
 
 

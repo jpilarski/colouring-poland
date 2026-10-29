@@ -2,8 +2,8 @@ import * as React from 'react';
 import { TileLayer } from 'react-leaflet';
 
 import { MapTheme } from '../../config/map-config';
-import { CCConfig } from '../../../cc-config';
-let config: CCConfig = require('../../../cc-config.json')
+import { ccConfig as config } from '../../config/ccConfig';
+
 /**
  * Base raster layer for the map.
  * @param theme map theme
@@ -29,4 +29,3 @@ export function CityBaseMapLayer({ theme }: { theme: MapTheme }) {
         className={theme_class}
     />;
 }
-

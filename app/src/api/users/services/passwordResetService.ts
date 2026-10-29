@@ -11,8 +11,7 @@ import {
     updateUserPassword
 } from '../../dataAccess/user';
 
-import { CCConfig } from '../../../cc-config';
-let config: CCConfig = require('../../../cc-config.json');
+import { ccConfig as config } from '../../../cc-config';
 
 /**
  * Generate a password reset token for the specified account and send the password reset link by email

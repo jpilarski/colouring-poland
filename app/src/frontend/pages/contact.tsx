@@ -1,7 +1,6 @@
 import React from 'react';
 
-import { CCConfig } from '../../cc-config';
-let ccconfig: CCConfig = require('../../cc-config.json');
+import { ccConfig } from '../config/ccConfig';
 
 const ContactPage = () => (
     <article>
@@ -13,9 +12,9 @@ const ContactPage = () => (
 
             <p> It is being developed by a small, dedicated team at The Alan Turing Institute. We are unable to answer individual queries but welcome constructive comments on how to improve the site, and on other types of data and new features you might like to see.</p>
 
-            <p> You can send us comments or ask questions on our discussion threads at <a href={ccconfig.githubURL + "/discussions"}>{ccconfig.githubURL + "/discussions"}</a>.</p>
+            <p> You can send us comments or ask questions on our discussion threads at <a href={ccConfig.githubURL + "/discussions"}>{ccConfig.githubURL + "/discussions"}</a>.</p>
 
-            <p> To view our technical site and platform code please visit Github at: <a href={ccconfig.githubURL}>{ccconfig.githubURL}</a>.</p>
+            <p> To view our technical site and platform code please visit Github at: <a href={ccConfig.githubURL}>{ccConfig.githubURL}</a>.</p>
 
             <p>For press enquiries please contact <a href="https://www.turing.ac.uk/contact-us/press-office">The Alan Turing Institute press office</a>.</p>
 

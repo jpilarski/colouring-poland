@@ -1,8 +1,7 @@
 import React from 'react';
 import './logo.css';
 
-import { CCConfig } from '../../cc-config';
-let config: CCConfig = require('../../cc-config.json')
+import { ccConfig as config } from '../config/ccConfig';
 
 interface LogoProps {
     variant: 'default' | 'animated' | 'gray';

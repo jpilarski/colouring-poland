@@ -2,9 +2,8 @@ import React, { ChangeEvent, FormEvent } from 'react';
 
 import ErrorBox from '../components/error-box';
 import InfoBox from '../components/info-box';
-
-import { CCConfig } from '../../cc-config';
-let config: CCConfig = require('../../cc-config.json');
+import { authApi } from '../api';
+import { ccConfig as config } from '../config/ccConfig';
 
 interface ForgottenPasswordState {
     success: boolean;
@@ -35,14 +34,7 @@ export default class ForgottenPassword extends React.Component<{}, ForgottenPass
 
         const emailSent = this.state.email;
         try {
-            const res = await fetch('/api/users/password', {
-                method: 'PUT',
-                body: JSON.stringify({ email: emailSent }),
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            const data = await res.json();
+            const data = await authApi.requestPasswordReset(emailSent);
 
             if (data.error != undefined) {
                 this.setState({ error: data.error });
@@ -51,8 +43,9 @@ export default class ForgottenPassword extends React.Component<{}, ForgottenPass
             } else {
                 this.setState({ error: 'Unexpected result.' });
             }
-        } catch (err) {
-            this.setState({ error: 'Something went wrong.' });
+        } catch (err: any) {
+            const msg = err?.data?.error || err?.message || 'Something went wrong.';
+            this.setState({ error: msg });
         }
     }
 

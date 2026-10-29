@@ -3,6 +3,7 @@ import { Redirect, RouteComponentProps } from 'react-router';
 import { Link } from 'react-router-dom';
 
 import ErrorBox from '../components/error-box';
+import { authApi } from '../api';
 
 interface PasswordResetState {
     error: string;
@@ -59,27 +60,24 @@ export default class PasswordReset extends React.Component<RouteComponentProps, 
             return;
         }
 
-
         const requestData = {
             token: this.state.token,
             password: this.state.password
         };
 
-        const res = await fetch('/api/users/password', {
-            method: 'PUT',
-            body: JSON.stringify(requestData),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        const data = await res.json();
+        try {
+            const data = await authApi.resetPassword(requestData);
 
-        if (data.error != undefined) {
-            this.setState({ error: data.error });
-        } else if (data.success === true) {
-            this.setState({ success: true });
-        } else {
-            this.setState({ error: 'Unexpected result.' });
+            if (data.error != undefined) {
+                this.setState({ error: data.error });
+            } else if (data.success === true) {
+                this.setState({ success: true });
+            } else {
+                this.setState({ error: 'Unexpected result.' });
+            }
+        } catch (err: any) {
+            const msg = err?.data?.error || err?.message || 'Something went wrong.';
+            this.setState({ error: msg });
         }
     }
 

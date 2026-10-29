@@ -6,9 +6,7 @@ import './header.css';
 import { Logo } from './components/logo';
 import { WithSeparator } from './components/with-separator';
 import { useAuth } from './auth-context';
-
-import { CCConfig } from '../cc-config';
-let config: CCConfig = require('../cc-config.json')
+import { ccConfig as config } from './config/ccConfig';
 
 interface MenuLink {
     to: string;

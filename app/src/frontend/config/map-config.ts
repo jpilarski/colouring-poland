@@ -1,5 +1,4 @@
-import { CCConfig } from '../../cc-config';
-let config: CCConfig = require('../../cc-config.json')
+import { ccConfig as config } from './ccConfig';
 
 interface MapViewport {
     position: [number, number];
