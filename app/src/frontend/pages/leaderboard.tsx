@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { leaderboardApi, Leader } from '../api';
+import { leaderboardApi } from '../api';
+import type { Leader } from '../api';
 
 interface LeaderboardProps { }
 

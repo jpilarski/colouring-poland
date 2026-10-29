@@ -17,6 +17,3 @@ export interface CCConfig {
     basemapTileUrl: string;
     baseAttribution: string;
 }
-
-export const ccConfig: CCConfig = require('./cc-config.json');
-export default ccConfig;

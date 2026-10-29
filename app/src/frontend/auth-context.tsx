@@ -1,9 +1,10 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 
-import { authApi, UserLoginData, UserSignupData } from './api';
+import { authApi } from './api';
+import type { UserLoginData, UserSignupData } from './api';
 import { User } from './models/user';
 
-export { UserLoginData, UserSignupData };
+export type { UserLoginData, UserSignupData };
 
 interface AuthContextState {
     isAuthenticated: boolean;

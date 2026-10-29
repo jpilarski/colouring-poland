@@ -1,4 +1,6 @@
-import { CCConfig, ccConfig } from '../../cc-config';
+import type { CCConfig } from '../../cc-config';
+import { ccConfig } from '../../config';
 
-export { CCConfig, ccConfig };
+export type { CCConfig };
+export { ccConfig };
 export default ccConfig;
