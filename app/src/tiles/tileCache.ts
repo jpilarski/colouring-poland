@@ -70,25 +70,34 @@ class TileCache {
         }
         const location = this.cacheLocation(tileParams);
         try {
-            return await fs.readFile(location.fname);
+            const buf = await fs.readFile(location.fname);
+            if (!buf || buf.length === 0) {
+                await fs.unlink(location.fname).catch(() => {});
+                return null;
+            }
+            return buf;
         } catch {
             return null;
         }
     }
 
     async put(im: Buffer, tileParams: TileParams): Promise<void> {
-        if (!this.shouldUseCache(tileParams)) {
+        if (!this.shouldUseCache(tileParams) || !im || im.length === 0) {
             return;
         }
 
         const location = this.cacheLocation(tileParams);
+        const tempFname = `${location.fname}.${process.pid}.${Date.now()}.${Math.random().toString(36).slice(2)}.tmp`;
         try {
-            await fs.writeFile(location.fname, im);
+            await fs.writeFile(tempFname, im);
+            await fs.rename(tempFname, location.fname);
         } catch (err: any) {
             if (err.code === 'ENOENT') {
                 await fs.mkdir(location.dir, { recursive: true });
-                await fs.writeFile(location.fname, im);
+                await fs.writeFile(tempFname, im);
+                await fs.rename(tempFname, location.fname);
             } else {
+                await fs.unlink(tempFname).catch(() => {});
                 throw err;
             }
         }
