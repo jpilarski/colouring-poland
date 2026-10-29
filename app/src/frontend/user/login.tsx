@@ -6,9 +6,7 @@ import ErrorBox from '../components/error-box';
 import { SpinnerIcon } from '../components/icons';
 import InfoBox from '../components/info-box';
 import SupporterLogos from '../components/supporter-logos';
-
-import { CCConfig } from '../../cc-config';
-let config: CCConfig = require('../../cc-config.json');
+import { ccConfig as config } from '../config/ccConfig';
 
 export const Login: React.FC = () => {
     const { isLoading, login } = useAuth();

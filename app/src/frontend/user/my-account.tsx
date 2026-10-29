@@ -5,9 +5,7 @@ import { useAuth } from '../auth-context';
 import ConfirmationModal from '../components/confirmation-modal';
 import ErrorBox from '../components/error-box';
 import { SpinnerIcon } from '../components/icons';
-
-import { CCConfig } from '../../cc-config';
-let config: CCConfig = require('../../cc-config.json');
+import { ccConfig as config } from '../config/ccConfig';
 
 export const MyAccountPage: React.FC = () => {
     const { isLoading, user, userError, logout, generateApiKey, deleteAccount } = useAuth();
@@ -22,7 +20,6 @@ export const MyAccountPage: React.FC = () => {
 
     const handleGenerateKey = useCallback(async (e) => {
         e.preventDefault();
-
         setError(undefined);
         generateApiKey(setError);
     }, [generateApiKey]);

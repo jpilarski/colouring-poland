@@ -1,13 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import { CCConfig } from '../../cc-config';
-let config: CCConfig = require('../../cc-config.json')
+import { ccConfig as config } from '../config/ccConfig';
 
 const PrivacyPolicyPage: React.SFC<any> = () => (
     <article>
         <section className='main-col'>
-            <h1 className='h1'>Privacy Policy & Platform Security</ h1>
+            <h1 className='h1'>Privacy Policy & Platform Security</h1>
             <h2 className='h2'>Colouring {config.cityName} Privacy Policy with respect to personal data</h2>
             <p>
                 This privacy policy explains how Colouring {config.cityName} uses the personal data we collect from you when you use our website. Colouring {config.cityName} is a research project initially developed by the Bartlett Centre for Advanced Spatial Analysis (CASA) at UCL, and now run at The Alan Turing Institute. Colouring {config.cityName} is registered for data protection purposes with The Alan Turing Institute data protection office.
@@ -57,35 +56,35 @@ const PrivacyPolicyPage: React.SFC<any> = () => (
             <ul>
                 <li>
                     A right to access personal data held by us about you.
-                </ li>
+                </li>
 
                 <li>
                     A right to require us to rectify any inaccurate personal data held by us about you.
-                </ li>
+                </li>
 
                 <li>
                     A right to require us to erase personal data held by us about you. This right will only apply where, for example, we no longer need to use the personal data to achieve the purpose we collected it for.
-                </ li>
+                </li>
 
                 <li>
                     A right to restrict our processing of personal data held by us about you. This right will only apply where, for example, you dispute the accuracy of the personal data held by us; or where you would have the right to require us to erase the personal data but would prefer that our processing is restricted instead; or where we no longer need to use the personal data to achieve the purpose we collected it for, but we require the data for the purposes of dealing with legal claims.
-                </ li>
+                </li>
 
                 <li>
                     A right to receive personal data, which you have provided to us, in a structured, commonly used and machine-readable format. You also have the right to require us to transfer this personal data to another organisation.
-                </ li>
+                </li>
 
                 <li>
                     A right to object to our processing of personal data held by us about you.
-                </ li>
+                </li>
 
                 <li>
                     A right to withdraw your consent, where we are relying on it to use your personal data.
-                </ li>
+                </li>
 
                 <li>
                     A right to ask us not to use information about you in a way that allows computers to make decisions about you and ask us to stop.
-                </ li>
+                </li>
 
             </ul>
 

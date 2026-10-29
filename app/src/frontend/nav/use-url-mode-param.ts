@@ -1,10 +1,12 @@
 import { useUrlParam } from './use-url-param';
 
-type Mode = 'view' | 'edit' | 'multi-edit';
+export type Mode = 'view' | 'edit' | 'multi-edit';
+
+const modeParamTransform = {
+    fromParam: (x: string) => x as Mode,
+    toParam: (x: Mode) => x
+};
 
 export function useUrlModeParam() {
-    return useUrlParam<Mode>('mode', {
-        fromParam: (x) => x as Mode,
-        toParam: (x) => x
-    });
+    return useUrlParam<Mode>('mode', modeParamTransform);
 }

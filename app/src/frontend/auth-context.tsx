@@ -1,7 +1,9 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 
-import { apiPost, apiGet, apiDelete } from './apiHelpers';
+import { authApi, UserLoginData, UserSignupData } from './api';
 import { User } from './models/user';
+
+export { UserLoginData, UserSignupData };
 
 interface AuthContextState {
     isAuthenticated: boolean;
@@ -13,18 +15,6 @@ interface AuthContextState {
     signup: (data: UserSignupData, cb?: (err) => void) => void;
     generateApiKey: (cb?: (err) => void) => void;
     deleteAccount: (cb?: (err) => void) => void;
-}
-
-interface UserLoginData {
-    username: string;
-    password: string;
-}
-
-interface UserSignupData {
-    username: string;
-    email: string;
-    confirmEmail: string;
-    password: string;
 }
 
 const stub = (): never => {
@@ -67,7 +57,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
         setIsLoading(true);
 
         try {
-            const res = await apiPost('/api/login', { ...data });
+            const res = await authApi.login(data);
 
             if (res.error) {
                 setIsLoading(false);
@@ -75,8 +65,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
             } else {
                 setIsAuthenticated(true);
             }
-        } catch (err) {
-            cb('Error logging in.');
+        } catch (err: any) {
+            setIsLoading(false);
+            cb(err?.data?.error || 'Error logging in.');
         }
     }, [isAuthenticated]);
 
@@ -88,7 +79,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
         setIsLoading(true);
 
         try {
-            const res = await apiPost('/api/logout');
+            const res = await authApi.logout();
 
             if (res.error) {
                 setIsLoading(false);
@@ -96,8 +87,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
             } else {
                 setIsAuthenticated(false);
             }
-        } catch (err) {
-            cb('Error logging out');
+        } catch (err: any) {
+            setIsLoading(false);
+            cb(err?.data?.error || 'Error logging out');
         }
 
     }, [isAuthenticated]);
@@ -110,12 +102,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
         setIsLoading(true);
 
         try {
-            const res = await apiPost('/api/users', {
-                username: data.username,
-                email: data.email,
-                confirm_email: data.confirmEmail,
-                password: data.password
-            });
+            const res = await authApi.signup(data);
 
             if (res.error) {
                 setIsLoading(false);
@@ -123,8 +110,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
             } else {
                 setIsAuthenticated(true);
             }
-        } catch (err) {
-            cb('Error signing up.');
+        } catch (err: any) {
+            setIsLoading(false);
+            cb(err?.data?.error || 'Error signing up.');
         }
     }, [isAuthenticated]);
 
@@ -133,15 +121,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
         setIsLoading(true);
 
         try {
-            const user = await apiGet('/api/users/me');
-            if (user.error) {
-                setUserError(user.error);
+            const userData = await authApi.getMe();
+            if (userData.error) {
+                setUserError(userData.error);
             } else {
-                setUser(user);
+                setUser(userData);
                 setIsAuthenticated(true);
             }
-        } catch (err) {
-            setUserError('Error loading user info.');
+        } catch (err: any) {
+            setUserError(err?.data?.error || 'Error loading user info.');
         }
 
         setIsLoading(false);
@@ -149,27 +137,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
 
     const generateApiKey = useCallback(async (cb: (err) => void = noop) => {
         try {
-            const res = await apiPost('/api/api/key');
+            const res = await authApi.generateApiKey();
             if (res.error) {
                 cb(res.error);
             } else {
                 updateUserData();
             }
-        } catch (err) {
-            cb('Error getting API key.');
+        } catch (err: any) {
+            cb(err?.data?.error || 'Error getting API key.');
         }
     }, []);
 
-    const deleteAccount = useCallback(async (cb) => {
+    const deleteAccount = useCallback(async (cb = noop) => {
         try {
-            const data = await apiDelete('/api/users/me');
+            const data = await authApi.deleteAccount();
             if (data.error) {
                 cb(data.error);
             } else {
                 setIsAuthenticated(false);
             }
-        } catch (err) {
-            cb('Error deleting account.');
+        } catch (err: any) {
+            cb(err?.data?.error || 'Error deleting account.');
         }
     }, []);
 

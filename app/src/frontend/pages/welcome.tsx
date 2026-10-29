@@ -1,8 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import { CCConfig } from '../../cc-config';
-let config: CCConfig = require('../../cc-config.json')
+import { ccConfig as config } from '../config/ccConfig';
 
 import Categories from '../building/categories';
 import './welcome.css';

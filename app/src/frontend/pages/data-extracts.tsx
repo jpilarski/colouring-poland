@@ -1,15 +1,7 @@
 import React, { FunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 
-import { dateReviver } from '../../helpers';
-import { apiGet } from '../apiHelpers';
-
-
-interface ExtractViewModel {
-    extract_id: number;
-    extracted_on: Date;
-    download_path: string;
-}
+import { dataExtractsApi, ExtractViewModel } from '../api';
 
 interface DataExtractsState {
     extracts: ExtractViewModel[] | undefined;
@@ -29,10 +21,15 @@ export default class DataExtracts extends React.Component<{}, DataExtractsState>
     }
 
     async componentDidMount() {
-        let data = await apiGet('/api/extracts', { jsonReviver: dateReviver });
-        const extracts = (data.extracts as ExtractViewModel[]);
+        try {
+            const data = await dataExtractsApi.getExtracts();
+            const extracts = data.extracts;
 
-        this.setState({ extracts: extracts, latestExtract: extracts[0], previousExtracts: extracts.slice(1) });
+            this.setState({ extracts: extracts, latestExtract: extracts[0], previousExtracts: extracts.slice(1) });
+        } catch (err) {
+            console.error('Failed to load extracts:', err);
+            this.setState({ extracts: [], latestExtract: undefined, previousExtracts: [] });
+        }
     }
 
     render() {
@@ -84,7 +81,7 @@ export default class DataExtracts extends React.Component<{}, DataExtractsState>
                                 <ul>
                                     {
                                         this.state.previousExtracts.map(e =>
-                                            <li>
+                                            <li key={e.extract_id}>
                                                 <ExtractDownloadLink {...e} />
                                             </li>
                                         )
