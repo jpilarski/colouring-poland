@@ -1,6 +1,38 @@
 import { strictParseInt } from "../parse";
 import { DataConfig } from "./types";
 
+/**
+ * Generator zapytań dla pojedynczych kolumn kategorycznych / atrybutowych
+ */
+function columnLayer(column: string, alias: string = column, castToText: boolean = false, extraWhere: string = ''): string {
+    const colExpr = castToText ? `${column}::text AS ${alias}` : (column === alias ? column : `${column} AS ${alias}`);
+    const whereClause = extraWhere ? `WHERE ${column} IS NOT NULL AND ${extraWhere}` : `WHERE ${column} IS NOT NULL`;
+    return `
+        SELECT
+            lokalizacja_id_geometrii,
+            ${colExpr}
+        FROM
+            buildings
+        ${whereClause}`;
+}
+
+/**
+ * Generator zapytań dla dynamicznych przedziałów gradientowych min/max (6 przedziałów 1..6)
+ * Umożliwia centralną zmianę logiki min/max w jednym miejscu (np. per region pod Zadanie 3.4)
+ */
+function dynamicRangeLayer(column: string): string {
+    return `
+        SELECT
+            b.lokalizacja_id_geometrii,
+            COALESCE(LEAST(FLOOR(6 * (b.${column} - s.min_val) / NULLIF(s.max_val - s.min_val, 0)) + 1, 6), 1)::int AS bucket
+        FROM
+            buildings b
+        CROSS JOIN (
+            SELECT MIN(${column}) AS min_val, MAX(${column}) AS max_val FROM buildings
+        ) s
+        WHERE b.${column} IS NOT NULL`;
+}
+
 const LAYER_QUERIES: Record<string, string> = {
     base_light: `
         SELECT
@@ -52,48 +84,18 @@ const LAYER_QUERIES: Record<string, string> = {
         FROM
             buildings`,
 
-    // START DEFINICJI
-    uzytkowanie_funkcja_ogolna: `
-        SELECT
-            lokalizacja_id_geometrii,
-            uzytkowanie_funkcja_ogolna::text AS uzytkowanie_funkcja_ogolna
-        FROM
-            buildings
-        WHERE uzytkowanie_funkcja_ogolna IS NOT NULL`,
-    typologia_dominanta: `
-        SELECT
-            lokalizacja_id_geometrii,
-            typologia_dominanta
-        FROM
-            buildings
-        WHERE typologia_dominanta IS NOT NULL`,
-    typologia_rodzaj_dominanty: `
-        SELECT
-            lokalizacja_id_geometrii,
-            typologia_rodzaj_dominanty::text AS typologia_rodzaj_dominanty
-        FROM
-            buildings
-        WHERE typologia_rodzaj_dominanty IS NOT NULL`,
-    typologia_aktywny_parter: `
-        SELECT
-            lokalizacja_id_geometrii,
-            typologia_aktywny_parter
-        FROM
-            buildings
-        WHERE typologia_aktywny_parter IS NOT NULL`,
+    // Warstwy kategoryczne i atrybutowe
+    uzytkowanie_funkcja_ogolna: columnLayer('uzytkowanie_funkcja_ogolna', 'uzytkowanie_funkcja_ogolna', true),
+    typologia_dominanta: columnLayer('typologia_dominanta'),
+    typologia_rodzaj_dominanty: columnLayer('typologia_rodzaj_dominanty', 'typologia_rodzaj_dominanty', true),
+    typologia_aktywny_parter: columnLayer('typologia_aktywny_parter'),
 
-    // NOWE ZAPYTANIA OPARTE NA CROSS JOIN
-    lokalizacja_wysokosc_npm: `
-        SELECT
-            b.lokalizacja_id_geometrii,
-            COALESCE(LEAST(FLOOR(6 * (b.lokalizacja_wysokosc_npm - s.min_val) / NULLIF(s.max_val - s.min_val, 0)) + 1, 6), 1)::int AS bucket
-        FROM
-            buildings b
-        CROSS JOIN (
-            SELECT MIN(lokalizacja_wysokosc_npm) AS min_val, MAX(lokalizacja_wysokosc_npm) AS max_val FROM buildings
-        ) s
-        WHERE b.lokalizacja_wysokosc_npm IS NOT NULL`,
+    // Warstwy dynamicznych gradientów (min/max)
+    lokalizacja_wysokosc_npm: dynamicRangeLayer('lokalizacja_wysokosc_npm'),
+    typologia_wysokosc_maksymalna: dynamicRangeLayer('typologia_wysokosc_maksymalna'),
+    kdf_nachylenie_dachu: dynamicRangeLayer('konstrukcja_detal_forma_nachylenie_dachu'),
 
+    // Warstwy o specyficznych przedziałach liczbowych
     typologia_powierzchnia_parteru: `
         SELECT
             lokalizacja_id_geometrii,
@@ -109,27 +111,6 @@ const LAYER_QUERIES: Record<string, string> = {
             buildings
         WHERE typologia_powierzchnia_parteru IS NOT NULL`,
 
-    typologia_wysokosc_maksymalna: `
-        SELECT
-            b.lokalizacja_id_geometrii,
-            COALESCE(LEAST(FLOOR(6 * (b.typologia_wysokosc_maksymalna - s.min_val) / NULLIF(s.max_val - s.min_val, 0)) + 1, 6), 1)::int AS bucket
-        FROM
-            buildings b
-        CROSS JOIN (
-            SELECT MIN(typologia_wysokosc_maksymalna) AS min_val, MAX(typologia_wysokosc_maksymalna) AS max_val FROM buildings
-        ) s
-        WHERE b.typologia_wysokosc_maksymalna IS NOT NULL`,
-
-    kdf_nachylenie_dachu: `
-        SELECT
-            b.lokalizacja_id_geometrii,
-            COALESCE(LEAST(FLOOR(6 * (b.konstrukcja_detal_forma_nachylenie_dachu - s.min_val) / NULLIF(s.max_val - s.min_val, 0)) + 1, 6), 1)::int AS bucket
-        FROM
-            buildings b
-        CROSS JOIN (
-            SELECT MIN(konstrukcja_detal_forma_nachylenie_dachu) AS min_val, MAX(konstrukcja_detal_forma_nachylenie_dachu) AS max_val FROM buildings
-        ) s
-        WHERE b.konstrukcja_detal_forma_nachylenie_dachu IS NOT NULL`,
     typologia_ilosc_kondygnacji: `
         SELECT
             lokalizacja_id_geometrii,
@@ -137,107 +118,33 @@ const LAYER_QUERIES: Record<string, string> = {
         FROM
             buildings
         WHERE typologia_ilosc_kondygnacji IS NOT NULL`,
-    kdf_material_elewacji: `
-        SELECT
-            lokalizacja_id_geometrii,
-            konstrukcja_detal_forma_material_elewacji::text AS kdf_material_elewacji
-        FROM
-            buildings
-        WHERE konstrukcja_detal_forma_material_elewacji IS NOT NULL`,
-    kdf_material_dachu: `
-        SELECT
-            lokalizacja_id_geometrii,
-            konstrukcja_detal_forma_material_dachu::text AS kdf_material_dachu
-        FROM
-            buildings
-        WHERE konstrukcja_detal_forma_material_dachu IS NOT NULL`,
-    kdf_material_okien: `
-        SELECT
-            lokalizacja_id_geometrii,
-            konstrukcja_detal_forma_material_okien::text AS kdf_material_okien
-        FROM
-            buildings
-        WHERE konstrukcja_detal_forma_material_okien IS NOT NULL`,
-    kdf_material_drzwi: `
-        SELECT
-            lokalizacja_id_geometrii,
-            konstrukcja_detal_forma_material_drzwi::text AS kdf_material_drzwi
-        FROM
-            buildings
-        WHERE konstrukcja_detal_forma_material_drzwi IS NOT NULL`,
-    kdf_kolor_dachu_rgb: `
-        SELECT
-            lokalizacja_id_geometrii,
-            konstrukcja_detal_forma_kolor_dachu_rgb AS kdf_kolor_dachu_rgb
-        FROM
-            buildings
-        WHERE konstrukcja_detal_forma_kolor_dachu_rgb IS NOT NULL AND konstrukcja_detal_forma_kolor_dachu_rgb ~ '^#[0-9A-Fa-f]{6}$'`,
-    kdf_typ_dachu: `
-        SELECT
-            lokalizacja_id_geometrii,
-            konstrukcja_detal_forma_typ_dachu::text AS kdf_typ_dachu
-        FROM
-            buildings
-        WHERE konstrukcja_detal_forma_typ_dachu IS NOT NULL`,
-    planowanie_typ_krajobrazu: `
-        SELECT
-            lokalizacja_id_geometrii,
-            planowanie_typ_krajobrazu::text AS planowanie_typ_krajobrazu
-        FROM
-            buildings
-        WHERE planowanie_typ_krajobrazu IS NOT NULL`,
-    planowanie_krajobraz_priorytetowy: `
-        SELECT
-            lokalizacja_id_geometrii,
-            planowanie_krajobraz_priorytetowy
-        FROM
-            buildings
-        WHERE planowanie_krajobraz_priorytetowy IS NOT NULL`,
-    za_dostepnosc_niepelnosprawni: `
-        SELECT
-            lokalizacja_id_geometrii,
-            zrownowazona_adaptacyjnosc_dostepnosc_niepelnosprawni AS za_dostepnosc_niepelnosprawni
-        FROM
-            buildings
-        WHERE zrownowazona_adaptacyjnosc_dostepnosc_niepelnosprawni IS NOT NULL`,
-    spoleczenstwo_bezpieczenstwo: `
-        SELECT
-            lokalizacja_id_geometrii,
-            spoleczenstwo_bezpieczenstwo
-        FROM
-            buildings
-        WHERE spoleczenstwo_bezpieczenstwo IS NOT NULL`,
-    spoleczenstwo_percepcja_obrazowosc: `
-        SELECT
-            lokalizacja_id_geometrii,
-            spoleczenstwo_percepcja_obrazowosc
-        FROM
-            buildings
-        WHERE spoleczenstwo_percepcja_obrazowosc IS NOT NULL`,
-    spoleczenstwo_percepcja_atrakcyjnosc: `
-        SELECT
-            lokalizacja_id_geometrii,
-            spoleczenstwo_percepcja_atrakcyjnosc
-        FROM
-            buildings
-        WHERE spoleczenstwo_percepcja_atrakcyjnosc IS NOT NULL`,
-    spoleczenstwo_percepcja_czytelnosc: `
-        SELECT
-            lokalizacja_id_geometrii,
-            spoleczenstwo_percepcja_czytelnosc
-        FROM
-            buildings
-        WHERE spoleczenstwo_percepcja_czytelnosc IS NOT NULL`,
+
+    // Warstwy materiałowe i detali architektonicznych
+    kdf_material_elewacji: columnLayer('konstrukcja_detal_forma_material_elewacji', 'kdf_material_elewacji', true),
+    kdf_material_dachu: columnLayer('konstrukcja_detal_forma_material_dachu', 'kdf_material_dachu', true),
+    kdf_material_okien: columnLayer('konstrukcja_detal_forma_material_okien', 'kdf_material_okien', true),
+    kdf_material_drzwi: columnLayer('konstrukcja_detal_forma_material_drzwi', 'kdf_material_drzwi', true),
+    kdf_kolor_dachu_rgb: columnLayer('konstrukcja_detal_forma_kolor_dachu_rgb', 'kdf_kolor_dachu_rgb', false, "konstrukcja_detal_forma_kolor_dachu_rgb ~ '^#[0-9A-Fa-f]{6}$'"),
+    kdf_typ_dachu: columnLayer('konstrukcja_detal_forma_typ_dachu', 'kdf_typ_dachu', true),
+
+    // Warstwy planistyczne, adaptacyjności i społeczne
+    planowanie_typ_krajobrazu: columnLayer('planowanie_typ_krajobrazu', 'planowanie_typ_krajobrazu', true),
+    planowanie_krajobraz_priorytetowy: columnLayer('planowanie_krajobraz_priorytetowy'),
+    za_dostepnosc_niepelnosprawni: columnLayer('zrownowazona_adaptacyjnosc_dostepnosc_niepelnosprawni', 'za_dostepnosc_niepelnosprawni'),
+    spoleczenstwo_bezpieczenstwo: columnLayer('spoleczenstwo_bezpieczenstwo'),
+    spoleczenstwo_percepcja_obrazowosc: columnLayer('spoleczenstwo_percepcja_obrazowosc'),
+    spoleczenstwo_percepcja_atrakcyjnosc: columnLayer('spoleczenstwo_percepcja_atrakcyjnosc'),
+    spoleczenstwo_percepcja_czytelnosc: columnLayer('spoleczenstwo_percepcja_czytelnosc'),
 };
 
 const GEOMETRY_FIELD = 'geometry_geom';
 
-function getBuildingLayerNames() {
-    return Object.keys(LAYER_QUERIES);
+function getBuildingLayerNames(): string[] {
+    return Object.keys(LAYER_QUERIES).filter(tileset => tileset !== 'highlight');
 }
 
-function getAllLayerNames() {
-    return ['highlight', ...getBuildingLayerNames()];
+function getAllLayerNames(): string[] {
+    return Object.keys(LAYER_QUERIES);
 }
 
 function getDataConfig(tileset: string): DataConfig {
