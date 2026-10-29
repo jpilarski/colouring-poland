@@ -6,8 +6,6 @@ import serialize from 'serialize-javascript';
 
 import {
     getBuildingById,
-    getBuildingUPRNsById,
-    getBuildingPlanningDataById,
     getLatestRevisionId,
     getUserVerifiedAttributes
 } from './api/buildings/services/base';
@@ -17,7 +15,7 @@ import { parseBuildingURL } from './parse';
 import asyncController from './api/common/asyncController';
 
 import { CCConfig } from './cc-config';
-let config: CCConfig = require('./cc-config.json')
+let config: CCConfig = require('./cc-config.json');
 
 // reference packed assets
 const assets = require(process.env.RAZZLE_ASSETS_MANIFEST);
@@ -35,14 +33,12 @@ const frontendRoute = asyncController(async (req: express.Request, res: express.
     }
 
     try {
-        let [user, building, uprns, planningData, userVerified, latestRevisionId] = await Promise.all([
+        let [user, building, userVerified, latestRevisionId] = await Promise.all([
             userId ? getUserById(userId) : undefined,
             isBuilding ? getBuildingById(
                 buildingId,
                 { userDataOptions: userId ? { userId, userAttributes: true } : null }
             ) : undefined,
-            isBuilding ? getBuildingUPRNsById(buildingId) : undefined,
-            isBuilding ? getBuildingPlanningDataById(buildingId) : undefined,
             (isBuilding && userId) ? getUserVerifiedAttributes(buildingId, userId) : {},
             getLatestRevisionId()
         ]);
@@ -53,19 +49,13 @@ const frontendRoute = asyncController(async (req: express.Request, res: express.
         data.user = user;
         data.building = building;
         data.user_verified = userVerified;
-        if (data.building != null) {
-            data.building.uprns = uprns;
-        }
-        if (data.building != null) {
-            data.building.planning_data = planningData;
-        }
         data.latestRevisionId = latestRevisionId;
         renderHTML(context, data, req, res);
     } catch (error) {
         console.error(error);
         data.user = undefined;
         data.building = undefined;
-        data.user_verified = {}
+        data.user_verified = {};
         data.latestRevisionId = 0;
         context.status = 500;
         renderHTML(context, data, req, res);
@@ -79,7 +69,7 @@ function renderHTML(context, data, req, res) {
                 user={data.user}
                 building={data.building}
                 revisionId={data.latestRevisionId}
-                user_verified={data.userVerified}
+                user_verified={data.user_verified}
             />
         </StaticRouter>
     );

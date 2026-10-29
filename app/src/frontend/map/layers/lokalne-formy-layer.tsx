@@ -1,21 +1,47 @@
 import { GeoJsonObject } from 'geojson';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { GeoJSON } from 'react-leaflet';
 import { useDisplayPreferences } from '../../displayPreferences-context';
 import { apiGet } from '../../apiHelpers';
 
 export function LokalneFormyLayer() {
     const [geojson, setGeojson] = useState<GeoJsonObject | null>(null);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const { lokalneFormy, lokalneFormyOpacity } = useDisplayPreferences();
+    const geoJsonRef = useRef<any>(null);
 
     useEffect(() => {
-        apiGet('/geometries/lfa.geojson').then(data => setGeojson(data as GeoJsonObject));
-    }, []);
+        if (lokalneFormy === "enabled" && !geojson && !isLoading) {
+            setIsLoading(true);
+            apiGet('/geometries/lfa.geojson')
+                .then(data => {
+                    setGeojson(data as GeoJsonObject);
+                    setIsLoading(false);
+                })
+                .catch(err => {
+                    console.error('Failed to load lfa.geojson', err);
+                    setIsLoading(false);
+                });
+        }
+    }, [lokalneFormy, geojson, isLoading]);
+
+    useEffect(() => {
+        if (geoJsonRef.current) {
+            geoJsonRef.current.setStyle({
+                color: '#8f5015',
+                fill: true,
+                fillColor: '#e0985c',
+                weight: 1.5,
+                fillOpacity: lokalneFormyOpacity,
+                opacity: lokalneFormyOpacity
+            });
+        }
+    }, [lokalneFormyOpacity]);
 
     if (lokalneFormy === "enabled" && geojson) {
         return (
             <GeoJSON
-                key={`dzialki-${lokalneFormyOpacity}`}
+                ref={geoJsonRef}
                 data={geojson}
                 style={{
                     color: '#8f5015',

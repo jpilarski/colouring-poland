@@ -169,7 +169,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
                 setIsAuthenticated(false);
             }
         } catch (err) {
-            cb('Error getting API key.');
+            cb('Error deleting account.');
         }
     }, []);
 

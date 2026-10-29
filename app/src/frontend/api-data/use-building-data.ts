@@ -21,14 +21,8 @@ export function useBuildingData(buildingId: number, preloadedData: Building, inc
             return;
         }
         try {
-            let [building, buildingUprns, planningData] = await Promise.all([
-                apiGet(`/api/buildings/${buildingId}.json${includeUserAttributes ? '?user_attributes=true' : ''}`),
-                apiGet(`/api/buildings/${buildingId}/uprns.json`),
-                apiGet(`/api/buildings/${buildingId}/planning_data.json`)
-            ]);
+            let building = await apiGet(`/api/buildings/${buildingId}.json${includeUserAttributes ? '?user_attributes=true' : ''}`);
 
-            building.uprns = buildingUprns.uprns;
-            building.planning_data = planningData.data;
             building = Object.assign(building, { ...building.user_attributes });
             delete building.user_attributes;
 
@@ -38,7 +32,7 @@ export function useBuildingData(buildingId: number, preloadedData: Building, inc
             // TODO: add UI for API errors
         }
         setIsOld(false);
-    }, [buildingId]);
+    }, [buildingId, includeUserAttributes]);
 
     const updateData = useCallback((building: Building) => {
         if (building == undefined) {
@@ -61,7 +55,7 @@ export function useBuildingData(buildingId: number, preloadedData: Building, inc
         if (isOld) {
             fetchData();
         }
-    }, [isOld]);
+    }, [isOld, fetchData]);
 
     const reloadData = useCallback(() => setIsOld(true), []);
 

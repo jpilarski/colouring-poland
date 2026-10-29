@@ -19,6 +19,6 @@ export function BuildingBaseLayer({ theme }: { theme: MapTheme }) {
             detectRetina={false}
         />;
     } else {
-        return <div></div>
+        return null;
     }
 }

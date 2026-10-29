@@ -18,7 +18,7 @@ import { CopyControl } from './header-buttons/copy-control';
 import { ViewEditControl } from './header-buttons/view-edit-control';
 
 import './data-container.css';
-import { dataFields } from '../config/data-fields-config'
+import { dataFields } from '../config/data-fields-config';
 
 import { EditHistoryLatest } from './edit-history/edit-history-latest';
 
@@ -45,10 +45,9 @@ interface DataContainerState {
     copying: boolean;
     keys_to_copy: { [key: string]: boolean };
     currentBuildingId: number | undefined;
-    currentBuildingRevisionId: number | undefined;
+    currentBuildingRevisionId: string | undefined;
+    currentCategory: string | undefined;
     buildingEdits: BuildingEdits;
-    mapColourScale: BuildingMapTileset;
-    onMapColourScale: (x: BuildingMapTileset) => void;
 }
 
 export type DataContainerType = React.ComponentType<DataContainerProps>;
@@ -73,8 +72,7 @@ const withCopyEdit: (wc: React.ComponentType<CategoryViewProps>) => DataContaine
                 buildingEdits: {},
                 currentBuildingId: undefined,
                 currentBuildingRevisionId: undefined,
-                mapColourScale: undefined,
-                onMapColourScale: undefined
+                currentCategory: undefined
             };
 
             this.handleChange = this.handleChange.bind(this);
@@ -88,14 +86,13 @@ const withCopyEdit: (wc: React.ComponentType<CategoryViewProps>) => DataContaine
             this.toggleCopyAttribute = this.toggleCopyAttribute.bind(this);
         }
 
-        static getDerivedStateFromProps(props, state): DataContainerState | null {
+        static getDerivedStateFromProps(props: DataContainerProps, state: DataContainerState): Partial<DataContainerState> | null {
             const newBuildingId = props.building == undefined ? undefined : props.building.lokalizacja_id_budynku;
             const newBuildingRevisionId = props.building == undefined ? undefined : props.building.revision_id;
+            const newCategory = props.cat;
 
             const categoryKeys = {};
-            const blackListedKeys = [
-
-            ]
+            const blackListedKeys = [];
             for (let key in dataFields) {
                 let fieldName = props.building == undefined ? undefined : props.building[key];
                 if (dataFields[key].category == props.cat && fieldName != null && !blackListedKeys.includes(key)) {
@@ -105,16 +102,20 @@ const withCopyEdit: (wc: React.ComponentType<CategoryViewProps>) => DataContaine
                     categoryKeys[key] = true;
                 }
             }
-            if (newBuildingId !== state.currentBuildingId || newBuildingRevisionId > state.currentBuildingRevisionId) {
+
+            const buildingChanged = newBuildingId !== state.currentBuildingId;
+            const revisionChanged = Number(newBuildingRevisionId || 0) > Number(state.currentBuildingRevisionId || 0);
+            const categoryChanged = newCategory !== state.currentCategory;
+
+            if (buildingChanged || revisionChanged || categoryChanged) {
                 return {
-                    error: undefined,
+                    error: buildingChanged ? undefined : state.error,
                     copying: false,
                     keys_to_copy: categoryKeys,
-                    buildingEdits: {},
+                    buildingEdits: (buildingChanged || revisionChanged) ? {} : state.buildingEdits,
                     currentBuildingId: newBuildingId,
                     currentBuildingRevisionId: newBuildingRevisionId,
-                    mapColourScale: props.mapColourScale,
-                    onMapColourScale: props.onMapColourScale
+                    currentCategory: newCategory
                 };
             }
 
@@ -274,7 +275,7 @@ const withCopyEdit: (wc: React.ComponentType<CategoryViewProps>) => DataContaine
                 this.setState({ error: err });
             }
 
-            console.log(slug + " verify button clicked")
+            console.log(slug + " verify button clicked");
         }
 
         render() {
@@ -382,7 +383,7 @@ const withCopyEdit: (wc: React.ComponentType<CategoryViewProps>) => DataContaine
                                         {
                                             (this.props.mode === 'edit' && !this.props.inactive) ?
                                                 <div className='edit-bar'>
-                                                    <ErrorBox msg={this.state.error} />
+                                                    {this.state.error && <ErrorBox msg={this.state.error} />}
                                                     {
                                                         this.props.cat !== 'like' && // special-case for likes
                                                         <div className="buttons-container with-space">
