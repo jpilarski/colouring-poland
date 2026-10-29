@@ -535,7 +535,7 @@ export const dataFields = { /* eslint-disable @typescript-eslint/camelcase */
     edit_history: {
         category: Category.UrbanInfrastructure,
         title: "PLANNING DATA",
-        tooltip: null,
+        tooltip: undefined,
         example: [{}],
     },
 
