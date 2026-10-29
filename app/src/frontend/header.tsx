@@ -18,7 +18,7 @@ interface MenuLink {
     note?: string;
 }
 
-function getCurrentMenuLinks(username: string): MenuLink[][] {
+function getCurrentMenuLinks(username: string | undefined): MenuLink[][] {
     return [
         [
             ...(

@@ -44,7 +44,7 @@ export interface DataFieldConfig {
      * (Add more options here as they become necessary)
      * Default: undefined
      */
-    sqlCast?: 'json' | 'jsonb';
+    sqlCast?: 'json' | 'jsonb' | 'kdf_detale_dict[]' | 'za_bariery_dict[]';
 }
 
 export const buildingAttributesConfig = valueType<DataFieldConfig>()({ /* eslint-disable @typescript-eslint/camelcase */

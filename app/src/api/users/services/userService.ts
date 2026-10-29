@@ -5,6 +5,7 @@
  * - delegacja zapytań SQL do warstwy dataAccess/user
  */
 import { promisify } from 'util';
+import { Session, SessionData } from 'express-session';
 import {
     insertUser,
     selectUserAuthData,
@@ -71,7 +72,7 @@ async function deleteUser(id: string): Promise<{ success?: boolean; error?: stri
     return softDeleteUserById(id);
 }
 
-function logout(session: Express.Session): Promise<void> {
+function logout(session: Session & Partial<SessionData>): Promise<void> {
     session.user_id = undefined;
     return promisify(session.destroy.bind(session))();
 }
