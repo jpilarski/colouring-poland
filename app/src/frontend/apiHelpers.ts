@@ -2,10 +2,13 @@
  * Compatibility facade for the frontend API client.
  * Will be fully replaced by direct imports from './api/apiClient' in Step 4.
  */
-export {
+export type {
     JsonReviver,
     ApiOptions,
-    HttpMethod,
+    HttpMethod
+} from './api/apiClient';
+
+export {
     apiRequest,
     apiGet,
     apiPost,

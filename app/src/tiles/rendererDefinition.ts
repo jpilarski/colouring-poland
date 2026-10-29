@@ -7,7 +7,7 @@ import { stitchTile } from "./renderers/stitchTile";
 import { TileCache } from "./tileCache";
 import { BoundingBox, Tile, TileParams } from "./types";
 import { isOutsideExtent } from "./util";
-import { ccConfig as config } from '../cc-config';
+import { ccConfig as config } from '../config';
 
 /**
  * A list of all tilesets handled by the tile server

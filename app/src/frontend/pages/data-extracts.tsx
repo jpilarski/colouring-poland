@@ -1,7 +1,8 @@
 import React, { FunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 
-import { dataExtractsApi, ExtractViewModel } from '../api';
+import { dataExtractsApi } from '../api';
+import type { ExtractViewModel } from '../api';
 
 interface DataExtractsState {
     extracts: ExtractViewModel[] | undefined;

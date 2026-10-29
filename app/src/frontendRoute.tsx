@@ -13,7 +13,7 @@ import { getUserById } from './api/users/services/userService';
 import { App } from './frontend/app';
 import { parseBuildingURL } from './parse';
 import asyncController from './api/common/asyncController';
-import { ccConfig as config } from './cc-config';
+import { ccConfig as config } from './config';
 
 // reference packed assets
 const assets = require(process.env.RAZZLE_ASSETS_MANIFEST);

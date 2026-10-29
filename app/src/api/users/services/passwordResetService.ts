@@ -11,7 +11,7 @@ import {
     updateUserPassword
 } from '../../dataAccess/user';
 
-import { ccConfig as config } from '../../../cc-config';
+import { ccConfig as config } from '../../../config';
 
 /**
  * Generate a password reset token for the specified account and send the password reset link by email
