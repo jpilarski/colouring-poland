@@ -13,21 +13,10 @@
  *
  */
 
-// Using node-fs package to patch fs
-// for node >10 we could drop this in favour of fs.mkdir (which has recursive option)
-// and then use stdlib `import fs from 'fs';`
-import { Image } from '@mapnik/mapnik';
-import fs from 'node-fs';
-import { promisify } from 'util';
+import { promises as fs } from 'fs';
 
-import { BoundingBox, TileParams } from './types';
+import { BoundingBox, Tile, TileParams } from './types';
 import { formatParams, getXYZ } from './util';
-
-// TODO: switch to modern node and use built-in fs with promise-based API
-const readFile = promisify(fs.readFile),
-    writeFile = promisify(fs.writeFile),
-    mkdir = promisify(fs.mkdir),
-    unlink = promisify(fs.unlink);
 
 interface CacheLocation {
     /**
@@ -70,50 +59,65 @@ class TileCache {
         /** Domain definition for the cache */
         private cacheDomain: CacheDomain,
         /** Function for defining custom caching rules (optional) */
-        private shouldCacheFn?: (TileParams) => boolean,
+        private shouldCacheFn?: (tileParams: TileParams) => boolean,
         /** Function for defining whether the tileset should be cleared when clearing cache for bounding box */
         private shouldBulkClearTilesetFn?: (tileset: string) => boolean
     ) { }
 
-    async get(tileParams: TileParams): Promise<Image> {
+    async get(tileParams: TileParams): Promise<Buffer | null> {
         if (!this.shouldUseCache(tileParams)) {
-            throw new Error(`Skip cache get ${formatParams(tileParams)}`);
+            return null;
         }
-        const location = this.cacheLocation(tileParams);
-        return readFile(location.fname);
-    }
-
-    async put(im: Image, tileParams: TileParams): Promise<void> {
-        if (!this.shouldUseCache(tileParams)) {
-            throw new Error(`Skip cache put ${formatParams(tileParams)}`);
-        }
-
         const location = this.cacheLocation(tileParams);
         try {
-            await writeFile(location.fname, im, 'binary');
-        } catch (err) {
+            const buf = await fs.readFile(location.fname);
+            if (!buf || buf.length === 0) {
+                await fs.unlink(location.fname).catch(() => {});
+                return null;
+            }
+            return buf;
+        } catch {
+            return null;
+        }
+    }
+
+    async put(im: Buffer, tileParams: TileParams): Promise<void> {
+        if (!this.shouldUseCache(tileParams) || !im || im.length === 0) {
+            return;
+        }
+
+        const location = this.cacheLocation(tileParams);
+        const tempFname = `${location.fname}.${process.pid}.${Date.now()}.${Math.random().toString(36).slice(2)}.tmp`;
+        try {
+            await fs.writeFile(tempFname, im);
+            await fs.rename(tempFname, location.fname);
+        } catch (err: any) {
             if (err.code === 'ENOENT') {
-                await mkdir(location.dir, 0o755, true);
-                await writeFile(location.fname, im, 'binary');
-            } else throw err;
+                await fs.mkdir(location.dir, { recursive: true });
+                await fs.writeFile(tempFname, im);
+                await fs.rename(tempFname, location.fname);
+            } else {
+                await fs.unlink(tempFname).catch(() => {});
+                throw err;
+            }
         }
     }
 
     async remove(tileParams: TileParams): Promise<void> {
         const location = this.cacheLocation(tileParams);
         try {
-            await unlink(location.fname);
+            await fs.unlink(location.fname);
         } catch (err) { }
-        //console.log(`Expire cache ${formatParams(tileParams)}`);
     }
 
-    async removeAllAtBbox(bbox: BoundingBox): Promise<void[]> {
+    async removeAllAtBbox(bbox: BoundingBox): Promise<void> {
         const removePromises: Promise<void>[] = [];
+        const maxCacheZoom = Math.min(this.cacheDomain.maxZoom, 18);
         for (const tileset of this.cacheDomain.tilesets) {
             if (!this.shouldBulkClearTileset(tileset)) continue;
 
-            for (let z = this.cacheDomain.minZoom; z <= this.cacheDomain.maxZoom; z++) {
-                let tileBounds = getXYZ(bbox, z);
+            for (let z = this.cacheDomain.minZoom; z <= maxCacheZoom; z++) {
+                const tileBounds = getXYZ(bbox, z);
                 for (let x = tileBounds.minX; x <= tileBounds.maxX; x++) {
                     for (let y = tileBounds.minY; y <= tileBounds.maxY; y++) {
                         for (const scale of this.cacheDomain.scales) {
@@ -123,7 +127,7 @@ class TileCache {
                 }
             }
         }
-        return Promise.all(removePromises);
+        await Promise.all(removePromises);
     }
 
     private cacheLocation({ tileset, z, x, y, scale }: TileParams): CacheLocation {
@@ -142,7 +146,7 @@ class TileCache {
     }
 
     private shouldBulkClearTileset(tileset: string): boolean {
-        return this.shouldCacheFn == undefined || this.shouldBulkClearTilesetFn(tileset);
+        return this.shouldBulkClearTilesetFn == undefined || this.shouldBulkClearTilesetFn(tileset);
     }
 }
 
