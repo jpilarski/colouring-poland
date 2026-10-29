@@ -7,6 +7,7 @@ import { SpinnerIcon } from '../components/icons';
 import InfoBox from '../components/info-box';
 import SupporterLogos from '../components/supporter-logos';
 import { ccConfig as config } from '../config/ccConfig';
+import { PasswordChecklist, isPasswordValid } from '../components/password-checklist';
 
 export const SignUp: React.FC = () => {
     const { isLoading, signup } = useAuth();
@@ -19,17 +20,23 @@ export const SignUp: React.FC = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [confirmConditions, setConfirmConditions] = useState(false);
 
+    const validPassword = isPasswordValid(password);
+
     const onSubmit = useCallback(
         e => {
             e.preventDefault();
+            if (!validPassword) {
+                setError('Password does not meet the security requirements / Hasło nie spełnia wymagań bezpieczeństwa.');
+                return;
+            }
             signup({ username, email, confirmEmail, password }, setError);
         },
-        [username, email, confirmEmail, password, confirmConditions, signup]
+        [username, email, confirmEmail, password, confirmConditions, signup, validPassword]
     );
 
     const msgName = `Welcome to Colouring ${config.cityName}. You're one of the first people to sign up!`;
-    const issuesURL = config.githubURL + "/issues";
-    const discussURL = config.githubURL + "/discussions";
+    const issuesURL = `${config.githubURL}/issues`;
+    const discussURL = `${config.githubURL}/discussions`;
 
     return (
         <article>
@@ -69,15 +76,17 @@ export const SignUp: React.FC = () => {
                         value={confirmEmail} onChange={e => setConfirmEmail(e.target.value)}
                     />
 
-                    <label htmlFor="password">Password (at least 8 characters)</label>
+                    <label htmlFor="password">Password (at least 10 characters / min. 10 znaków)</label>
                     <input name="password" id="password"
                         className="form-control"
                         type={(showPassword) ? 'text' : 'password'}
                         value={password} onChange={e => setPassword(e.target.value)}
                         required
-                        minLength={8}
+                        minLength={10}
                         maxLength={128}
                     />
+
+                    <PasswordChecklist password={password} />
 
                     <div className="form-check">
                         <input id="show_password" name="show_password"
@@ -104,7 +113,12 @@ export const SignUp: React.FC = () => {
                     </div>
 
                     <div className="buttons-container with-space">
-                        <input type="submit" disabled={isLoading} value="Sign Up" className="btn btn-primary" />
+                        <input
+                            type="submit"
+                            disabled={isLoading || !validPassword}
+                            value="Sign Up"
+                            className="btn btn-primary"
+                        />
                         {isLoading && <span><SpinnerIcon />Sending sign up data...</span>}
                     </div>
                     <InfoBox msg="">
