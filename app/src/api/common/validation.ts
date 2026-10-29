@@ -3,21 +3,47 @@
  * 
  * Moduł weryfikujący reguły biznesowe dla kont użytkowników:
  * - format i długość nazwy użytkownika (username)
- * - minimalna i maksymalna długość hasła (podstawa pod Zadanie 1.1 z TODO_MASTER.md - politykę haseł PP)
+ * - reguły złożoności hasła (Zadanie 1.1.1 z TODO_MASTER.md - standard PP: min. 10 znaków, wielka/mała litera, cyfra, znak specjalny)
  */
 import { ValidationError } from '../errors';
 
 function validateUsername(username: string): void {
-    if (username == undefined) throw new ValidationError('Username is required');
-    if (!username.match(/^\w+$/)) throw new ValidationError('Username can only contain alphanumeric characters and underscore');
-    if (username.length < 4) throw new ValidationError('Username must be at least 4 characters long');
-    if (username.length > 30) throw new ValidationError('Username must be at most 30 characters long');
+    if (username == undefined) {
+        throw new ValidationError('Username is required');
+    }
+    if (!username.match(/^\w+$/)) {
+        throw new ValidationError('Username can only contain alphanumeric characters and underscore');
+    }
+    if (username.length < 4) {
+        throw new ValidationError('Username must be at least 4 characters long');
+    }
+    if (username.length > 30) {
+        throw new ValidationError('Username must be at most 30 characters long');
+    }
 }
 
 function validatePassword(password: string): void {
-    if (password == undefined) throw new ValidationError('Password is required');
-    if (password.length < 8) throw new ValidationError('Password must be at least 8 characters long');
-    if (password.length > 128) throw new ValidationError('Password must be at most 128 characters long');
+    if (!password || password.length === 0) {
+        throw new ValidationError('Hasło jest wymagane.');
+    }
+    if (password.length < 10) {
+        throw new ValidationError('Hasło musi mieć co najmniej 10 znaków.');
+    }
+    if (password.length > 128) {
+        throw new ValidationError('Hasło nie może mieć więcej niż 128 znaków.');
+    }
+    if (!/[A-Z]/.test(password)) {
+        throw new ValidationError('Hasło musi zawierać co najmniej jedną wielką literę.');
+    }
+    if (!/[a-z]/.test(password)) {
+        throw new ValidationError('Hasło musi zawierać co najmniej jedną małą literę.');
+    }
+    if (!/[0-9]/.test(password)) {
+        throw new ValidationError('Hasło musi zawierać co najmniej jedną cyfrę.');
+    }
+    if (!/[^A-Za-z0-9\s]/.test(password)) {
+        throw new ValidationError('Hasło musi zawierać co najmniej jeden znak specjalny.');
+    }
 }
 
 export {

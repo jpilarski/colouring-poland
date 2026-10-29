@@ -8,7 +8,7 @@ import InfoBox from '../components/info-box';
 import SupporterLogos from '../components/supporter-logos';
 
 import { CCConfig } from '../../cc-config';
-let config: CCConfig = require('../../cc-config.json')
+const config: CCConfig = require('../../cc-config.json');
 
 export const SignUp: React.FC = () => {
     const { isLoading, signup } = useAuth();
@@ -16,22 +16,35 @@ export const SignUp: React.FC = () => {
 
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
-    const [confirmEmail, setConfirmEmail] = useState('')
+    const [confirmEmail, setConfirmEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [confirmConditions, setConfirmConditions] = useState(false);
 
+    const passwordRules = [
+        { label: 'At least 10 characters (min. 10 znaków)', valid: password.length >= 10 && password.length <= 128 },
+        { label: 'At least one uppercase letter (wielka litera: A-Z)', valid: /[A-Z]/.test(password) },
+        { label: 'At least one lowercase letter (mała litera: a-z)', valid: /[a-z]/.test(password) },
+        { label: 'At least one number (cyfra: 0-9)', valid: /[0-9]/.test(password) },
+        { label: 'At least one special character (znak specjalny: !@#$%^&*...)', valid: /[^A-Za-z0-9\s]/.test(password) },
+    ];
+    const isPasswordValid = passwordRules.every(r => r.valid);
+
     const onSubmit = useCallback(
         e => {
             e.preventDefault();
+            if (!isPasswordValid) {
+                setError('Hasło nie spełnia wymagań bezpieczeństwa.');
+                return;
+            }
             signup({ username, email, confirmEmail, password }, setError);
         },
-        [username, email, confirmEmail, password, confirmConditions, signup]
+        [username, email, confirmEmail, password, confirmConditions, signup, isPasswordValid]
     );
 
     const msgName = `Welcome to Colouring ${config.cityName}. You're one of the first people to sign up!`;
-    const issuesURL = config.githubURL + "/issues";
-    const discussURL = config.githubURL + "/discussions";
+    const issuesURL = `${config.githubURL}/issues`;
+    const discussURL = `${config.githubURL}/discussions`;
 
     return (
         <article>
@@ -71,15 +84,29 @@ export const SignUp: React.FC = () => {
                         value={confirmEmail} onChange={e => setConfirmEmail(e.target.value)}
                     />
 
-                    <label htmlFor="password">Password (at least 8 characters)</label>
+                    <label htmlFor="password">Password (at least 10 characters / min. 10 znaków)</label>
                     <input name="password" id="password"
                         className="form-control"
                         type={(showPassword) ? 'text' : 'password'}
                         value={password} onChange={e => setPassword(e.target.value)}
                         required
-                        minLength={8}
+                        minLength={10}
                         maxLength={128}
                     />
+
+                    <div className="password-requirements my-2 p-2 border rounded bg-light" style={{ fontSize: '0.85rem' }}>
+                        <div className="fw-bold mb-1" style={{ fontWeight: 600 }}>Password requirements / Wymagania dotyczące hasła:</div>
+                        <ul className="list-unstyled mb-0" style={{ paddingLeft: '0.5rem', marginBottom: 0 }}>
+                            {passwordRules.map((rule, idx) => (
+                                <li key={idx} style={{ color: rule.valid ? '#198754' : '#6c757d', fontWeight: rule.valid ? 500 : 400 }}>
+                                    <span style={{ display: 'inline-block', width: '1.2rem', fontWeight: 'bold' }}>
+                                        {rule.valid ? '✓' : '○'}
+                                    </span>
+                                    {rule.label}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
 
                     <div className="form-check">
                         <input id="show_password" name="show_password"
@@ -106,7 +133,12 @@ export const SignUp: React.FC = () => {
                     </div>
 
                     <div className="buttons-container with-space">
-                        <input type="submit" disabled={isLoading} value="Sign Up" className="btn btn-primary" />
+                        <input
+                            type="submit"
+                            disabled={isLoading || !isPasswordValid}
+                            value="Sign Up"
+                            className="btn btn-primary"
+                        />
                         {isLoading && <span><SpinnerIcon />Sending sign up data...</span>}
                     </div>
                     <InfoBox msg="">
