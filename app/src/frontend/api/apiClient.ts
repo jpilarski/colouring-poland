@@ -25,24 +25,22 @@ export async function apiRequest<T = any>(
         body: data == undefined ? null : JSON.stringify(data)
     });
 
-    const contentType = res.headers.get('content-type') || '';
+    const text = await res.text();
     let result: any;
 
-    if (contentType.includes('application/json')) {
-        const text = await res.text();
+    try {
         const reviver = options?.jsonReviver;
         result = text ? JSON.parse(text, reviver) : {};
-    } else {
-        const text = await res.text();
-        if (!res.ok) {
-            result = { error: text || res.statusText || `HTTP ${res.status}` };
-        } else {
-            result = text;
-        }
+    } catch {
+        result = text;
     }
 
-    if (!res.ok && typeof result === 'object' && result !== null && !result.error) {
-        result.error = result.message || res.statusText || `HTTP ${res.status}`;
+    if (!res.ok) {
+        if (typeof result === 'string') {
+            result = { error: result || res.statusText || `HTTP ${res.status}` };
+        } else if (typeof result === 'object' && result !== null && !result.error) {
+            result.error = result.message || res.statusText || `HTTP ${res.status}`;
+        }
     }
 
     return result as T;

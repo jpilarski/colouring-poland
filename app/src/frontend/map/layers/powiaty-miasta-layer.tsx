@@ -8,8 +8,27 @@ export function MiastaPowiatyLayer() {
     const [powiatyGeojson, setPowiatyGeojson] = useState<GeoJsonObject | null>(null);
 
     useEffect(() => {
-        apiGet('/geometries/miasta.geojson').then(data => setMiastaGeojson(data as GeoJsonObject));
-        apiGet('/geometries/powiaty.geojson').then(data => setPowiatyGeojson(data as GeoJsonObject));
+        let isMounted = true;
+
+        apiGet('/geometries/miasta.geojson').then(data => {
+            if (isMounted && data && typeof data === 'object') {
+                setMiastaGeojson(data as GeoJsonObject);
+            }
+        }).catch(err => {
+            console.error('Failed to load miasta.geojson', err);
+        });
+
+        apiGet('/geometries/powiaty.geojson').then(data => {
+            if (isMounted && data && typeof data === 'object') {
+                setPowiatyGeojson(data as GeoJsonObject);
+            }
+        }).catch(err => {
+            console.error('Failed to load powiaty.geojson', err);
+        });
+
+        return () => {
+            isMounted = false;
+        };
     }, []);
 
     return (
