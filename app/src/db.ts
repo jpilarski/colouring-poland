@@ -7,7 +7,7 @@ const db = pgp({
     'database': process.env.PGDATABASE,
     'user': process.env.PGUSER,
     'password': process.env.PGPASSWORD,
-    'port': parseInt(process.env.PGPORT || '5432')
+    'port': process.env.PGPORT == undefined ? undefined : parseInt(process.env.PGPORT)
 });
 
 export default db;
