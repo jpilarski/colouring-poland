@@ -3,7 +3,7 @@ import { useThrottle } from 'use-throttle';
 
 import './autofill-dropdown.css';
 
-import { apiGet } from '../../../../apiHelpers';
+import { apiGet } from '../../../../api';
 
 interface AutofillDropdownProps {
     fieldName: string;

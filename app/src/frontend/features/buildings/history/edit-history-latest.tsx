@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import './edit-history.css';
 
-import { apiGet } from '../../../apiHelpers';
+import { apiGet } from '../../../api';
 import { Building } from '../../../models/building';
 import { EditHistoryEntry } from '../../../models/edit-history-entry';
 import ContainerHeader from '../components/container-header';

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { UserVerified } from '../models/building';
-import { apiGet } from '../apiHelpers';
+import { apiGet } from '../api';
 
 export function useUserVerifiedData(buildingId: number, preloadedData: UserVerified): [UserVerified, (updatedBuilding: UserVerified) => void, () => void] {
     const [userVerifyData, setUserVerifyData] = useState<UserVerified>(preloadedData);

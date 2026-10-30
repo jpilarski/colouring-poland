@@ -4,7 +4,7 @@ import { AttributionControl, MapContainer, ZoomControl, useMapEvent, Pane, useMa
 import 'leaflet/dist/leaflet.css';
 import './map.css';
 
-import { apiGet } from '../../apiHelpers';
+import { apiGet } from '../../api';
 import { initialMapViewport, mapBackgroundColor, MapTheme } from '../../config/map-config';
 
 import { Building } from '../../models/building';

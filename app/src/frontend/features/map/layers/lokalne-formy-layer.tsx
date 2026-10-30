@@ -2,7 +2,7 @@ import { GeoJsonObject } from 'geojson';
 import React, { useEffect, useRef, useState } from 'react';
 import { GeoJSON } from 'react-leaflet';
 import { useDisplayPreferences } from '../displayPreferences-context';
-import { apiGet } from '../../../apiHelpers';
+import { apiGet } from '../../../api';
 
 export function LokalneFormyLayer() {
     const [geojson, setGeojson] = useState<GeoJsonObject | null>(null);
