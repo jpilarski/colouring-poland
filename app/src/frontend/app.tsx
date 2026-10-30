@@ -4,8 +4,6 @@ import { Route, Switch } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './app.css';
 
-import { AuthRoute, PrivateRoute } from './route';
-import { AuthProvider } from './auth-context';
 import { DisplayPreferencesProvider } from './displayPreferences-context';
 import { Header } from './components';
 import { MapApp } from './map-app';
@@ -21,11 +19,16 @@ import {
     PrivacyPolicyPage,
     NotFound
 } from './features/pages';
-import ForgottenPassword from './user/forgotten-password';
-import { Login } from './user/login';
-import { MyAccountPage } from './user/my-account';
-import PasswordReset from './user/password-reset';
-import { SignUp } from './user/signup';
+import {
+    AuthRoute,
+    PrivateRoute,
+    AuthProvider,
+    ForgottenPassword,
+    Login,
+    MyAccountPage,
+    PasswordReset,
+    SignUp
+} from './features/auth';
 
 
 interface AppProps {

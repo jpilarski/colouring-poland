@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react'
 import { Route, RouteProps, Redirect } from 'react-router-dom';
-import { SpinnerIcon } from './components/icons';
+import { SpinnerIcon } from '../../components/icons';
 
 import { useAuth } from './auth-context';
 

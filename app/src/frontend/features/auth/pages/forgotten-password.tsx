@@ -1,9 +1,9 @@
 import React, { useState, FormEvent } from 'react';
 
-import ErrorBox from '../components/error-box';
-import InfoBox from '../components/info-box';
-import { authApi } from '../api';
-import { ccConfig as config } from '../config/ccConfig';
+import ErrorBox from '../../../components/error-box';
+import InfoBox from '../../../components/info-box';
+import { authApi } from '../../../api';
+import { ccConfig as config } from '../../../config/ccConfig';
 
 export const ForgottenPassword: React.FC = () => {
     const [email, setEmail] = useState('');

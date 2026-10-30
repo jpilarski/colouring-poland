@@ -1,8 +1,8 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 
-import { authApi } from './api';
-import type { UserLoginData, UserSignupData } from './api';
-import { User } from './models/user';
+import { authApi } from '../../api';
+import type { UserLoginData, UserSignupData } from '../../api';
+import { User } from '../../models/user';
 
 export type { UserLoginData, UserSignupData };
 
