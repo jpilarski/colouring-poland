@@ -15,13 +15,13 @@ import MultiEdit from './building/multi-edit';
 import Sidebar from './building/sidebar';
 import { Building, UserVerified } from './models/building';
 import { Welcome } from './features/pages';
-import { PrivateRoute } from './route';
+import { PrivateRoute } from './features/auth/route';
 import { useLastNotEmpty } from './hooks/use-last-not-empty';
 import { Category } from './config/categories-config';
 import { BuildingMapTileset } from './config/tileserver-config';
 import { defaultMapCategory, categoryMapsConfig } from './config/category-maps-config';
 import { useMultiEditData } from './hooks/use-multi-edit-data';
-import { useAuth } from './auth-context';
+import { useAuth } from './features/auth/auth-context';
 import { sendBuildingUpdate } from './api-data/building-update';
 
 /**

@@ -5,7 +5,7 @@ import './header.css';
 
 import { Logo } from './logo';
 import { WithSeparator } from './with-separator';
-import { useAuth } from '../auth-context';
+import { useAuth } from '../features/auth/auth-context';
 import { ccConfig as config } from '../config/ccConfig';
 
 interface MenuLink {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAuth } from '../auth-context';
+import { useAuth } from '../features/auth/auth-context';
 
 import { categoriesConfig, Category } from '../config/categories-config';
 import { categoryUiConfig } from '../config/category-ui-config';

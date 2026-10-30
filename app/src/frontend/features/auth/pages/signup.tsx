@@ -2,11 +2,11 @@ import React, { useCallback, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { useAuth } from '../auth-context';
-import ErrorBox from '../components/error-box';
-import { SpinnerIcon } from '../components/icons';
-import InfoBox from '../components/info-box';
-import SupporterLogos from '../components/supporter-logos';
-import { ccConfig as config } from '../config/ccConfig';
+import ErrorBox from '../../../components/error-box';
+import { SpinnerIcon } from '../../../components/icons';
+import InfoBox from '../../../components/info-box';
+import SupporterLogos from '../../../components/supporter-logos';
+import { ccConfig as config } from '../../../config/ccConfig';
 import { PasswordChecklist, isPasswordValid } from '../components/password-checklist';
 
 export const SignUp: React.FC = () => {

@@ -2,9 +2,9 @@ import React, { useState, useEffect, FormEvent } from 'react';
 import { Redirect, RouteComponentProps } from 'react-router';
 import { Link } from 'react-router-dom';
 
-import ErrorBox from '../components/error-box';
+import ErrorBox from '../../../components/error-box';
 import { PasswordChecklist, isPasswordValid } from '../components/password-checklist';
-import { authApi } from '../api';
+import { authApi } from '../../../api';
 
 const TOKEN_MISSING_MESSAGE = 'Password reset token is missing. Make sure to follow the link from a password reset email!';
 

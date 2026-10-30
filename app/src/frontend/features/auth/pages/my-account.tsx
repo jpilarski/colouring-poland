@@ -2,10 +2,10 @@ import React, { useCallback, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { useAuth } from '../auth-context';
-import ConfirmationModal from '../components/confirmation-modal';
-import ErrorBox from '../components/error-box';
-import { SpinnerIcon } from '../components/icons';
-import { ccConfig as config } from '../config/ccConfig';
+import ConfirmationModal from '../../../components/confirmation-modal';
+import ErrorBox from '../../../components/error-box';
+import { SpinnerIcon } from '../../../components/icons';
+import { ccConfig as config } from '../../../config/ccConfig';
 
 export const MyAccountPage: React.FC = () => {
     const { isLoading, user, userError, logout, generateApiKey, deleteAccount } = useAuth();
