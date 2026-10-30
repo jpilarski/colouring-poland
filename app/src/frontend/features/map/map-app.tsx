@@ -10,11 +10,7 @@ import {
     useUrlCategoryParam,
     useUrlModeParam
 } from '../../hooks';
-import BuildingView from '../../building/building-view';
-import Categories from '../../building/categories';
-import { EditHistory } from '../../building/edit-history/edit-history';
-import MultiEdit from '../../building/multi-edit';
-import Sidebar from '../../building/sidebar';
+import { BuildingView, Categories, EditHistory, MultiEdit, Sidebar } from '../buildings';
 import { Building, UserVerified } from '../../models/building';
 import { Welcome } from '../pages';
 import { PrivateRoute } from '../auth/route';

@@ -1,19 +1,19 @@
 import { Category } from './categories-config';
 
-import PlanningConservationContainer from '../building/data-containers/planning-conservation';
-import CommunityContainer from '../building/data-containers/community';
-import AgeHistoryContainer from '../building/data-containers/age-history';
-import DisasterManagementContainer from '../building/data-containers/disaster-management';
-import LocationContainer from '../building/data-containers/location';
-import UrbanInfrastructureContainer from '../building/data-containers/urban-infrastructure';
-import ConstructionDesignContainer from '../building/data-containers/construction-design';
-import RetrofitConditionContainer from '../building/data-containers/retrofit-condition';
-import WaterGreenInfrastructureContainer from '../building/data-containers/water-green-infrastructure';
-import EnergyPerformanceContainer from '../building/data-containers/energy-performance';
-import TypologySizeContainer from '../building/data-containers/typology-size';
-import LandUseContainer from '../building/data-containers/land-use';
+import PlanningConservationContainer from '../features/buildings/containers/planning-conservation';
+import CommunityContainer from '../features/buildings/containers/community';
+import AgeHistoryContainer from '../features/buildings/containers/age-history';
+import DisasterManagementContainer from '../features/buildings/containers/disaster-management';
+import LocationContainer from '../features/buildings/containers/location';
+import UrbanInfrastructureContainer from '../features/buildings/containers/urban-infrastructure';
+import ConstructionDesignContainer from '../features/buildings/containers/construction-design';
+import RetrofitConditionContainer from '../features/buildings/containers/retrofit-condition';
+import WaterGreenInfrastructureContainer from '../features/buildings/containers/water-green-infrastructure';
+import EnergyPerformanceContainer from '../features/buildings/containers/energy-performance';
+import TypologySizeContainer from '../features/buildings/containers/typology-size';
+import LandUseContainer from '../features/buildings/containers/land-use';
 
-import { DataContainerType } from '../building/data-container';
+import { DataContainerType } from '../features/buildings/components/data-container';
 
 export const categoryUiConfig: { [key in Category]: DataContainerType } = {
     [Category.Location]: LocationContainer,
