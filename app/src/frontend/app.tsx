@@ -7,7 +7,7 @@ import './app.css';
 import { AuthRoute, PrivateRoute } from './route';
 import { AuthProvider } from './auth-context';
 import { DisplayPreferencesProvider } from './displayPreferences-context';
-import { Header } from './header';
+import { Header } from './components';
 import { MapApp } from './map-app';
 import { Building, UserVerified } from './models/building';
 import { User } from './models/user';

@@ -3,10 +3,10 @@ import { NavLink } from 'react-router-dom';
 
 import './header.css';
 
-import { Logo } from './components/logo';
-import { WithSeparator } from './components/with-separator';
-import { useAuth } from './auth-context';
-import { ccConfig as config } from './config/ccConfig';
+import { Logo } from './logo';
+import { WithSeparator } from './with-separator';
+import { useAuth } from '../auth-context';
+import { ccConfig as config } from '../config/ccConfig';
 
 interface MenuLink {
     to: string;
