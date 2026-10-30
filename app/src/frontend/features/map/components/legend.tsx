@@ -4,7 +4,7 @@ import { DownIcon, UpIcon } from '../../../components/icons';
 import { Logo } from '../../../components/logo';
 import { CategoryMapDefinition, LegendConfig } from '../../../config/category-maps-config';
 import { BuildingMapTileset } from '../../../config/tileserver-config';
-import { apiGet } from '../../../apiHelpers';
+import { apiGet } from '../../../api';
 
 interface LegendProps {
     mapColourScaleDefinitions: CategoryMapDefinition[];

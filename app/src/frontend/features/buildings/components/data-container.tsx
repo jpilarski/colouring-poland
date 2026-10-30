@@ -3,7 +3,7 @@ import { NavLink, Redirect } from 'react-router-dom';
 import Confetti from 'canvas-confetti';
 import _ from 'lodash';
 
-import { apiPost } from '../../../apiHelpers';
+import { apiPost } from '../../../api';
 import { sendBuildingUpdate } from '../../../api';
 import ErrorBox from '../../../components/error-box';
 import InfoBox from '../../../components/info-box';

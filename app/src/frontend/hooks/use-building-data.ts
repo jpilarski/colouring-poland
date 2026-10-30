@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { Building, BuildingAttributeVerificationCounts } from '../models/building';
-import { apiGet } from '../apiHelpers';
+import { apiGet } from '../api';
 
 /**
  * 

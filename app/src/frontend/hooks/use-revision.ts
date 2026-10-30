@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import { apiGet } from '../apiHelpers';
+import { apiGet } from '../api';
 
 export function useRevisionId(initialRevisionId: string): [string, (newId: string) => void, () => void] {
     const [revisionId, setRevisionId] = useState(initialRevisionId ?? '0');

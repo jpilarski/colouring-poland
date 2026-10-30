@@ -1,7 +1,7 @@
 import { GeoJsonObject } from 'geojson';
 import React, { useEffect, useState } from 'react';
 import { GeoJSON } from 'react-leaflet';
-import { apiGet } from '../../../apiHelpers';
+import { apiGet } from '../../../api';
 
 export function MiastaPowiatyLayer() {
     const [miastaGeojson, setMiastaGeojson] = useState<GeoJsonObject | null>(null);
