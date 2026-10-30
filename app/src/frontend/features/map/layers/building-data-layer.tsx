@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { TileLayer } from 'react-leaflet';
 
-import { BuildingMapTileset } from '../../config/tileserver-config';
-import { useDisplayPreferences } from '../../displayPreferences-context';
+import { BuildingMapTileset } from '../../../config/tileserver-config';
+import { useDisplayPreferences } from '../displayPreferences-context';
 import { getTileLayerUrl } from './get-tile-layer-url';
 
 export function BuildingDataLayer({ tileset, revisionId }: { tileset: BuildingMapTileset, revisionId: string }) {

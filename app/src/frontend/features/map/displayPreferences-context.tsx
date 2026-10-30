@@ -1,6 +1,6 @@
 import React, { createContext, useCallback, useContext, useState } from 'react';
 
-import { LayerEnablementState, MapTheme } from './config/map-config';
+import { LayerEnablementState, MapTheme } from '../../config/map-config';
 
 interface DisplayPreferencesContextState {
     showOverlayList: (e: React.FormEvent<HTMLFormElement>) => void;

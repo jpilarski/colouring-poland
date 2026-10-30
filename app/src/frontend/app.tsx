@@ -4,9 +4,8 @@ import { Route, Switch } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './app.css';
 
-import { DisplayPreferencesProvider } from './displayPreferences-context';
+import { DisplayPreferencesProvider, MapApp } from './features/map';
 import { Header } from './components';
-import { MapApp } from './map-app';
 import { Building, UserVerified } from './models/building';
 import { User } from './models/user';
 import {

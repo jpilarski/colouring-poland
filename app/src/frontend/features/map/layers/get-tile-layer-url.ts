@@ -1,4 +1,4 @@
-import { MapTileset } from '../../config/tileserver-config';
+import { MapTileset } from '../../../config/tileserver-config';
 
 /**
  * Formats a CL tileserver URL for a tileset and a set of parameters

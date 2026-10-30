@@ -1,10 +1,10 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import './legend.css';
-import { DownIcon, UpIcon } from '../components/icons';
-import { Logo } from '../components/logo';
-import { CategoryMapDefinition, LegendConfig } from '../config/category-maps-config';
-import { BuildingMapTileset } from '../config/tileserver-config';
-import { apiGet } from '../apiHelpers';
+import { DownIcon, UpIcon } from '../../../components/icons';
+import { Logo } from '../../../components/logo';
+import { CategoryMapDefinition, LegendConfig } from '../../../config/category-maps-config';
+import { BuildingMapTileset } from '../../../config/tileserver-config';
+import { apiGet } from '../../../apiHelpers';
 
 interface LegendProps {
     mapColourScaleDefinitions: CategoryMapDefinition[];

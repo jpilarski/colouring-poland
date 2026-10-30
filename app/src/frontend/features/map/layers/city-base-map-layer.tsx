@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { TileLayer } from 'react-leaflet';
 
-import { MapTheme } from '../../config/map-config';
-import { ccConfig as config } from '../../config/ccConfig';
+import { MapTheme } from '../../../config/map-config';
+import { ccConfig as config } from '../../../config/ccConfig';
 
 /**
  * Base raster layer for the map.

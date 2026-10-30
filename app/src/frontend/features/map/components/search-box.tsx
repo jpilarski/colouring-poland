@@ -3,8 +3,8 @@ import React, { useState, useEffect, useCallback, ChangeEvent, FormEvent, Keyboa
 
 import './search-box.css';
 
-import { apiGet } from '../apiHelpers';
-import { SearchIcon } from '../components/icons';
+import { apiGet } from '../../../apiHelpers';
+import { SearchIcon } from '../../../components/icons';
 
 export interface SearchResult {
     type: string;
