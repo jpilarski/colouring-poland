@@ -5,7 +5,7 @@ import { Link, RouteComponentProps } from 'react-router-dom';
 import './changes.css';
 
 import { apiGet } from '../../apiHelpers';
-import { BuildingEditSummary } from '../../building/edit-history/building-edit-summary';
+import { BuildingEditSummary } from '../buildings/history/building-edit-summary';
 import ErrorBox from '../../components/error-box';
 import InfoBox from '../../components/info-box';
 import { EditHistoryEntry } from '../../models/edit-history-entry';
