@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { TileLayer } from 'react-leaflet';
 
-import { BuildingMapTileset } from '../../config/tileserver-config';
+import { BuildingMapTileset } from '../../../config/tileserver-config';
 
 import { getTileLayerUrl } from './get-tile-layer-url';
 

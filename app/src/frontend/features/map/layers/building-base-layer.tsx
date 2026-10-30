@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { TileLayer } from 'react-leaflet';
 
-import { MapTheme } from '../../config/map-config';
-import { MapTileset } from '../../config/tileserver-config';
-import { useDisplayPreferences } from '../../displayPreferences-context';
+import { MapTheme } from '../../../config/map-config';
+import { MapTileset } from '../../../config/tileserver-config';
+import { useDisplayPreferences } from '../displayPreferences-context';
 import { getTileLayerUrl } from './get-tile-layer-url';
 
 export function BuildingBaseLayer({ theme }: { theme: MapTheme }) {

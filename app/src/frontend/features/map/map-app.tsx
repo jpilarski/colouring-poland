@@ -9,22 +9,22 @@ import {
     useUrlBuildingParam,
     useUrlCategoryParam,
     useUrlModeParam
-} from './hooks';
-import BuildingView from './building/building-view';
-import Categories from './building/categories';
-import { EditHistory } from './building/edit-history/edit-history';
-import MultiEdit from './building/multi-edit';
-import Sidebar from './building/sidebar';
-import { Building, UserVerified } from './models/building';
-import { Welcome } from './features/pages';
-import { PrivateRoute } from './features/auth/route';
-import { useLastNotEmpty } from './hooks/use-last-not-empty';
-import { Category } from './config/categories-config';
-import { BuildingMapTileset } from './config/tileserver-config';
-import { defaultMapCategory, categoryMapsConfig } from './config/category-maps-config';
-import { useMultiEditData } from './hooks/use-multi-edit-data';
-import { useAuth } from './features/auth/auth-context';
-import { sendBuildingUpdate } from './api';
+} from '../../hooks';
+import BuildingView from '../../building/building-view';
+import Categories from '../../building/categories';
+import { EditHistory } from '../../building/edit-history/edit-history';
+import MultiEdit from '../../building/multi-edit';
+import Sidebar from '../../building/sidebar';
+import { Building, UserVerified } from '../../models/building';
+import { Welcome } from '../pages';
+import { PrivateRoute } from '../auth/route';
+import { useLastNotEmpty } from '../../hooks/use-last-not-empty';
+import { Category } from '../../config/categories-config';
+import { BuildingMapTileset } from '../../config/tileserver-config';
+import { defaultMapCategory, categoryMapsConfig } from '../../config/category-maps-config';
+import { useMultiEditData } from '../../hooks/use-multi-edit-data';
+import { useAuth } from '../auth/auth-context';
+import { sendBuildingUpdate } from '../../api';
 
 /**
  * Load and render ColouringMap component on client-side only.
@@ -38,7 +38,7 @@ import { sendBuildingUpdate } from './api';
  * to all modules that import leaflet or react-leaflet.
  */
 const ColouringMap = loadable(
-    async () => (await import('./map/map')).ColouringMap,
+    async () => (await import('./map')).ColouringMap,
     { ssr: false }
 );
 

@@ -4,10 +4,10 @@ import { AttributionControl, MapContainer, ZoomControl, useMapEvent, Pane, useMa
 import 'leaflet/dist/leaflet.css';
 import './map.css';
 
-import { apiGet } from '../apiHelpers';
-import { initialMapViewport, mapBackgroundColor, MapTheme } from '../config/map-config';
+import { apiGet } from '../../apiHelpers';
+import { initialMapViewport, mapBackgroundColor, MapTheme } from '../../config/map-config';
 
-import { Building } from '../models/building';
+import { Building } from '../../models/building';
 
 import { CityBaseMapLayer } from './layers/city-base-map-layer';
 import { BuildingBaseLayer } from './layers/building-base-layer';
@@ -18,16 +18,16 @@ import { MiastaPowiatyLayer } from './layers/powiaty-miasta-layer';
 import { DzialkiLayer } from './layers/dzialki-layer';
 import { LokalneFormyLayer } from './layers/lokalne-formy-layer';
 
-import { Legend } from './legend';
-import SearchBox from './search-box';
-import ThemeSwitcher from './theme-switcher';
-import DataLayerSwitcher from './data-switcher';
-import { DzialkiSwitcher } from './dzialki-switcher';
-import { LokalneFormySwitcher } from './lokalne-formy-switcher';
-import { EditableBuildingsSwitcher } from './editable-buildings-switcher';
-import { BuildingMapTileset } from '../config/tileserver-config';
-import { useDisplayPreferences } from '../displayPreferences-context';
-import { CategoryMapDefinition } from '../config/category-maps-config';
+import { Legend } from './components/legend';
+import SearchBox from './components/search-box';
+import ThemeSwitcher from './components/theme-switcher';
+import DataLayerSwitcher from './components/data-switcher';
+import { DzialkiSwitcher } from './components/dzialki-switcher';
+import { LokalneFormySwitcher } from './components/lokalne-formy-switcher';
+import { EditableBuildingsSwitcher } from './components/editable-buildings-switcher';
+import { BuildingMapTileset } from '../../config/tileserver-config';
+import { useDisplayPreferences } from './displayPreferences-context';
+import { CategoryMapDefinition } from '../../config/category-maps-config';
 
 interface ColouringMapProps {
     selectedBuildingId?: number;
