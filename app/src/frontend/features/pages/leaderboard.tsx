@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { leaderboardApi } from '../api';
-import type { Leader } from '../api';
+import { leaderboardApi } from '../../api';
+import type { Leader } from '../../api';
 
 export const LeaderboardPage: React.FC = () => {
     const [leaders, setLeaders] = useState<Leader[]>([]);

@@ -1,8 +1,8 @@
 import React, { useState, useEffect, FunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 
-import { dataExtractsApi } from '../api';
-import type { ExtractViewModel } from '../api';
+import { dataExtractsApi } from '../../api';
+import type { ExtractViewModel } from '../../api';
 
 export const DataExtracts: React.FC = () => {
     const [extracts, setExtracts] = useState<ExtractViewModel[] | undefined>(undefined);

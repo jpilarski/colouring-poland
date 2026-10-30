@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { ccConfig as config } from '../config/ccConfig';
+import { ccConfig as config } from '../../config/ccConfig';
 
 const DataAccuracyPage = () => (
     <article>
