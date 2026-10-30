@@ -2,12 +2,14 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import loadable from '@loadable/component';
 
-import { useRevisionId } from './api-data/use-revision';
-import { useBuildingData } from './api-data/use-building-data';
-import { useUserVerifiedData } from './api-data/use-user-verified-data';
-import { useUrlBuildingParam } from './nav/use-url-building-param';
-import { useUrlCategoryParam } from './nav/use-url-category-param';
-import { useUrlModeParam } from './nav/use-url-mode-param';
+import {
+    useRevisionId,
+    useBuildingData,
+    useUserVerifiedData,
+    useUrlBuildingParam,
+    useUrlCategoryParam,
+    useUrlModeParam
+} from './hooks';
 import BuildingView from './building/building-view';
 import Categories from './building/categories';
 import { EditHistory } from './building/edit-history/edit-history';
@@ -22,7 +24,7 @@ import { BuildingMapTileset } from './config/tileserver-config';
 import { defaultMapCategory, categoryMapsConfig } from './config/category-maps-config';
 import { useMultiEditData } from './hooks/use-multi-edit-data';
 import { useAuth } from './features/auth/auth-context';
-import { sendBuildingUpdate } from './api-data/building-update';
+import { sendBuildingUpdate } from './api';
 
 /**
  * Load and render ColouringMap component on client-side only.

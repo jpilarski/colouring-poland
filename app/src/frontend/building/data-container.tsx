@@ -4,7 +4,7 @@ import Confetti from 'canvas-confetti';
 import _ from 'lodash';
 
 import { apiPost } from '../apiHelpers';
-import { sendBuildingUpdate } from '../api-data/building-update';
+import { sendBuildingUpdate } from '../api';
 import ErrorBox from '../components/error-box';
 import InfoBox from '../components/info-box';
 import { compareObjects } from '../helpers';

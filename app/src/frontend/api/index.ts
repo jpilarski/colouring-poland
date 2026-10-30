@@ -21,7 +21,8 @@ export type {
 } from './authApi';
 export { authApi } from './authApi';
 
-export { buildingsApi } from './buildingsApi';
+export { buildingsApi, sendBuildingUpdate } from './buildingsApi';
+export type { UpdatedBuilding } from './buildingsApi';
 
 export type {
     Leader,
