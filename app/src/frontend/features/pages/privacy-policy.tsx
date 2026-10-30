@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import { ccConfig as config } from '../config/ccConfig';
+import { ccConfig as config } from '../../config/ccConfig';
 
 const PrivacyPolicyPage: React.SFC<any> = () => (
     <article>

@@ -1,9 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import { ccConfig as config } from '../config/ccConfig';
+import { ccConfig as config } from '../../config/ccConfig';
 
-import Categories from '../building/categories';
+import Categories from '../../building/categories';
 import './welcome.css';
 
 const Welcome = () => (

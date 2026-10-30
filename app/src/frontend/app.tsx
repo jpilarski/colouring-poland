@@ -11,19 +11,21 @@ import { Header } from './components';
 import { MapApp } from './map-app';
 import { Building, UserVerified } from './models/building';
 import { User } from './models/user';
-import ChangesPage from './pages/changes';
-import ContactPage from './pages/contact';
-import DataAccuracyPage from './pages/data-accuracy';
-import DataExtracts from './pages/data-extracts';
-import LeaderboardPage from './pages/leaderboard';
-import OrdnanceSurveyLicencePage from './pages/ordnance-survey-licence';
-import PrivacyPolicyPage from './pages/privacy-policy';
+import {
+    ChangesPage,
+    ContactPage,
+    DataAccuracyPage,
+    DataExtracts,
+    LeaderboardPage,
+    OrdnanceSurveyLicencePage,
+    PrivacyPolicyPage,
+    NotFound
+} from './features/pages';
 import ForgottenPassword from './user/forgotten-password';
 import { Login } from './user/login';
 import { MyAccountPage } from './user/my-account';
 import PasswordReset from './user/password-reset';
 import { SignUp } from './user/signup';
-import { NotFound } from './pages/not-found';
 
 
 interface AppProps {

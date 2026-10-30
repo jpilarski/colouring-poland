@@ -4,11 +4,11 @@ import { Link, RouteComponentProps } from 'react-router-dom';
 
 import './changes.css';
 
-import { apiGet } from '../apiHelpers';
-import { BuildingEditSummary } from '../building/edit-history/building-edit-summary';
-import ErrorBox from '../components/error-box';
-import InfoBox from '../components/info-box';
-import { EditHistoryEntry } from '../models/edit-history-entry';
+import { apiGet } from '../../apiHelpers';
+import { BuildingEditSummary } from '../../building/edit-history/building-edit-summary';
+import ErrorBox from '../../components/error-box';
+import InfoBox from '../../components/info-box';
+import { EditHistoryEntry } from '../../models/edit-history-entry';
 
 interface PagingInfo {
     id_for_older_query: string;

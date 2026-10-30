@@ -14,7 +14,7 @@ import { EditHistory } from './building/edit-history/edit-history';
 import MultiEdit from './building/multi-edit';
 import Sidebar from './building/sidebar';
 import { Building, UserVerified } from './models/building';
-import Welcome from './pages/welcome';
+import { Welcome } from './features/pages';
 import { PrivateRoute } from './route';
 import { useLastNotEmpty } from './hooks/use-last-not-empty';
 import { Category } from './config/categories-config';

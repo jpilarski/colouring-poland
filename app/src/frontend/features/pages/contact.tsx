@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { ccConfig } from '../config/ccConfig';
+import { ccConfig } from '../../config/ccConfig';
 
 const ContactPage = () => (
     <article>
