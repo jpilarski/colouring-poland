@@ -16,6 +16,7 @@ jest.mock('../../dataAccess/user', () => ({
     selectUserByEmail: jest.fn(),
     updateUserAPIKey: jest.fn(),
     selectUserIdByAPIKey: jest.fn(),
+    revokeAllUserSessions: jest.fn(),
     softDeleteUserById: jest.fn(),
     insertPasswordResetToken: jest.fn(),
     consumePasswordResetToken: jest.fn(),

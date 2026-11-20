@@ -51,15 +51,20 @@ const deleteCurrentUser = asyncController(async (req: express.Request, res: expr
     if (!req.session.user_id) {
         return res.send({ error: 'Must be logged in' });
     }
-    console.log(`Deleting user ${req.session.user_id}`);
+    const userId = req.session.user_id;
+    console.log(`Deleting user ${userId}`);
 
     try {
-        await userService.deleteUser(req.session.user_id);
-        await userService.logout(req.session);
+        const result = await userService.deleteUser(userId);
+        if (result.error) {
+            return res.status(500).send({ error: result.error });
+        }
 
+        await userService.logout(req.session);
         res.send({ success: true });
-    } catch (err) {
-        res.send({ error: err });
+    } catch (err: any) {
+        console.error('Error in deleteCurrentUser:', err?.code || 'UNKNOWN', err?.message || 'Unexpected error');
+        res.status(500).send({ error: 'Failed to delete user account.' });
     }
 });
 

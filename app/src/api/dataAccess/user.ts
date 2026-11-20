@@ -1,4 +1,4 @@
-import { errors } from 'pg-promise';
+import { errors, ITask } from 'pg-promise';
 import db from '../../db';
 
 // Static valid Blowfish hash (cost 10) used for constant-time dummy password verification
@@ -149,7 +149,7 @@ export async function recordSuccessfulLogin(userId: string): Promise<void> {
 }
 
 /**
- * Pobiera publiczny profil użytkownika na podstawie user_id
+ * Pobiera publiczny profil aktywnego (nieusuniętego) użytkownika na podstawie user_id
  */
 export async function selectUserById(id: string): Promise<UserProfileRow | undefined> {
     try {
@@ -159,7 +159,8 @@ export async function selectUserById(id: string): Promise<UserProfileRow | undef
             FROM
                 users
             WHERE
-                user_id = $1`,
+                user_id = $1
+                AND NOT is_deleted`,
             [id]
         );
     } catch (error) {
@@ -179,7 +180,8 @@ export async function selectUserByEmail(email: string): Promise<UserEmailRow | u
             FROM
                 users
             WHERE
-                email = $1`,
+                email = $1
+                AND NOT is_deleted`,
             [email]
         );
     } catch (error) {
@@ -200,6 +202,7 @@ export async function updateUserAPIKey(id: string): Promise<{ api_key?: string; 
                 api_key = gen_random_uuid()
             WHERE
                 user_id = $1
+                AND NOT is_deleted
             RETURNING
                 api_key`,
             [id]
@@ -221,7 +224,8 @@ export async function selectUserIdByAPIKey(key: string): Promise<string | undefi
             FROM
                 users
             WHERE
-                api_key = $1`,
+                api_key = $1
+                AND NOT is_deleted`,
             [key]
         );
         return user_id;
@@ -232,25 +236,65 @@ export async function selectUserIdByAPIKey(key: string): Promise<string | undefi
 }
 
 /**
- * Procedura soft-delete z natychmiastową anonimizacją danych użytkownika (email=null, pass=null, api_key=null, username=deleted_uuid)
+ * Natychmiast unieważnia wszystkie aktywne sesje użytkownika w tabeli user_sessions.
+ * Wykorzystuje indeks funkcyjny user_sessions_user_id_idx ((sess->>'user_id')).
+ */
+export async function revokeAllUserSessions(userId: string, t?: ITask<any>): Promise<number> {
+    const executor = t ?? db;
+    const result = await executor.result(
+        `DELETE FROM user_sessions
+        WHERE sess->>'user_id' = $1::text`,
+        [userId]
+    );
+    return result.rowCount;
+}
+
+/**
+ * Transakcyjna procedura soft-delete z natychmiastową anonimizacją konta:
+ * - zeruje dane osobowe, hasło, klucz API, token aktywacyjny i liczniki blokad
+ * - zachowuje spójność z więzami integralności tabeli users (bez kasowania historii edycji)
+ * - natychmiast usuwa wszystkie aktywne sesje użytkownika oraz oczekujące tokeny resetu hasła
  */
 export async function softDeleteUserById(id: string): Promise<{ success?: boolean; error?: string }> {
     try {
-        await db.none(
-            `UPDATE users
-            SET
-                email = null,
-                pass = null,
-                api_key = null,
-                username = concat('deleted_', cast(user_id as char(13))),
-                is_deleted = true,
-                deleted_on = now() at time zone 'utc'
-            WHERE user_id = $1`,
-            [id]
-        );
+        const deletedRow = await db.tx(async t => {
+            const row = await t.oneOrNone<{ user_id: string }>(
+                `UPDATE users
+                SET
+                    email = null,
+                    pass = null,
+                    api_key = null,
+                    is_active = false,
+                    activation_token = null,
+                    activation_expires_on = null,
+                    failed_login_attempts = 0,
+                    lockout_until = null,
+                    username = concat('deleted_', cast(user_id as char(13))),
+                    is_deleted = true,
+                    deleted_on = now()
+                WHERE user_id = $1::uuid
+                  AND NOT is_deleted
+                RETURNING user_id`,
+                [id]
+            );
+
+            await revokeAllUserSessions(id, t);
+            await t.none(
+                `DELETE FROM user_password_reset_tokens
+                WHERE user_id = $1::uuid`,
+                [id]
+            );
+
+            return row;
+        });
+
+        if (deletedRow == null) {
+            return { error: 'User not found or already deleted' };
+        }
+
         return { success: true };
     } catch (error) {
-        console.error('Error in softDeleteUserById:', error);
+        console.error('Error in softDeleteUserById:', error?.code || 'UNKNOWN', error?.message || 'Unexpected error');
         return { error: 'Database error' };
     }
 }

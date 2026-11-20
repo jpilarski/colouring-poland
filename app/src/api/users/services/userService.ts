@@ -16,6 +16,7 @@ import {
     selectUserByEmail,
     updateUserAPIKey,
     selectUserIdByAPIKey,
+    revokeAllUserSessions,
     softDeleteUserById,
     UserProfileRow,
     UserEmailRow
@@ -108,6 +109,10 @@ async function authAPIUser(key: string): Promise<string | undefined> {
     return selectUserIdByAPIKey(key);
 }
 
+async function revokeUserSessions(id: string): Promise<number> {
+    return revokeAllUserSessions(id);
+}
+
 async function deleteUser(id: string): Promise<{ success?: boolean; error?: string }> {
     return softDeleteUserById(id);
 }
@@ -127,6 +132,7 @@ export {
     authUser,
     getNewUserAPIKey,
     authAPIUser,
+    revokeUserSessions,
     deleteUser,
     logout
 };
