@@ -4,7 +4,9 @@ import { authUser, getNewUserAPIKey, logout } from '../users/services/userServic
 
 const login = asyncController(async (req: express.Request, res: express.Response) => {
     try {
-        const user = await authUser(req.body.username, req.body.password);
+        const username = req.body?.username;
+        const password = req.body?.password;
+        const user = await authUser(username, password);
         if (user.user_id) {
             req.session.user_id = user.user_id;
         } else {
@@ -12,7 +14,8 @@ const login = asyncController(async (req: express.Request, res: express.Response
         }
         res.send(user);
     } catch (error) {
-        res.send(error);
+        console.error('Error in login controller:', error?.code || 'UNKNOWN', error?.message || 'Unexpected error');
+        res.status(500).send({ error: 'Authentication service error.' });
     }
 });
 
@@ -43,4 +46,3 @@ export default {
     logout: logoutUser,
     generateApiKey
 };
-

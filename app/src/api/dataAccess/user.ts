@@ -1,12 +1,22 @@
 import { errors } from 'pg-promise';
 import db from '../../db';
 
+// Static valid Blowfish hash (cost 10) used for constant-time dummy password verification
+const DUMMY_BCRYPT_HASH = '$2a$10$lZQL0ZAZTGe2uT/VKO94GOTvDMPV.br1q1AnEM6FkHz6jPFIs5vd2';
+
 export interface UserAuthRow {
     user_id: string;
     auth_ok: boolean;
     is_blocked: boolean;
     blocked_on?: Date;
     blocked_reason?: string;
+    failed_login_attempts: number;
+    lockout_until: Date | null;
+}
+
+export interface FailedLoginAttemptResult {
+    failed_login_attempts: number;
+    lockout_until: Date | null;
 }
 
 export interface UserProfileRow {
@@ -23,7 +33,7 @@ export interface UserEmailRow {
 }
 
 /**
- * Rejestruje nowego użytkownika z hashowaniem hasła przez crypt(pass, gen_salt('bf'))
+ * Rejestruje nowego użytkownika z hashowaniem hasła przez crypt(pass, gen_salt('bf', 10))
  */
 export async function insertUser(
     username: string,
@@ -42,12 +52,12 @@ export async function insertUser(
                 gen_random_uuid(),
                 $1,
                 $2,
-                crypt($3, gen_salt('bf'))
+                crypt($3, gen_salt('bf', 10))
             ) RETURNING user_id`,
             [username, email, pass]
         );
     } catch (error) {
-        console.error('Error in insertUser:', error);
+        console.error('Error in insertUser:', error?.code || 'UNKNOWN', error?.message || 'Unexpected error');
         if (error?.detail?.includes('already exists')) {
             if (error.detail.includes('username')) {
                 return { error: 'Username already registered' };
@@ -60,22 +70,81 @@ export async function insertUser(
 }
 
 /**
- * Pobiera dane autoryzacyjne użytkownika (weryfikacja hasła przez crypt i status blokady)
+ * Pobiera dane autoryzacyjne aktywnego (nieusuniętego) użytkownika wraz ze stanem blokad
  */
 export async function selectUserAuthData(username: string, password: string): Promise<UserAuthRow | undefined> {
-    return await db.oneOrNone<UserAuthRow>(
+    const row = await db.oneOrNone<UserAuthRow>(
         `SELECT
             user_id,
-            (
-                pass = crypt($2, pass)
-            ) AS auth_ok,
+            COALESCE(pass = crypt($2, pass), false) AS auth_ok,
             is_blocked,
             blocked_on,
-            blocked_reason
+            blocked_reason,
+            failed_login_attempts,
+            lockout_until
         FROM users
         WHERE
-            username = $1`,
+            username = $1
+            AND NOT is_deleted`,
         [username, password]
+    );
+    return row ?? undefined;
+}
+
+/**
+ * Wykonuje fikcyjną weryfikację Blowfish w PostgreSQL w celu wyrównania czasu odpowiedzi
+ * (ochrona przed atakami czasowymi / user enumeration).
+ */
+export async function verifyDummyPassword(password: string): Promise<void> {
+    await db.one(
+        `SELECT crypt($1, $2) AS dummy_hash`,
+        [password, DUMMY_BCRYPT_HASH]
+    );
+}
+
+/**
+ * Atomowo inkrementuje licznik nieudanych prób logowania (resetując go do 1, jeśli poprzednia blokada już wygasła).
+ * Po osiągnięciu limitu maxAttempts ustawia czasową blokadę lockout_until na lockoutMinutes minut.
+ */
+export async function recordFailedLoginAttempt(
+    userId: string,
+    maxAttempts: number,
+    lockoutMinutes: number
+): Promise<FailedLoginAttemptResult> {
+    return await db.one<FailedLoginAttemptResult>(
+        `UPDATE users
+        SET
+            failed_login_attempts = CASE
+                WHEN lockout_until IS NOT NULL AND lockout_until <= now() THEN 1
+                ELSE failed_login_attempts + 1
+            END,
+            lockout_until = CASE
+                WHEN (
+                    CASE
+                        WHEN lockout_until IS NOT NULL AND lockout_until <= now() THEN 1
+                        ELSE failed_login_attempts + 1
+                    END
+                ) >= $2 THEN now() + make_interval(mins => $3)
+                ELSE NULL
+            END
+        WHERE user_id = $1::uuid
+        RETURNING failed_login_attempts, lockout_until`,
+        [userId, maxAttempts, lockoutMinutes]
+    );
+}
+
+/**
+ * Zeruje licznik nieudanych prób i tymczasową blokadę oraz zapisuje czas ostatniego logowania.
+ */
+export async function recordSuccessfulLogin(userId: string): Promise<void> {
+    await db.none(
+        `UPDATE users
+        SET
+            failed_login_attempts = 0,
+            lockout_until = NULL,
+            last_login_at = now()
+        WHERE user_id = $1::uuid`,
+        [userId]
     );
 }
 
@@ -230,17 +299,16 @@ export async function consumePasswordResetToken(token: string): Promise<string |
 }
 
 /**
- * Aktualizuje hasło użytkownika z soleniem i szyfrowaniem Blowfish
+ * Aktualizuje hasło użytkownika z soleniem i szyfrowaniem Blowfish (koszt 10)
  */
 export async function updateUserPassword(userId: string, newPassword: string): Promise<void> {
     await db.none(
         `UPDATE
             users
         SET
-            pass = crypt($1, gen_salt('bf'))
+            pass = crypt($1, gen_salt('bf', 10))
         WHERE
             user_id = $2::uuid`,
         [newPassword, userId]
     );
 }
-

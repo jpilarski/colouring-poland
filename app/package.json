@@ -27,6 +27,7 @@
         "canvas-confetti": "^1.2.0",
         "connect-pg-simple": "^6.1.0",
         "express": "^4.22.2",
+        "express-rate-limit": "^8.7.5",
         "express-session": "^1.19.0",
         "geojson": "^0.5.0",
         "leaflet": "^1.7.1",
@@ -103,6 +104,9 @@
         ],
         "collectCoverageFrom": [
             "src/**/*.{js,jsx,ts,tsx}"
+        ],
+        "setupFiles": [
+            "<rootDir>/src/setupJestNodeBuiltins.js"
         ]
     }
 }

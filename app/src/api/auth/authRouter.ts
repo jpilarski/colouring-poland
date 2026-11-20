@@ -1,4 +1,5 @@
 import express from 'express';
+// Optional IP rate limiter available in '../common/rateLimiters' (loginLimiter)
 import authController from './authController';
 
 const router = express.Router();
@@ -8,4 +9,3 @@ router.post('/logout', authController.logout);
 router.post('/api/key', authController.generateApiKey);
 
 export default router;
-
