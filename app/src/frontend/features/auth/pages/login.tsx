@@ -42,7 +42,7 @@ export const Login: React.FC = () => {
                     <input name="username" id="username"
                         className="form-control" type="text"
                         value={username} onChange={e => setUsername(e.target.value)}
-                        placeholder="please note the user name you choose will be public" required
+                        placeholder="Twój pseudonim w serwisie" required
                     />
 
                     <label htmlFor="password">Password</label>

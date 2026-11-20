@@ -2,23 +2,24 @@ import db from '../../db';
 import { EditHistoryEntry } from '../../frontend/models/edit-history-entry';
 import { DatabaseError } from '../errors';
 
+const PSEUDONYM_SQL = "concat('Użytkownik #', substring(cast(logs.user_id as text) from 1 for 8)) as username";
+
 const baseQuery = `
         SELECT
             log_id as revision_id,
             forward_patch,
             reverse_patch,
             date_trunc('minute', log_timestamp) as revision_timestamp,
-            username,
+            ${PSEUDONYM_SQL},
             lokalizacja_id_budynku
-        FROM logs
-        JOIN users ON logs.user_id = users.user_id`;
+        FROM logs`;
 
 const deletionCondition = `
     EXISTS (SELECT * from jsonb_each(forward_patch) WHERE value = 'null' )
 `;
 
 export function getHistoryAfterId(id: string, count: number, filterDeletions: boolean = false): Promise<EditHistoryEntry[]> {
-    /** 
+    /**
      * SQL with lower time bound specified (records after ID).
      * The outer SELECT is so that final results are sorted by descending ID
      * (like the other queries). The inner select is sorted in ascending order
@@ -112,13 +113,20 @@ export async function selectLatestRevisionId(): Promise<string> {
 
 /**
  * Pobiera pełną historię edycji danego budynku, posortowaną malejąco po czasie
+ * z pseudonimizacją identyfikatora użytkownika (bez ujawniania jawnego loginu)
  */
 export async function selectBuildingEditHistory(id: number): Promise<EditHistoryEntry[]> {
     try {
         return await db.manyOrNone<EditHistoryEntry>(
-            `SELECT log_id as revision_id, forward_patch, reverse_patch, date_trunc('minute', log_timestamp) as revision_timestamp, username, lokalizacja_id_budynku
-            FROM logs, users
-            WHERE lokalizacja_id_budynku = $1 AND logs.user_id = users.user_id
+            `SELECT
+                log_id as revision_id,
+                forward_patch,
+                reverse_patch,
+                date_trunc('minute', log_timestamp) as revision_timestamp,
+                ${PSEUDONYM_SQL},
+                lokalizacja_id_budynku
+            FROM logs
+            WHERE lokalizacja_id_budynku = $1
             ORDER BY log_timestamp DESC`,
             [id]
         );
