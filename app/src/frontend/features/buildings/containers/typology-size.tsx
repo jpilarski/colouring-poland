@@ -10,14 +10,14 @@ const TypologyContainer: React.FunctionComponent<CategoryViewProps> = (props) =>
             <DataEntryGroup name="Układ Urbanistyczny" collapsed={false}>
                 <VerifiedField slug="typologia_uklad_zabudowy" control="select" categoryProps={props} />
                 <VerifiedField slug="typologia_intensywnosc" control="select" categoryProps={props} />
-                <VerifiedField slug="typologia_typ_zabudowy" control="text" categoryProps={props} />
-                <VerifiedField slug="typologia_zwartosc_zabudowy" control="numeric" categoryProps={props} />
+                <VerifiedField slug="typologia_typ_zabudowy" control="select" categoryProps={props} />
+                <VerifiedField slug="typologia_zwartosc_zabudowy" control="numeric" min={0} max={99999} categoryProps={props} />
             </DataEntryGroup>
 
             <DataEntryGroup name="Wymiary i Forma" collapsed={false}>
-                <VerifiedField slug="typologia_ilosc_kondygnacji" control="numeric" min={1} step={1} categoryProps={props} />
-                <VerifiedField slug="typologia_wysokosc_maksymalna" control="numeric" min={0} step={0.1} categoryProps={props} />
-                <VerifiedField slug="typologia_powierzchnia_parteru" control="numeric" min={0} step={0.01} categoryProps={props} />
+                <VerifiedField slug="typologia_ilosc_kondygnacji" control="numeric" min={0} max={99999} step={1} categoryProps={props} />
+                <VerifiedField slug="typologia_wysokosc_maksymalna" control="numeric" min={0} max={99999} step={0.1} categoryProps={props} />
+                <VerifiedField slug="typologia_powierzchnia_parteru" control="numeric" min={0} max={99999} step={0.01} categoryProps={props} />
                 <VerifiedField slug="typologia_kat_srodkowy" control="numeric" min={0} max={90} step={0.1} categoryProps={props} />
             </DataEntryGroup>
 

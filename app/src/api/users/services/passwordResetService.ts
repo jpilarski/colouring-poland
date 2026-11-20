@@ -1,6 +1,7 @@
 import nodemailer from 'nodemailer';
 import url, { URL } from 'url';
 
+import { generatePasswordResetToken, hashTokenSha256 } from '../../common/tokens';
 import { validatePassword } from '../../common/validation';
 import { TokenVerificationError } from '../../errors';
 import { transporter } from './emailService';
@@ -8,43 +9,49 @@ import * as userService from './userService';
 import {
     insertPasswordResetToken,
     consumePasswordResetToken,
+    purgeExpiredPasswordResetTokens,
     updateUserPassword
 } from '../../dataAccess/user';
-
 import { ccConfig as config } from '../../../config';
 
-/**
- * Generate a password reset token for the specified account and send the password reset link by email
- * @param email the email address for which to generate a password reset token
- * @param siteOrigin the origin of the website, without a path element - e.g. https://beta.colouring.london
- */
 async function sendPasswordResetToken(email: string, siteOrigin: string): Promise<void> {
-    const user = await userService.getUserByEmail(email);
+    await purgeExpiredPasswordResetTokens().catch(err => {
+        console.error('Error purging expired reset tokens:', err?.code || 'UNKNOWN', err?.message || 'Unexpected error');
+    });
 
-    // if no user found for email, do nothing
+    const user = await userService.getUserByEmail(email);
     if (user == undefined) return;
 
-    const token = await insertPasswordResetToken(user.user_id);
-    const message = getPasswordResetEmail(email, token, siteOrigin);
-    await transporter.sendMail(message);
+    const rawToken = generatePasswordResetToken();
+    await insertPasswordResetToken(user.user_id, hashTokenSha256(rawToken));
+    await transporter.sendMail(getPasswordResetEmail(email, rawToken, siteOrigin));
 }
 
 async function resetPassword(passwordResetToken: string, newPassword: string): Promise<void> {
     validatePassword(newPassword);
-    const userId = await consumePasswordResetToken(passwordResetToken);
+    if (typeof passwordResetToken !== 'string' || passwordResetToken.trim().length === 0) {
+        throw new TokenVerificationError('Password reset token could not be verified');
+    }
+
+    const userId = await consumePasswordResetToken(hashTokenSha256(passwordResetToken.trim()));
     if (userId != undefined) {
         await updateUserPassword(userId, newPassword);
-        //TODO: expire other tokens of the user?
+        await purgeExpiredPasswordResetTokens().catch(err => {
+            console.error('Error purging expired reset tokens:', err?.code || 'UNKNOWN', err?.message || 'Unexpected error');
+        });
     } else {
         throw new TokenVerificationError('Password reset token could not be verified');
     }
+}
+
+async function cleanupExpiredPasswordResetTokens(retentionDays: number = 7): Promise<number> {
+    return purgeExpiredPasswordResetTokens(retentionDays);
 }
 
 function getPasswordResetEmail(email: string, token: string, siteOrigin: string): nodemailer.SendMailOptions {
     const linkUrl = new URL(siteOrigin);
     linkUrl.pathname = '/password-reset.html';
     linkUrl.search = `?token=${token}`;
-
     const linkString = url.format(linkUrl);
 
     const messageBody = `Hi there,
@@ -66,5 +73,6 @@ function getPasswordResetEmail(email: string, token: string, siteOrigin: string)
 export {
     sendPasswordResetToken,
     resetPassword,
+    cleanupExpiredPasswordResetTokens,
     TokenVerificationError
 };

@@ -13,7 +13,7 @@ const UsageContainer: React.FunctionComponent<CategoryViewProps> = (props) => {
 
             <DataEntryGroup name="Funkcje" collapsed={false}>
                 <VerifiedField slug="uzytkowanie_funkcja_ogolna" control="select" categoryProps={props} />
-                <VerifiedField slug="uzytkowanie_funkcja_szczegolowa" control="numeric" categoryProps={props} />
+                <VerifiedField slug="uzytkowanie_funkcja_szczegolowa" control="numeric" min={0} max={99999} step={1} categoryProps={props} />
             </DataEntryGroup>
         </>
     );

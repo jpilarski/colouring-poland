@@ -186,7 +186,25 @@ export const dataFields = { /* eslint-disable @typescript-eslint/camelcase */
     typologia_typ_zabudowy: {
         category: Category.TypologySize,
         title: "Typ zabudowy",
-        example: ""
+        example: "",
+        items: [
+            "Wolnostojąca",
+            "Bliźniacza",
+            "Szeregowa",
+            "Gniazdowa",
+            "Atrialna",
+            "Łanowa",
+            "Zagrodowa",
+            "Pierzejowa",
+            "Pasmowa",
+            "Grzebieniowa",
+            "Punktowa",
+            "Wstęgowa",
+            "Klastrowa",
+            "Obrzeżna",
+            "Komercyjno-usługowa",
+            "Inny"
+        ]
     },
     typologia_kat_srodkowy: {
         category: Category.TypologySize,

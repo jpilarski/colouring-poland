@@ -11,6 +11,7 @@ export const MyAccountPage: React.FC = () => {
     const { isLoading, user, userError, logout, generateApiKey, deleteAccount } = useAuth();
 
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [generatedApiKey, setGeneratedApiKey] = useState<string | undefined>(undefined);
     const [error, setError] = useState(undefined);
 
     const handleLogout = useCallback((e) => {
@@ -21,7 +22,10 @@ export const MyAccountPage: React.FC = () => {
     const handleGenerateKey = useCallback(async (e) => {
         e.preventDefault();
         setError(undefined);
-        generateApiKey(setError);
+        const newKey = await generateApiKey(setError);
+        if (newKey) {
+            setGeneratedApiKey(newKey);
+        }
     }, [generateApiKey]);
 
     const handleDeleteAccount = useCallback(() => {
@@ -80,9 +84,29 @@ export const MyAccountPage: React.FC = () => {
                     <h2 className="h2">Technical details</h2>
                     <p>Are you a software developer? If so, you might be interested in these.</p>
                     <h3 className="h3">API key</h3>
-                    <p>{user.api_key || '-'}</p>
+                    {generatedApiKey ? (
+                        <div className="alert alert-warning" role="alert">
+                            <strong>Skopiuj klucz API teraz – jest wyświetlany tylko jeden raz:</strong>
+                            <div className="mt-2">
+                                <code style={{ wordBreak: 'break-all' }}>{generatedApiKey}</code>
+                            </div>
+                            <small className="d-block mt-2">
+                                Ze względów bezpieczeństwa w bazie przechowywany jest wyłącznie skrót kryptograficzny (SHA-256). Po opuszczeniu lub odświeżeniu strony klucz nie będzie już widoczny.
+                            </small>
+                        </div>
+                    ) : (
+                        <p>
+                            {user.has_api_key
+                                ? 'Klucz API jest aktywny (ukryty ze względów bezpieczeństwa). Wygenerowanie nowego klucza unieważni poprzedni.'
+                                : '-'}
+                        </p>
+                    )}
                     <form onSubmit={handleGenerateKey} className="form-group mb-3">
-                        <input className="btn btn-secondary" type="submit" value="Generate API key" />
+                        <input
+                            className="btn btn-secondary"
+                            type="submit"
+                            value={user.has_api_key || generatedApiKey ? 'Regenerate API key' : 'Generate API key'}
+                        />
                     </form>
 
                     <h3 className="h3">Open Source Code</h3>

@@ -49,35 +49,35 @@ export interface DataFieldConfig {
 
 export const buildingAttributesConfig = valueType<DataFieldConfig>()({ /* eslint-disable @typescript-eslint/camelcase */
     lokalizacja_id_gml: {
-        edit: true,
+        edit: false,
         verify: true
     },
     lokalizacja_lat: {
-        edit: true,
+        edit: false,
         verify: true
     },
     lokalizacja_lon: {
-        edit: true,
+        edit: false,
         verify: true
     },
     lokalizacja_crs: {
-        edit: true,
+        edit: false,
         verify: true
     },
     lokalizacja_wysokosc_npm: {
-        edit: true,
+        edit: false,
         verify: true
     },
     lokalizacja_ulica: {
-        edit: true,
+        edit: false,
         verify: true
     },
     lokalizacja_numer: {
-        edit: true,
+        edit: false,
         verify: true
     },
     lokalizacja_kod_pocztowy: {
-        edit: true,
+        edit: false,
         verify: true
     },
     uzytkowanie_status: {

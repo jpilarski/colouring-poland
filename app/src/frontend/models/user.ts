@@ -2,7 +2,7 @@ interface User {
     username?: string;
     email?: string;
     registered?: Date;
-    api_key?: string;
+    has_api_key?: boolean;
     error?: string;
     // TODO: add other fields as needed
 }

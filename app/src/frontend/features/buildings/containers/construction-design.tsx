@@ -54,7 +54,7 @@ const ConstructionContainer: React.FunctionComponent<CategoryViewProps> = (props
                     control="numeric"
                     min={0}
                     max={90}
-                    step={0.1}
+                    step={1}
                 />
                 <VerifiedField
                     slug="konstrukcja_detal_forma_kolor_dachu_rgb"

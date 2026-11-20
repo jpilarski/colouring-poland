@@ -14,7 +14,7 @@ interface AuthContextState {
     login: (data: UserLoginData, cb?: (err) => void) => void;
     logout: (cb?: (err) => void) => void;
     signup: (data: UserSignupData, cb?: (err) => void) => void;
-    generateApiKey: (cb?: (err) => void) => void;
+    generateApiKey: (cb?: (err) => void) => Promise<string | undefined>;
     deleteAccount: (cb?: (err) => void) => void;
 }
 
@@ -136,16 +136,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
         setIsLoading(false);
     }
 
-    const generateApiKey = useCallback(async (cb: (err) => void = noop) => {
+    const generateApiKey = useCallback(async (cb: (err) => void = noop): Promise<string | undefined> => {
         try {
             const res = await authApi.generateApiKey();
             if (res.error) {
                 cb(res.error);
+                return undefined;
             } else {
                 updateUserData();
+                return res.api_key;
             }
         } catch (err: any) {
             cb(err?.data?.error || 'Error getting API key.');
+            return undefined;
         }
     }, []);
 

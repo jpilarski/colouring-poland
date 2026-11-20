@@ -25,6 +25,7 @@ const AdaptabilityContainer: React.FunctionComponent<CategoryViewProps> = (props
                     slug="zrownowazona_adaptacyjnosc_komunikacja_publiczna_odleglosc"
                     control="numeric"
                     min={0}
+                    max={99999}
                     step={1}
                     categoryProps={props}
                 />
