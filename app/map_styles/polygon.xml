@@ -37,23 +37,6 @@
             <LineSymbolizer stroke="#0081AF" stroke-width="4.0" />
         </Rule>
     </Style>
-    <Style name="base_boroughs">
-        <Rule>
-            <TextSymbolizer face-name="DejaVu Sans Condensed Bold" fill="#eee" size="24" halo-radius="2" halo-fill="#333" wrap-width="40" clip="false" margin="20">[name]</TextSymbolizer>
-            <MinScaleDenominator>10000</MinScaleDenominator>
-            <MaxScaleDenominator>20000</MaxScaleDenominator>
-        </Rule>
-        <Rule>
-            <TextSymbolizer face-name="DejaVu Sans Condensed Bold" fill="#eee" size="21" halo-radius="2" halo-fill="#333" wrap-width="35" clip="false" margin="20">[name]</TextSymbolizer>
-            <MinScaleDenominator>20000</MinScaleDenominator>
-            <MaxScaleDenominator>80000</MaxScaleDenominator>
-        </Rule>
-        <Rule>
-            <TextSymbolizer face-name="DejaVu Sans Condensed Bold" fill="#eee" size="15" halo-radius="2" halo-fill="#333" wrap-width="35" clip="false" margin="20">[name]</TextSymbolizer>
-            <MinScaleDenominator>80000</MinScaleDenominator>
-            <MaxScaleDenominator>400000</MaxScaleDenominator>
-        </Rule>
-    </Style>
     <Style name="number_labels">
         <Rule>
             <TextSymbolizer face-name="DejaVu Sans Condensed Bold" fill="#eee" size="21" halo-radius="1" halo-fill="#333">[lokalizacja_numer]</TextSymbolizer>

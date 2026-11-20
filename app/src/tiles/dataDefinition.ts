@@ -49,12 +49,6 @@ const LAYER_QUERIES: Record<string, string> = {
             lokalizacja_id_geometrii
         FROM
             buildings`,
-    base_boroughs: `
-        SELECT
-            lokalizacja_id_geometrii,
-            name
-        FROM
-            external_data_borough_boundary`,
     number_labels: `
         SELECT
             lokalizacja_id_geometrii,
@@ -151,27 +145,6 @@ function getDataConfig(tileset: string): DataConfig {
     const table = LAYER_QUERIES[tileset];
     if (table == undefined) {
         throw new Error('Invalid tileset requested');
-    }
-
-    if (tileset == 'base_boroughs') {
-        const query = `(
-            SELECT
-            d.*,
-            g.geometry_geom
-        FROM (
-            ${table}
-        ) AS d
-        JOIN
-            geometries AS g
-        ON d.lokalizacja_id_geometrii = g.lokalizacja_id_geometrii
-        JOIN
-            external_data_borough_boundary AS b
-        ON d.lokalizacja_id_geometrii = b.lokalizacja_id_geometrii
-    ) AS data`;
-        return {
-            geometry_field: GEOMETRY_FIELD,
-            table: query
-        };
     }
 
     const query = `(

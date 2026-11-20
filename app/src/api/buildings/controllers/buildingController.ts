@@ -3,7 +3,6 @@
  * Konsoliduje wyspecjalizowane kontrolery dziedzinowe dla zachowania 100% zgodności wstecznej.
  */
 import buildingCoreController from './buildingCoreController';
-import buildingExternalController from './buildingExternalController';
 import buildingSpatialController from './buildingSpatialController';
 import buildingVerifyController from './buildingVerifyController';
 
@@ -16,8 +15,7 @@ export const {
 } = buildingCoreController;
 
 export const {
-    getBuildingsByLocation,
-    getBuildingsByReference
+    getBuildingsByLocation
 } = buildingSpatialController;
 
 export const {
@@ -25,14 +23,8 @@ export const {
     verifyBuildingAttributes
 } = buildingVerifyController;
 
-export const {
-    getBuildingUPRNsById,
-    getBuildingPlanningDataById
-} = buildingExternalController;
-
 export default {
     ...buildingCoreController,
     ...buildingSpatialController,
-    ...buildingVerifyController,
-    ...buildingExternalController
+    ...buildingVerifyController
 };

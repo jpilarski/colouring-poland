@@ -55,6 +55,4 @@ export async function getBuildingUserAttributesById(buildingId: number, userId: 
 export * from './edit';
 export * from './history';
 export * from './query';
-export * from './uprn';
-export * from './planningData';
 export * from './verify';

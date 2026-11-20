@@ -15,20 +15,7 @@ const getBuildingsByLocation = asyncController(async (req: express.Request, res:
     }
 });
 
-// GET buildings by reference (UPRN/TOID or other identifier)
-const getBuildingsByReference = asyncController(async (req: express.Request, res: express.Response) => {
-    const { key, id } = req.query;
-    try {
-        const result = await buildingService.queryBuildingsByReference(String(key), String(id));
-        res.send(result);
-    } catch (error) {
-        console.error(error);
-        res.send({ error: 'Database error' });
-    }
-});
-
 export default {
-    getBuildingsByLocation,
-    getBuildingsByReference
+    getBuildingsByLocation
 };
 

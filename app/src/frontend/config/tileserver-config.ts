@@ -28,6 +28,6 @@ export type BuildingMapTileset =
     'kdf_nachylenie_dachu' |
     'lokalizacja_kompletnosc';
 
-export type SpecialMapTileset = 'base_light' | 'base_night' | 'base_night_outlines' | 'highlight' | 'number_labels' | 'base_boroughs';
+export type SpecialMapTileset = 'base_light' | 'base_night' | 'base_night_outlines' | 'highlight' | 'number_labels';
 
 export type MapTileset = BuildingMapTileset | SpecialMapTileset;

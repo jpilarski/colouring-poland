@@ -239,71 +239,6 @@ export async function getBuildingUserData(
 }
 
 
-export interface BuildingUPRNRow {
-    uprn: string;
-    parent_uprn: string;
-}
-
-export async function selectBuildingUPRNsById(id: number): Promise<BuildingUPRNRow[]> {
-    try {
-        return await db.any<BuildingUPRNRow>(
-            'SELECT uprn, parent_uprn FROM building_properties WHERE lokalizacja_id_budynku = $1',
-            [id]
-        );
-    } catch (error) {
-        console.error('Error in selectBuildingUPRNsById:', error);
-        return undefined;
-    }
-}
-
-export interface BuildingPlanningDataRow {
-    uprn: string;
-    lokalizacja_id_budynku: number;
-    description: string;
-    status: string;
-    status_before_aliasing: string;
-    status_explanation_note: string;
-    planning_application_id: string;
-    planning_application_link: string;
-    registered_with_local_authority_date: string;
-    decision_date: string;
-    last_synced_date: string;
-    data_source: string;
-    data_source_link: string;
-    address: string;
-}
-
-export async function selectBuildingPlanningDataById(id: number): Promise<BuildingPlanningDataRow[]> {
-    try {
-        return await db.any<BuildingPlanningDataRow>(
-            `SELECT 
-                building_properties.uprn, 
-                building_properties.lokalizacja_id_budynku, 
-                planning_data.description, 
-                planning_data.status, 
-                planning_data.status_before_aliasing, 
-                planning_data.status_explanation_note, 
-                planning_data.uprn, 
-                planning_data.planning_application_id, 
-                planning_application_link, 
-                to_char(planning_data.registered_with_local_authority_date, 'YYYY-MM-DD') AS registered_with_local_authority_date, 
-                to_char(planning_data.decision_date, 'YYYY-MM-DD') AS decision_date, 
-                to_char(planning_data.last_synced_date, 'YYYY-MM-DD') AS last_synced_date, 
-                planning_data.data_source, 
-                planning_data.data_source_link, 
-                planning_data.address
-            FROM building_properties
-            INNER JOIN planning_data ON building_properties.uprn = planning_data.uprn 
-            WHERE lokalizacja_id_budynku = $1`,
-            [id]
-        );
-    } catch (error) {
-        console.error('Error in selectBuildingPlanningDataById:', error);
-        return undefined;
-    }
-}
-
-
 /**
  * Wyszukuje budynki przecinające się z zadanym punktem współrzędnych (WGS84 -> EPSG:3857)
  */
@@ -326,28 +261,6 @@ export async function selectBuildingsAtPoint(lng: number, lat: number): Promise<
         );
     } catch (error) {
         console.error('Error in selectBuildingsAtPoint:', error);
-        return undefined;
-    }
-}
-
-/**
- * Wyszukuje budynek na podstawie identyfikatora UPRN
- */
-export async function selectBuildingsByUprn(uprn: string): Promise<BaseBuilding[]> {
-    try {
-        return await db.manyOrNone<BaseBuilding>(
-            `SELECT
-                b.*
-            FROM
-                buildings as b, building_properties as p
-            WHERE
-                b.lokalizacja_id_budynku = p.lokalizacja_id_budynku
-            AND
-                p.uprn = $1`,
-            [uprn]
-        );
-    } catch (err) {
-        console.error('Error in selectBuildingsByUprn:', err);
         return undefined;
     }
 }
