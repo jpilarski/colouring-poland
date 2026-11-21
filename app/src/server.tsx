@@ -9,6 +9,10 @@ import express from 'express';
 import session from 'express-session';
 
 import apiServer from './api/api';
+import {
+    createSessionOptions,
+    SESSION_PRUNE_INTERVAL_SECONDS
+} from './api/common/sessionConfig';
 import db from './db';
 import frontendRoute from './frontendRoute';
 import tileserver from './tiles/tileserver';
@@ -27,24 +31,18 @@ if (publicDir == undefined) {
 server.use(express.static(publicDir));
 
 // handle user sessions
-const pgSession = pgConnect(session);
-const sess: any = { // TODO: remove any
-    name: 'cl.session',
-    store: new pgSession({
-        pgPromise: db,
-        tableName: 'user_sessions'
-    }),
-    secret: process.env.APP_COOKIE_SECRET,
-    saveUninitialized: false,
-    resave: false,
-    cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 } // 30 days
-};
-if (server.get('env') === 'production') {
+const isProduction = server.get('env') === 'production';
+if (isProduction) {
     // trust first proxy
     server.set('trust proxy', 1);
-    // serve secure cookies
-    sess.cookie.secure = true;
 }
+const pgSession = pgConnect(session);
+const sessionStore = new pgSession({
+    pgPromise: db,
+    tableName: 'user_sessions',
+    pruneSessionInterval: SESSION_PRUNE_INTERVAL_SECONDS
+});
+const sess: session.SessionOptions = createSessionOptions(sessionStore, isProduction);
 server.use(session(sess));
 
 server.use('/tiles', tileserver);
