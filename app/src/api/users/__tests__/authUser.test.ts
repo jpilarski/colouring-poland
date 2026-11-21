@@ -2,12 +2,15 @@ import {
     authUser,
     MAX_FAILED_LOGIN_ATTEMPTS,
     ACCOUNT_LOCKOUT_MINUTES,
-    INVALID_CREDENTIALS_ERROR
+    INVALID_CREDENTIALS_ERROR,
+    ACCOUNT_NOT_ACTIVATED_ERROR
 } from '../services/userService';
 import * as userDataAccess from '../../dataAccess/user';
 
 jest.mock('../../dataAccess/user', () => ({
     insertUser: jest.fn(),
+    activateUserByToken: jest.fn(),
+    deleteUnactivatedUserById: jest.fn(),
     selectUserAuthData: jest.fn(),
     verifyDummyPassword: jest.fn(),
     recordFailedLoginAttempt: jest.fn(),
@@ -63,6 +66,7 @@ describe('User Authentication & Brute-Force Protection (authUser)', () => {
         mockedUserDA.selectUserAuthData.mockResolvedValue({
             user_id: '00000000-0000-4000-8000-000000000001',
             auth_ok: false,
+            is_active: true,
             is_blocked: false,
             failed_login_attempts: 2,
             lockout_until: null
@@ -88,6 +92,7 @@ describe('User Authentication & Brute-Force Protection (authUser)', () => {
         mockedUserDA.selectUserAuthData.mockResolvedValue({
             user_id: '00000000-0000-4000-8000-000000000001',
             auth_ok: false,
+            is_active: true,
             is_blocked: false,
             failed_login_attempts: 4,
             lockout_until: null
@@ -114,6 +119,7 @@ describe('User Authentication & Brute-Force Protection (authUser)', () => {
         mockedUserDA.selectUserAuthData.mockResolvedValue({
             user_id: '00000000-0000-4000-8000-000000000001',
             auth_ok: true,
+            is_active: true,
             is_blocked: false,
             failed_login_attempts: 5,
             lockout_until: activeLockout
@@ -132,6 +138,7 @@ describe('User Authentication & Brute-Force Protection (authUser)', () => {
         mockedUserDA.selectUserAuthData.mockResolvedValue({
             user_id: '00000000-0000-4000-8000-000000000001',
             auth_ok: true,
+            is_active: true,
             is_blocked: false,
             failed_login_attempts: 5,
             lockout_until: expiredLockout
@@ -144,10 +151,46 @@ describe('User Authentication & Brute-Force Protection (authUser)', () => {
         expect(result).toEqual({ user_id: '00000000-0000-4000-8000-000000000001' });
     });
 
+    it('blocks login for unactivated account only after password verification succeeds', async () => {
+        mockedUserDA.selectUserAuthData.mockResolvedValue({
+            user_id: '00000000-0000-4000-8000-000000000003',
+            auth_ok: true,
+            is_active: false,
+            is_blocked: false,
+            failed_login_attempts: 0,
+            lockout_until: null
+        });
+
+        const result = await authUser('test_user', 'ExamplePass2026!');
+
+        expect(result).toEqual({ error: ACCOUNT_NOT_ACTIVATED_ERROR });
+        expect(mockedUserDA.recordSuccessfulLogin).not.toHaveBeenCalled();
+    });
+
+    it('returns uniform credentials error when unactivated account receives wrong password', async () => {
+        mockedUserDA.selectUserAuthData.mockResolvedValue({
+            user_id: '00000000-0000-4000-8000-000000000003',
+            auth_ok: false,
+            is_active: false,
+            is_blocked: false,
+            failed_login_attempts: 0,
+            lockout_until: null
+        });
+        mockedUserDA.recordFailedLoginAttempt.mockResolvedValue({
+            failed_login_attempts: 1,
+            lockout_until: null
+        });
+
+        const result = await authUser('test_user', 'WrongPass123!');
+
+        expect(result).toEqual({ error: INVALID_CREDENTIALS_ERROR });
+    });
+
     it('blocks administratively blocked account after valid password without resetting attempts', async () => {
         mockedUserDA.selectUserAuthData.mockResolvedValue({
             user_id: '00000000-0000-4000-8000-000000000001',
             auth_ok: true,
+            is_active: true,
             is_blocked: true,
             blocked_reason: 'Policy violation',
             failed_login_attempts: 0,
@@ -165,6 +208,7 @@ describe('User Authentication & Brute-Force Protection (authUser)', () => {
         mockedUserDA.selectUserAuthData.mockResolvedValue({
             user_id: '00000000-0000-4000-8000-000000000002',
             auth_ok: true,
+            is_active: true,
             is_blocked: false,
             failed_login_attempts: 2,
             lockout_until: null

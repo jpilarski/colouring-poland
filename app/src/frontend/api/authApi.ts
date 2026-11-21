@@ -18,6 +18,8 @@ export type UserSignupData = UserSignupPayload;
 
 export interface AuthApiResponse {
     success?: boolean;
+    requires_activation?: boolean;
+    message?: string;
     error?: string;
     [key: string]: any;
 }

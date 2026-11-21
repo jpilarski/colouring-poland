@@ -13,7 +13,11 @@ interface AuthContextState {
     userError: string;
     login: (data: UserLoginData, cb?: (err) => void) => void;
     logout: (cb?: (err) => void) => void;
-    signup: (data: UserSignupData, cb?: (err) => void) => void;
+    signup: (
+        data: UserSignupData,
+        cb?: (err) => void,
+        onPendingActivation?: (msg: string) => void
+    ) => void;
     generateApiKey: (cb?: (err) => void) => Promise<string | undefined>;
     deleteAccount: (cb?: (err) => void) => void;
 }
@@ -95,7 +99,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
 
     }, [isAuthenticated]);
 
-    const signup = useCallback(async (data: UserSignupData, cb: (err) => void = noop) => {
+    const signup = useCallback(async (
+        data: UserSignupData,
+        cb: (err) => void = noop,
+        onPendingActivation: (msg: string) => void = noop
+    ) => {
         if (isAuthenticated) {
             return;
         }
@@ -108,6 +116,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
             if (res.error) {
                 setIsLoading(false);
                 cb(res.error);
+            } else if (res.requires_activation) {
+                setIsLoading(false);
+                onPendingActivation(
+                    res.message ||
+                    'Konto zostało utworzone. Wysłaliśmy link aktywacyjny na podany adres e-mail.'
+                );
             } else {
                 setIsAuthenticated(true);
             }

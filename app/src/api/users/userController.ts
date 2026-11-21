@@ -1,6 +1,7 @@
 import express from 'express';
 
 import asyncController from '../common/asyncController';
+import { normalizeEmail } from '../common/validation';
 import { TokenVerificationError, ValidationError } from '../errors';
 import * as passwordResetService from './services/passwordResetService';
 import * as userService from './services/userService';
@@ -8,30 +9,66 @@ import * as userService from './services/userService';
 const createUser = asyncController(async (req: express.Request, res: express.Response) => {
     const user = req.body;
     if (req.session.user_id) {
-        return res.send({ error: 'Already signed in' });
+        return res.status(400).send({ error: 'Already signed in' });
     }
 
-    if (user.email) {
-        if (user.email != user.confirm_email) {
-            return res.send({ error: 'Email did not match confirmation.' });
-        }
-    } else {
-        user.email = null;
+    if (typeof user?.email !== 'string' || user.email.trim().length === 0) {
+        return res.status(400).send({ error: 'Adres e-mail jest wymagany.' });
+    }
+
+    if (
+        typeof user?.confirm_email !== 'string' ||
+        normalizeEmail(user.email) !== normalizeEmail(user.confirm_email)
+    ) {
+        return res.status(400).send({ error: 'Podane adresy e-mail nie są identyczne.' });
     }
 
     try {
-        const result = await userService.createUser(user);
+        const origin = getWebAppOrigin();
+        const result = await userService.createUser(user, origin);
+        if (result.error) {
+            req.session.user_id = undefined;
+            return res.status(400).send({ error: result.error });
+        }
+        if (result.requires_activation) {
+            req.session.user_id = undefined;
+            return res.status(201).send({
+                success: true,
+                requires_activation: true,
+                message: result.message
+            });
+        }
         if (result.user_id) {
             req.session.user_id = result.user_id;
-            res.send({ user_id: result.user_id });
-        } else {
-            req.session.user_id = undefined;
-            res.send({ error: result.error });
+            return res.status(201).send({ user_id: result.user_id });
         }
-    } catch (err) {
-        console.error(err);
-        res.send(err);
+        req.session.user_id = undefined;
+        return res.status(400).send({ error: 'Failed to create user account.' });
+    } catch (err: any) {
+        if (err && typeof err === 'object' && typeof err.error === 'string') {
+            return res.status(400).send({ error: err.error });
+        }
+        console.error('Error in createUser:', err?.code || 'UNKNOWN', err?.message || 'Unexpected error');
+        return res.status(500).send({ error: 'Failed to create user account.' });
     }
+});
+
+const activateUser = asyncController(async (req: express.Request, res: express.Response) => {
+    const rawToken = typeof req.query.token === 'string' ? req.query.token : '';
+    const result = await userService.activateUser(rawToken);
+    const wantsJson = req.query.format === 'json' || req.accepts(['html', 'json']) === 'json';
+
+    if (result.success) {
+        if (wantsJson) {
+            return res.status(200).send({ success: true });
+        }
+        return res.redirect('/login.html?activated=1');
+    }
+
+    if (wantsJson) {
+        return res.status(400).send({ error: result.error });
+    }
+    return res.redirect('/login.html?activation_error=1');
 });
 
 const getCurrentUser = asyncController(async (req: express.Request, res: express.Response) => {
@@ -111,6 +148,7 @@ function getWebAppOrigin(): string {
 
 export default {
     createUser,
+    activateUser,
     getCurrentUser,
     deleteCurrentUser,
     resetPassword

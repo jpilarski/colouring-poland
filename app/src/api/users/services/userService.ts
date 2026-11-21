@@ -1,7 +1,11 @@
+import nodemailer from 'nodemailer';
+import url, { URL } from 'url';
 import { promisify } from 'util';
 import { Session, SessionData } from 'express-session';
 import {
     insertUser,
+    activateUserByToken,
+    deleteUnactivatedUserById,
     selectUserAuthData,
     verifyDummyPassword,
     recordFailedLoginAttempt,
@@ -15,22 +19,115 @@ import {
     UserProfileRow,
     UserEmailRow
 } from '../../dataAccess/user';
-import { generateApiKey, hashTokenSha256 } from '../../common/tokens';
-import { validatePassword, validateUsername, ValidationError } from '../../common/validation';
+import { generateActivationToken, generateApiKey, hashTokenSha256 } from '../../common/tokens';
+import { validateEmail, validatePassword, validateUsername, ValidationError } from '../../common/validation';
+import { ccConfig as config } from '../../../config';
+import { transporter } from './emailService';
 
 const MAX_FAILED_LOGIN_ATTEMPTS = 5;
 const ACCOUNT_LOCKOUT_MINUTES = 15;
+const ACTIVATION_TOKEN_EXPIRY_HOURS = 48;
 const INVALID_CREDENTIALS_ERROR = 'Niepoprawny login lub hasło.';
+const ACCOUNT_NOT_ACTIVATED_ERROR = 'Konto nie zostało jeszcze aktywowane. Sprawdź swoją skrzynkę e-mail.';
+const INVALID_ACTIVATION_TOKEN_ERROR = 'Link aktywacyjny jest nieprawidłowy lub wygasł.';
+const ACTIVATION_EMAIL_SENT_MESSAGE =
+    'Konto zostało utworzone. Wysłaliśmy link aktywacyjny na podany adres e-mail (ważny 48 godzin).';
 
-async function createUser(user: any): Promise<{ user_id?: string; error?: string }> {
+export interface CreateUserResult {
+    user_id?: string;
+    requires_activation?: boolean;
+    message?: string;
+    error?: string;
+}
+
+function getActivationEmail(email: string, rawToken: string, siteOrigin: string): nodemailer.SendMailOptions {
+    const linkUrl = new URL(siteOrigin);
+    linkUrl.pathname = '/api/users/activate';
+    linkUrl.search = `?token=${encodeURIComponent(rawToken)}`;
+    const linkString = url.format(linkUrl);
+
+    const fromAddress = process.env.MAIL_FROM?.trim();
+    if (!fromAddress || fromAddress === 'tbd') {
+        throw new Error('MAIL_FROM is not configured');
+    }
+
+    const messageBody = `Witaj,
+
+Dziękujemy za rejestrację w platformie Colouring ${config.cityName}.
+Aby aktywować swoje konto, kliknij poniższy link w ciągu 48 godzin:
+
+${linkString}
+
+Jeśli to nie Ty zakładałeś/aś to konto, zignoruj tę wiadomość.
+`;
+
+    return {
+        text: messageBody,
+        subject: `Aktywacja konta – Colouring ${config.cityName}`,
+        to: email,
+        from: fromAddress
+    };
+}
+
+async function createUser(user: any, siteOrigin: string): Promise<CreateUserResult> {
+    let normalizedEmail: string;
     try {
         validateUsername(user.username);
+        normalizedEmail = validateEmail(user.email);
         validatePassword(user.password);
     } catch (err) {
         if (err instanceof ValidationError) throw { error: err.message };
         throw err;
     }
-    return await insertUser(user.username, user.email, user.password);
+
+    const rawActivationToken = generateActivationToken();
+    const activationTokenHash = hashTokenSha256(rawActivationToken);
+
+    const inserted = await insertUser(
+        user.username,
+        normalizedEmail,
+        user.password,
+        activationTokenHash,
+        ACTIVATION_TOKEN_EXPIRY_HOURS
+    );
+
+    if (inserted.error || !inserted.user_id) {
+        return { error: inserted.error || 'Database error' };
+    }
+
+    try {
+        await transporter.sendMail(getActivationEmail(normalizedEmail, rawActivationToken, siteOrigin));
+    } catch (err: any) {
+        console.error('Error sending activation email:', err?.code || 'UNKNOWN', err?.message || 'Unexpected error');
+        await deleteUnactivatedUserById(inserted.user_id).catch(cleanupErr => {
+            console.error(
+                'Error rolling back unactivated user:',
+                cleanupErr?.code || 'UNKNOWN',
+                cleanupErr?.message || 'Unexpected error'
+            );
+        });
+        return { error: 'Nie udało się wysłać wiadomości aktywacyjnej. Spróbuj ponownie później.' };
+    }
+
+    return {
+        user_id: inserted.user_id,
+        requires_activation: true,
+        message: ACTIVATION_EMAIL_SENT_MESSAGE
+    };
+}
+
+async function activateUser(rawToken: string): Promise<{ success?: boolean; user_id?: string; error?: string }> {
+    if (typeof rawToken !== 'string' || rawToken.trim().length === 0) {
+        return { error: INVALID_ACTIVATION_TOKEN_ERROR };
+    }
+
+    const tokenHash = hashTokenSha256(rawToken.trim());
+    const userId = await activateUserByToken(tokenHash);
+    if (!userId) {
+        return { error: INVALID_ACTIVATION_TOKEN_ERROR };
+    }
+
+    return { success: true, user_id: userId };
 }
 
 async function authUser(username: string, password: string): Promise<{ user_id?: string; error?: string }> {
@@ -61,6 +158,9 @@ async function authUser(username: string, password: string): Promise<{ user_id?:
             };
         }
         return { error: INVALID_CREDENTIALS_ERROR };
+    }
+    if (!user.is_active) {
+        return { error: ACCOUNT_NOT_ACTIVATED_ERROR };
     }
     if (user.is_blocked) {
         return { error: `Account temporarily blocked.${user.blocked_reason == undefined ? '' : ' Reason: ' + user.blocked_reason}` };
@@ -106,10 +206,15 @@ function logout(session: Session & Partial<SessionData>): Promise<void> {
 export {
     MAX_FAILED_LOGIN_ATTEMPTS,
     ACCOUNT_LOCKOUT_MINUTES,
+    ACTIVATION_TOKEN_EXPIRY_HOURS,
     INVALID_CREDENTIALS_ERROR,
+    ACCOUNT_NOT_ACTIVATED_ERROR,
+    INVALID_ACTIVATION_TOKEN_ERROR,
+    ACTIVATION_EMAIL_SENT_MESSAGE,
     getUserById,
     getUserByEmail,
     createUser,
+    activateUser,
     authUser,
     getNewUserAPIKey,
     authAPIUser,

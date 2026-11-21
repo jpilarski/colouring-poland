@@ -11,6 +11,8 @@ import {
 
 jest.mock('../../dataAccess/user', () => ({
     insertUser: jest.fn(),
+    activateUserByToken: jest.fn(),
+    deleteUnactivatedUserById: jest.fn(),
     selectUserAuthData: jest.fn(),
     verifyDummyPassword: jest.fn(),
     recordFailedLoginAttempt: jest.fn(),

@@ -6,6 +6,7 @@ import userController from './userController';
 const router = express.Router();
 
 router.post('/', userController.createUser);
+router.get('/activate', userController.activateUser);
 
 router.route('/me')
     .get(userController.getCurrentUser)

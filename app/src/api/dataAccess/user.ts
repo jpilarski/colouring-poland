@@ -7,6 +7,7 @@ const DUMMY_BCRYPT_HASH = '$2a$10$lZQL0ZAZTGe2uT/VKO94GOTvDMPV.br1q1AnEM6FkHz6jP
 export interface UserAuthRow {
     user_id: string;
     auth_ok: boolean;
+    is_active: boolean;
     is_blocked: boolean;
     blocked_on?: Date;
     blocked_reason?: string;
@@ -34,24 +35,79 @@ export interface UserEmailRow {
 
 export async function insertUser(
     username: string,
-    email: string | null,
-    pass: string
+    email: string,
+    pass: string,
+    activationTokenHash: string,
+    activationExpiresInHours: number = 48
 ): Promise<{ user_id?: string; error?: string }> {
     try {
         return await db.one<{ user_id: string }>(
-            `INSERT INTO users (user_id, username, email, pass)
-            VALUES (gen_random_uuid(), $1, $2, crypt($3, gen_salt('bf', 10)))
+            `INSERT INTO users (
+                user_id,
+                username,
+                email,
+                pass,
+                is_active,
+                activation_token,
+                activation_expires_on
+            )
+            VALUES (
+                gen_random_uuid(),
+                $1,
+                lower(trim($2)),
+                crypt($3, gen_salt('bf', 10)),
+                false,
+                $4,
+                now() + make_interval(hours => $5)
+            )
             RETURNING user_id`,
-            [username, email, pass]
+            [username, email, pass, activationTokenHash, activationExpiresInHours]
         );
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error in insertUser:', error?.code || 'UNKNOWN', error?.message || 'Unexpected error');
-        if (error?.detail?.includes('already exists')) {
-            if (error.detail.includes('username')) return { error: 'Username already registered' };
-            if (error.detail.includes('email')) return { error: 'Email already registered' };
+        const isUniqueViolation = error?.code === '23505' || Boolean(error?.detail?.includes('already exists'));
+        if (isUniqueViolation) {
+            const constraint: string = error?.constraint || '';
+            const detail: string = error?.detail || '';
+            if (constraint.includes('username') || detail.includes('username')) {
+                return { error: 'Username already registered' };
+            }
+            if (constraint.includes('email') || detail.includes('email')) {
+                return { error: 'Email already registered' };
+            }
         }
         return { error: 'Database error' };
     }
+}
+
+export async function activateUserByToken(tokenHash: string): Promise<string | undefined> {
+    try {
+        const row = await db.oneOrNone<{ user_id: string }>(
+            `UPDATE users
+            SET
+                is_active = true,
+                activation_token = NULL,
+                activation_expires_on = NULL
+            WHERE activation_token = $1
+              AND activation_expires_on > now()
+              AND NOT is_active
+              AND NOT is_deleted
+            RETURNING user_id`,
+            [tokenHash]
+        );
+        return row?.user_id;
+    } catch (error: any) {
+        console.error('Error in activateUserByToken:', error?.code || 'UNKNOWN', error?.message || 'Unexpected error');
+        return undefined;
+    }
+}
+
+export async function deleteUnactivatedUserById(userId: string): Promise<void> {
+    await db.none(
+        `DELETE FROM users
+        WHERE user_id = $1::uuid AND NOT is_active AND NOT is_deleted`,
+        [userId]
+    );
 }
 
 export async function selectUserAuthData(username: string, password: string): Promise<UserAuthRow | undefined> {
@@ -59,13 +115,14 @@ export async function selectUserAuthData(username: string, password: string): Pr
         `SELECT
             user_id,
             COALESCE(pass = crypt($2, pass), false) AS auth_ok,
+            is_active,
             is_blocked,
             blocked_on,
             blocked_reason,
             failed_login_attempts,
             lockout_until
         FROM users
-        WHERE username = $1 AND NOT is_deleted`,
+        WHERE lower(username) = lower($1) AND NOT is_deleted`,
         [username, password]
     );
     return row ?? undefined;
@@ -127,14 +184,15 @@ export async function selectUserById(id: string): Promise<UserProfileRow | undef
 
 export async function selectUserByEmail(email: string): Promise<UserEmailRow | undefined> {
     try {
-        return await db.one<UserEmailRow>(
+        const row = await db.oneOrNone<UserEmailRow>(
             `SELECT user_id, username, email
             FROM users
-            WHERE email = $1 AND NOT is_deleted`,
+            WHERE lower(email) = lower(trim($1)) AND NOT is_deleted`,
             [email]
         );
-    } catch (error) {
-        console.error('Error in selectUserByEmail:', error);
+        return row ?? undefined;
+    } catch (error: any) {
+        console.error('Error in selectUserByEmail:', error?.code || 'UNKNOWN', error?.message || 'Unexpected error');
         return undefined;
     }
 }
@@ -149,7 +207,7 @@ export async function updateUserAPIKey(id: string, apiKeyHash: string): Promise<
             [id, apiKeyHash]
         );
         return updated == null ? { error: 'Failed to generate new API key.' } : { success: true };
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error in updateUserAPIKey:', error?.code || 'UNKNOWN', error?.message || 'Unexpected error');
         return { error: 'Failed to generate new API key.' };
     }
@@ -158,11 +216,11 @@ export async function updateUserAPIKey(id: string, apiKeyHash: string): Promise<
 export async function selectUserIdByAPIKey(apiKeyHash: string): Promise<string | undefined> {
     try {
         const row = await db.oneOrNone<{ user_id: string }>(
-            `SELECT user_id FROM users WHERE api_key = $1 AND NOT is_deleted`,
+            `SELECT user_id FROM users WHERE api_key = $1 AND NOT is_deleted AND is_active`,
             [apiKeyHash]
         );
         return row?.user_id;
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error in selectUserIdByAPIKey:', error?.code || 'UNKNOWN', error?.message || 'Unexpected error');
         return undefined;
     }
@@ -203,7 +261,7 @@ export async function softDeleteUserById(id: string): Promise<{ success?: boolea
             return row;
         });
         return deletedRow == null ? { error: 'User not found or already deleted' } : { success: true };
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error in softDeleteUserById:', error?.code || 'UNKNOWN', error?.message || 'Unexpected error');
         return { error: 'Database error' };
     }

@@ -20,3 +20,10 @@ export function generateApiKey(): string {
 export function generatePasswordResetToken(): string {
     return crypto.randomBytes(32).toString('hex');
 }
+
+/**
+ * Generates a high-entropy account activation token (256 bits of randomness).
+ */
+export function generateActivationToken(): string {
+    return crypto.randomBytes(32).toString('hex');
+}

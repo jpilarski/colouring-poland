@@ -2,6 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { useAuth } from '../auth-context';
+import { useQuery } from '../../../hooks';
 import ErrorBox from '../../../components/error-box';
 import { SpinnerIcon } from '../../../components/icons';
 import InfoBox from '../../../components/info-box';
@@ -10,12 +11,16 @@ import { ccConfig as config } from '../../../config/ccConfig';
 
 export const Login: React.FC = () => {
     const { isLoading, login } = useAuth();
+    const query = useQuery();
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
 
     const [error, setError] = useState(undefined);
+
+    const activationSuccess = query.activated === '1';
+    const activationError = query.activation_error === '1';
 
     const onSubmit = useCallback((e) => {
         e.preventDefault();
@@ -36,6 +41,12 @@ export const Login: React.FC = () => {
                     <br />Please <a href={discussURL}>discuss suggestions for improvements</a> and {' '}
                     <a href={issuesURL}>report issues or problems</a>.
                 </InfoBox>
+                {activationSuccess && (
+                    <InfoBox msg="Konto zostało aktywowane. Możesz się teraz zalogować." />
+                )}
+                {activationError && (
+                    <ErrorBox msg="Link aktywacyjny jest nieprawidłowy lub wygasł." />
+                )}
                 {error && <ErrorBox msg={error} />}
                 <form onSubmit={onSubmit}>
                     <label htmlFor="username">Username*</label>
