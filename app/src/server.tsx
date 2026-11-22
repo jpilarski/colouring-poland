@@ -7,8 +7,13 @@
 import pgConnect from 'connect-pg-simple';
 import express from 'express';
 import session from 'express-session';
+import helmet from 'helmet';
 
 import apiServer from './api/api';
+import {
+    createHelmetOptions,
+    permissionsPolicyMiddleware
+} from './api/common/securityHeadersConfig';
 import {
     createSessionOptions,
     SESSION_PRUNE_INTERVAL_SECONDS
@@ -19,9 +24,12 @@ import tileserver from './tiles/tileserver';
 
 // create server
 const server = express();
+const isProduction = server.get('env') === 'production';
 
-// disable header
+// disable header & apply security headers (Helmet + CSP + Permissions-Policy)
 server.disable('x-powered-by');
+server.use(helmet(createHelmetOptions(isProduction)));
+server.use(permissionsPolicyMiddleware);
 
 // serve static files
 const publicDir = process.env.RAZZLE_PUBLIC_DIR;
@@ -31,7 +39,6 @@ if (publicDir == undefined) {
 server.use(express.static(publicDir));
 
 // handle user sessions
-const isProduction = server.get('env') === 'production';
 if (isProduction) {
     // trust first proxy
     server.set('trust proxy', 1);
