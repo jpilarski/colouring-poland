@@ -30,7 +30,9 @@ export const MyAccountPage: React.FC = () => {
 
     const handleDeleteAccount = useCallback(() => {
         setError(undefined);
-        deleteAccount(setError);
+        deleteAccount(setError, () => {
+            window.location.replace('/login.html?account_deleted=1');
+        });
     }, [deleteAccount]);
 
     if (!user && isLoading) {

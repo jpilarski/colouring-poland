@@ -69,7 +69,7 @@ export const PasswordReset: React.FC<RouteComponentProps> & { tokenMissingMessag
     };
 
     if (success) {
-        return <Redirect to="/my-account.html" />;
+        return <Redirect to="/login.html?password_reset=1" />;
     }
 
     const validPassword = isPasswordValid(password);

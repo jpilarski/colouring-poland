@@ -84,6 +84,33 @@ const withCopyEdit: (wc: React.ComponentType<CategoryViewProps>) => DataContaine
 
             this.toggleCopying = this.toggleCopying.bind(this);
             this.toggleCopyAttribute = this.toggleCopyAttribute.bind(this);
+            this.syncSectionHeaderHeight = this.syncSectionHeaderHeight.bind(this);
+        }
+
+        private sectionRef = React.createRef<HTMLElement>();
+
+        componentDidMount() {
+            this.syncSectionHeaderHeight();
+            window.addEventListener('resize', this.syncSectionHeaderHeight);
+        }
+
+        componentDidUpdate() {
+            this.syncSectionHeaderHeight();
+        }
+
+        componentWillUnmount() {
+            window.removeEventListener('resize', this.syncSectionHeaderHeight);
+        }
+
+        syncSectionHeaderHeight() {
+            const sectionEl = this.sectionRef.current;
+            if (!sectionEl) return;
+            const headerEl = sectionEl.querySelector('.section-header') as HTMLElement | null;
+            if (!headerEl) return;
+            const height = Math.ceil(headerEl.getBoundingClientRect().height);
+            if (height > 0) {
+                sectionEl.style.setProperty('--section-header-height', `${height}px`);
+            }
         }
 
         static getDerivedStateFromProps(props: DataContainerProps, state: DataContainerState): Partial<DataContainerState> | null {
@@ -298,6 +325,7 @@ const withCopyEdit: (wc: React.ComponentType<CategoryViewProps>) => DataContaine
 
             return (
                 <section
+                    ref={this.sectionRef}
                     id={this.props.cat}
                     className="data-section">
                     <ContainerHeader

@@ -27,17 +27,28 @@
     color: #fff;
 }
 
-.map-button.night .btn {
+.map-button.night,
+.map-button.night_outlines {
+    background: #343a40;
+}
+
+.map-button.night .btn,
+.map-button.night_outlines .btn {
     color: #fff;
     background-color: #343a40;
     border-color: #343a40;
 }
 
-.map-button.night .btn:hover {
-    color: #d4d7da;
-    background-color: transparent;
+.map-button.night .btn:hover,
+.map-button.night .btn:focus,
+.map-button.night .btn:active,
+.map-button.night_outlines .btn:hover,
+.map-button.night_outlines .btn:focus,
+.map-button.night_outlines .btn:active {
+    color: #fff;
+    background-color: #23272b;
     background-image: none;
-    border-color: #343a40;
+    border-color: #1d2124;
 }
 
 .map-switcher-inline.disabled-state,
@@ -47,8 +58,11 @@
 }
 
 .map-switcher-inline.night.disabled-state,
+.map-switcher-inline.night_outlines.disabled-state,
 .map-button.night.disabled-state,
-.map-button.night.disabled-state .btn {
+.map-button.night_outlines.disabled-state,
+.map-button.night.disabled-state .btn,
+.map-button.night_outlines.disabled-state .btn {
     background-color: #333699;
 }
 
@@ -62,18 +76,22 @@
     background-color: #75e775;
 }
 
-.map-button.night.enabled-state {
+.map-button.night.enabled-state,
+.map-button.night_outlines.enabled-state {
     color: #448844;
     background-color: #448844;
 }
 
 .map-switcher-inline.night.enabled-state,
-.map-button.night.enabled-state .btn {
+.map-switcher-inline.night_outlines.enabled-state,
+.map-button.night.enabled-state .btn,
+.map-button.night_outlines.enabled-state .btn {
     background-color: #448844;
 }
 
 .map-button.enabled .btn:hover,
-.map-button.night.enabled .btn:hover {
+.map-button.night.enabled .btn:hover,
+.map-button.night_outlines.enabled .btn:hover {
     background-color: transparent;
     background-image: none;
 }
@@ -109,11 +127,13 @@
     margin-right: 0px;
 }
 
-.map-switcher-inline.night {
+.map-switcher-inline.night,
+.map-switcher-inline.night_outlines {
     color: #fff;
 }
 
-.map-switcher-inline.night :hover {
+.map-switcher-inline.night :hover,
+.map-switcher-inline.night_outlines :hover {
     color: #d4d7da;
     background-color: transparent;
     background-image: none;

@@ -19,7 +19,7 @@ interface AuthContextState {
         onPendingActivation?: (msg: string) => void
     ) => void;
     generateApiKey: (cb?: (err) => void) => Promise<string | undefined>;
-    deleteAccount: (cb?: (err) => void) => void;
+    deleteAccount: (cb?: (err) => void, onSuccess?: () => void) => void;
 }
 
 const stub = (): never => {
@@ -166,11 +166,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
         }
     }, []);
 
-    const deleteAccount = useCallback(async (cb = noop) => {
+    const deleteAccount = useCallback(async (cb = noop, onSuccess?: () => void) => {
         try {
             const data = await authApi.deleteAccount();
             if (data.error) {
                 cb(data.error);
+            } else if (onSuccess) {
+                onSuccess();
             } else {
                 setIsAuthenticated(false);
             }

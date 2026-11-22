@@ -21,6 +21,8 @@ export const Login: React.FC = () => {
 
     const activationSuccess = query.activated === '1';
     const activationError = query.activation_error === '1';
+    const passwordResetSuccess = query.password_reset === '1';
+    const accountDeletedSuccess = query.account_deleted === '1';
 
     const onSubmit = useCallback((e) => {
         e.preventDefault();
@@ -46,6 +48,12 @@ export const Login: React.FC = () => {
                 )}
                 {activationError && (
                     <ErrorBox msg="Link aktywacyjny jest nieprawidłowy lub wygasł." />
+                )}
+                {passwordResetSuccess && (
+                    <InfoBox msg="Hasło zostało zmienione. Możesz się teraz zalogować nowym hasłem." />
+                )}
+                {accountDeletedSuccess && (
+                    <InfoBox msg="Konto zostało usunięte." />
                 )}
                 {error && <ErrorBox msg={error} />}
                 <form onSubmit={onSubmit}>

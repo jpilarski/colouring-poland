@@ -3,7 +3,6 @@ import React, { Fragment } from 'react';
 import { BaseDataEntryProps } from './data-entry';
 import { DataTitleCopyable } from './data-title';
 
-import './select-data-entry.css';
 
 interface SelectOption {
     value: string;
@@ -40,7 +39,7 @@ const SelectDataEntry: React.FunctionComponent<SelectDataEntryProps> = (props) =
                 disabled={props.disabled || props.value == undefined}
                 copy={props.copy}
             />
-            <select className="form-control"
+            <select className="cp-select"
                 id={slugWithModifier} name={slugWithModifier}
                 value={props.value || ''}
                 disabled={props.mode === 'view' || props.disabled}
