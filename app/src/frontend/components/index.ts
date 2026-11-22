@@ -1,3 +1,4 @@
+export { CookieNotice, COOKIE_NOTICE_STORAGE_KEY } from './CookieNotice';
 export { Header } from './header';
 export { Logo } from './logo';
 export { Tooltip } from './tooltip';

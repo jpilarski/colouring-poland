@@ -5,7 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './app.css';
 
 import { DisplayPreferencesProvider, MapApp } from './features/map';
-import { Header } from './components';
+import { CookieNotice, Header } from './components';
 import { Building, UserVerified } from './models/building';
 import { User } from './models/user';
 import {
@@ -79,6 +79,7 @@ export const App: React.FC<AppProps> = props => {
                     </Route>
                     <Route component={NotFound} />
                 </Switch>
+                <CookieNotice />
             </AuthProvider>
         </DisplayPreferencesProvider>
     );

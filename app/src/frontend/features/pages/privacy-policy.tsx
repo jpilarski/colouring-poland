@@ -43,7 +43,7 @@ const PrivacyPolicyPage: React.SFC<any> = () => (
                 {config.privacyStatement}
             </p>
 
-            <h2 className='h2'>How do we use cookies?</h2>
+            <h2 id='cookies' className='h2 cookie-anchor-target'>How do we use cookies?</h2>
             <p>
                 Colouring {config.cityName} only uses cookies to improve the user experience of users of the website, for example we use cookies to keep you signed in. We do not use cookies for marketing or advertising purposes.
             </p>
