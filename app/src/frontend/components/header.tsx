@@ -112,26 +112,15 @@ function getCurrentMenuLinks(username: string | undefined): MenuLink[][] {
                 text: "Top Contributors"
             },
             {
-                to: "https://discuss.colouring.london/",
-                text: "Colouring London Discussions Forum",
-                external: true
-            },
-            {
                 to: config.githubURL + "/discussions",
                 text: "Technical Discussion Forum (GitHub)",
                 external: true
             },
-            // {
-            //     to: "https://discuss.colouring.london/c/blog/9",
-            //     text: "Blog",
-            //     external: true
-            // },
         ],
         [
             {
-                to: "https://github.com/colouring-cities/manual/wiki/F2.-PROTOCOLS-&-CODES-OF-CONDUCT#ccrp-contributor-privacy-policy",
-                text: "Privacy Policy",
-                external: true
+                to: "/privacy-policy.html",
+                text: "Privacy Policy"
             },
             {
                 to: "https://github.com/colouring-cities/manual/wiki/F2.-PROTOCOLS-&-CODES-OF-CONDUCT#ccrp-contributor--data-user-data-accuracy--ethical-use-agreement",

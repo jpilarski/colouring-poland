@@ -267,6 +267,16 @@ export async function softDeleteUserById(id: string): Promise<{ success?: boolea
     }
 }
 
+export async function invalidateUserPasswordResetTokens(userId: string): Promise<number> {
+    const result = await db.result(
+        `UPDATE user_password_reset_tokens
+        SET used = true
+        WHERE user_id = $1::uuid AND NOT used`,
+        [userId]
+    );
+    return result.rowCount;
+}
+
 export async function insertPasswordResetToken(
     userId: string,
     tokenHash: string,

@@ -59,7 +59,7 @@ export const MyAccountPage: React.FC = () => {
                     </p>
                     <p>
                         For reference, here are the{' '}
-                        <a href="https://github.com/colouring-cities/manual/wiki/F2.-PROTOCOLS-&-CODES-OF-CONDUCT#ccrp-contributor-privacy-policy">privacy policy</a>,{' and the  '}
+                        <Link to="/privacy-policy.html">privacy policy</Link>,{' and the  '}
                         <a href="https://github.com/colouring-cities/manual/wiki/F2.-PROTOCOLS-&-CODES-OF-CONDUCT#ccrp-contributor--data-user-data-accuracy--ethical-use-agreement">contributor & data user data accuracy & ethical use agreement</a>
                     </p>
                     {error && <ErrorBox msg={error} />}

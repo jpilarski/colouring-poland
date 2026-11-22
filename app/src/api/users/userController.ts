@@ -120,10 +120,15 @@ const resetPassword = asyncController(async function (req: express.Request, res:
     }
 
     if (req.body.email != undefined) {
-        // first stage: send reset token to email address
-
+        // first stage: dispatch reset email asynchronously to avoid timing-based email enumeration
         const origin = getWebAppOrigin();
-        await passwordResetService.sendPasswordResetToken(req.body.email, origin);
+        void passwordResetService.sendPasswordResetToken(req.body.email, origin).catch(err => {
+            console.error(
+                'Error sending password reset email:',
+                err?.code || 'UNKNOWN',
+                err?.message || 'Unexpected error'
+            );
+        });
 
         return res.status(202).send({ success: true });
     } else if (req.body.token != undefined) {

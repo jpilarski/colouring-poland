@@ -23,6 +23,7 @@ jest.mock('../../dataAccess/user', () => ({
     selectUserIdByAPIKey: jest.fn(),
     revokeAllUserSessions: jest.fn(),
     softDeleteUserById: jest.fn(),
+    invalidateUserPasswordResetTokens: jest.fn(),
     insertPasswordResetToken: jest.fn(),
     consumePasswordResetToken: jest.fn(),
     purgeExpiredPasswordResetTokens: jest.fn(),
@@ -37,8 +38,19 @@ const mockedDA = userDataAccess as jest.Mocked<typeof userDataAccess>;
 const mockedSendMail = transporter.sendMail as jest.Mock;
 
 describe('SHA-256 Hashing for API Keys and Password Reset Tokens', () => {
+    const originalMailFrom = process.env.MAIL_FROM;
+
     beforeEach(() => {
         jest.clearAllMocks();
+        process.env.MAIL_FROM = 'no-reply@example.org';
+    });
+
+    afterEach(() => {
+        if (originalMailFrom === undefined) {
+            delete process.env.MAIL_FROM;
+        } else {
+            process.env.MAIL_FROM = originalMailFrom;
+        }
     });
 
     it('generates prefixed API keys, 64-char reset tokens, and deterministic SHA-256 digests', () => {
@@ -89,28 +101,50 @@ describe('SHA-256 Hashing for API Keys and Password Reset Tokens', () => {
         expect(await authAPIUser('   ')).toBeUndefined();
     });
 
-    it('stores SHA-256 hash in DB, emails raw reset token, and purges expired tokens', async () => {
+    it('invalidates prior unused tokens, stores SHA-256 hash in DB, and emails raw reset token using MAIL_FROM', async () => {
         mockedDA.purgeExpiredPasswordResetTokens.mockResolvedValue(2);
         mockedDA.selectUserByEmail.mockResolvedValue({
             user_id: '00000000-0000-4000-8000-000000000001',
             username: 'test_user',
             email: 'user@example.com'
         });
+        mockedDA.invalidateUserPasswordResetTokens.mockResolvedValue(1);
         mockedDA.insertPasswordResetToken.mockResolvedValue(undefined);
         mockedSendMail.mockResolvedValue(undefined);
 
         await sendPasswordResetToken('user@example.com', 'https://example.org');
 
         expect(mockedDA.purgeExpiredPasswordResetTokens).toHaveBeenCalledTimes(1);
+        expect(mockedDA.invalidateUserPasswordResetTokens).toHaveBeenCalledWith('00000000-0000-4000-8000-000000000001');
         const [savedUserId, savedTokenHash] = mockedDA.insertPasswordResetToken.mock.calls[0];
         expect(savedUserId).toBe('00000000-0000-4000-8000-000000000001');
         expect(savedTokenHash).toMatch(/^[0-9a-f]{64}$/);
 
-        const mailText: string = mockedSendMail.mock.calls[0][0].text;
+        const sentMail = mockedSendMail.mock.calls[0][0];
+        expect(sentMail.from).toBe('no-reply@example.org');
+        expect(sentMail.from).not.toContain('colouring.london');
+        const mailText: string = sentMail.text;
         const tokenMatch = mailText.match(/\?token=([0-9a-f]{64})/);
         expect(tokenMatch).not.toBeNull();
         expect(tokenMatch![1]).not.toBe(savedTokenHash);
         expect(hashTokenSha256(tokenMatch![1])).toBe(savedTokenHash);
+    });
+
+    it('throws when MAIL_FROM is missing or placeholder tbd during password reset email dispatch', async () => {
+        mockedDA.purgeExpiredPasswordResetTokens.mockResolvedValue(0);
+        mockedDA.selectUserByEmail.mockResolvedValue({
+            user_id: '00000000-0000-4000-8000-000000000001',
+            username: 'test_user',
+            email: 'user@example.com'
+        });
+        mockedDA.invalidateUserPasswordResetTokens.mockResolvedValue(0);
+        mockedDA.insertPasswordResetToken.mockResolvedValue(undefined);
+
+        process.env.MAIL_FROM = 'tbd';
+        await expect(sendPasswordResetToken('user@example.com', 'https://example.org')).rejects.toThrow(
+            'MAIL_FROM is not configured'
+        );
+        expect(mockedSendMail).not.toHaveBeenCalled();
     });
 
     it('hashes provided reset token before consuming, updates password, and revokes all user sessions', async () => {

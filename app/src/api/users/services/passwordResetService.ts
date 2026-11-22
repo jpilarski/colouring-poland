@@ -7,6 +7,7 @@ import { TokenVerificationError } from '../../errors';
 import { transporter } from './emailService';
 import * as userService from './userService';
 import {
+    invalidateUserPasswordResetTokens,
     insertPasswordResetToken,
     consumePasswordResetToken,
     purgeExpiredPasswordResetTokens,
@@ -22,6 +23,8 @@ async function sendPasswordResetToken(email: string, siteOrigin: string): Promis
 
     const user = await userService.getUserByEmail(email);
     if (user == undefined) return;
+
+    await invalidateUserPasswordResetTokens(user.user_id);
 
     const rawToken = generatePasswordResetToken();
     await insertPasswordResetToken(user.user_id, hashTokenSha256(rawToken));
@@ -54,22 +57,29 @@ async function cleanupExpiredPasswordResetTokens(retentionDays: number = 7): Pro
 function getPasswordResetEmail(email: string, token: string, siteOrigin: string): nodemailer.SendMailOptions {
     const linkUrl = new URL(siteOrigin);
     linkUrl.pathname = '/password-reset.html';
-    linkUrl.search = `?token=${token}`;
+    linkUrl.search = `?token=${encodeURIComponent(token)}`;
     const linkString = url.format(linkUrl);
 
-    const messageBody = `Hi there,
+    const fromAddress = process.env.MAIL_FROM?.trim();
+    if (!fromAddress || fromAddress === 'tbd') {
+        throw new Error('MAIL_FROM is not configured');
+    }
 
-    Someone has requested a password reset for the Colouring ${config.cityName} account associated with this email address.
-    Click on the following link within the next 24 hours to reset your password:
+    const messageBody = `Witaj,
 
-    ${linkString}
-    `;
+Otrzymaliśmy prośbę o zresetowanie hasła do konta Colouring ${config.cityName} powiązanego z tym adresem e-mail.
+Aby ustawić nowe hasło, kliknij poniższy link w ciągu 24 godzin:
+
+${linkString}
+
+Jeśli to nie Ty wysłałeś/aś tę prośbę, zignoruj tę wiadomość.
+`;
 
     return {
         text: messageBody,
-        subject: `Reset your Colouring ${config.cityName} password`,
+        subject: `Reset hasła – Colouring ${config.cityName}`,
         to: email,
-        from: 'no-reply@colouring.london'
+        from: fromAddress
     };
 }
 

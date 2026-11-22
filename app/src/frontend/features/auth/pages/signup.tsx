@@ -132,7 +132,7 @@ export const SignUp: React.FC = () => {
                                     required />
                                 <label className="form-check-label" htmlFor="confirm_conditions">
                                     I confirm that I have read and agree to the {' '}
-                                    <a href="https://github.com/colouring-cities/manual/wiki/F2.-PROTOCOLS-&-CODES-OF-CONDUCT#ccrp-contributor-privacy-policy">privacy policy</a>,{' and the '}
+                                    <Link to="/privacy-policy.html">privacy policy</Link>,{' and the '}
                                     <a href="https://github.com/colouring-cities/manual/wiki/F2.-PROTOCOLS-&-CODES-OF-CONDUCT#ccrp-contributor--data-user-data-accuracy--ethical-use-agreement">contributor & data user data accuracy & ethical use agreement</a>.
                                 </label>
                             </div>

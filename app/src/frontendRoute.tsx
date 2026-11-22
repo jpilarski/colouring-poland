@@ -75,19 +75,28 @@ function renderHTML(context, data, req, res) {
     if (context.url) {
         res.redirect(context.url);
     } else {
+        const rawOrigin = process.env.WEBAPP_ORIGIN?.trim();
+        const siteOrigin = rawOrigin && rawOrigin !== 'tbd' ? rawOrigin.replace(/\/+$/, '') : undefined;
+        const ogUrlTag = siteOrigin
+            ? `<meta property="og:url"                content="${siteOrigin}" />`
+            : '';
+        const ogImageTag = siteOrigin
+            ? `<meta property="og:image"              content="${siteOrigin}/images/logo-cl-square.png" />`
+            : '';
+
         res.status(context.status).send(
             `<!doctype html>
-    <html lang="">
+    <html lang="pl">
     <head>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta charset="utf-8" />
 
-        <meta property="og:url"                content="https://colouring.london" />
+        ${ogUrlTag}
         <meta property="og:type"               content="website" />
         <meta property="og:title"              content="Colouring ${config.cityName}" />
         <meta property="og:description"        content="Colouring ${config.cityName} is a knowledge exchange platform collecting information on every building in ${config.cityName}, to help make the city more sustainable." />
-        <meta property="og:locale"             content="en_GB" />
-        <meta property="og:image"              content="https://colouring.london/images/logo-cl-square.png" />
+        <meta property="og:locale"             content="pl_PL" />
+        ${ogImageTag}
 
         <link rel="manifest" href="site.webmanifest">
 

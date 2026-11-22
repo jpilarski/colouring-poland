@@ -179,4 +179,48 @@ describe('Session Lifecycle & Cookie Clearing Controllers', () => {
         expect(res.clearCookie).not.toHaveBeenCalled();
         expect(res.body).toEqual({ success: true });
     });
+
+    it('responds immediately with HTTP 202 for password reset email request without awaiting SMTP', async () => {
+        const originalOrigin = process.env.WEBAPP_ORIGIN;
+        process.env.WEBAPP_ORIGIN = 'https://example.org';
+
+        let rejectSend: ((err: Error) => void) | undefined;
+        mockedPasswordResetService.sendPasswordResetToken.mockImplementation(
+            () => new Promise<void>((_resolve, reject) => {
+                rejectSend = reject;
+            })
+        );
+
+        const req: any = {
+            body: { email: 'user@example.org' },
+            session: {},
+            app: { get: jest.fn().mockReturnValue('development') }
+        };
+        const res = createMockRes();
+        const next = jest.fn();
+
+        try {
+            userController.resetPassword(req, res, next);
+            await flushAsync();
+
+            expect(res.status).toHaveBeenCalledWith(202);
+            expect(res.body).toEqual({ success: true });
+            expect(mockedPasswordResetService.sendPasswordResetToken).toHaveBeenCalledWith(
+                'user@example.org',
+                'https://example.org'
+            );
+            expect(next).not.toHaveBeenCalled();
+
+            // Simulate background SMTP failure after response was already sent
+            rejectSend!(new Error('SMTP timeout'));
+            await flushAsync();
+            expect(consoleErrorSpy).toHaveBeenCalled();
+        } finally {
+            if (originalOrigin === undefined) {
+                delete process.env.WEBAPP_ORIGIN;
+            } else {
+                process.env.WEBAPP_ORIGIN = originalOrigin;
+            }
+        }
+    });
 });
