@@ -1,5 +1,6 @@
 import { errors, ITask } from 'pg-promise';
 import db from '../../db';
+import { DatabaseError } from '../errors';
 
 // Static valid Blowfish hash (cost 10) used for constant-time dummy password verification
 const DUMMY_BCRYPT_HASH = '$2a$10$lZQL0ZAZTGe2uT/VKO94GOTvDMPV.br1q1AnEM6FkHz6jPFIs5vd2';
@@ -39,7 +40,7 @@ export async function insertUser(
     pass: string,
     activationTokenHash: string,
     activationExpiresInHours: number = 48
-): Promise<{ user_id?: string; error?: string }> {
+): Promise<{ user_id?: string; error?: string; conflict?: boolean }> {
     try {
         return await db.one<{ user_id: string }>(
             `INSERT INTO users (
@@ -70,10 +71,10 @@ export async function insertUser(
             const constraint: string = error?.constraint || '';
             const detail: string = error?.detail || '';
             if (constraint.includes('username') || detail.includes('username')) {
-                return { error: 'Username already registered' };
+                return { error: 'Username already registered', conflict: true };
             }
             if (constraint.includes('email') || detail.includes('email')) {
-                return { error: 'Email already registered' };
+                return { error: 'Email already registered', conflict: true };
             }
         }
         return { error: 'Database error' };
@@ -170,15 +171,16 @@ export async function recordSuccessfulLogin(userId: string): Promise<void> {
 
 export async function selectUserById(id: string): Promise<UserProfileRow | undefined> {
     try {
-        return await db.one<UserProfileRow>(
+        const row = await db.oneOrNone<UserProfileRow>(
             `SELECT username, email, date_trunc('minute', registered) as registered, (api_key IS NOT NULL) as has_api_key
             FROM users
             WHERE user_id = $1 AND NOT is_deleted`,
             [id]
         );
-    } catch (error) {
-        console.error('Error in selectUserById:', error);
-        return undefined;
+        return row ?? undefined;
+    } catch (error: any) {
+        console.error('Error in selectUserById:', error?.code || 'UNKNOWN', error?.message || 'Unexpected error');
+        throw new DatabaseError(error?.message);
     }
 }
 

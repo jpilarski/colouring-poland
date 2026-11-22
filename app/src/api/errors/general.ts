@@ -21,6 +21,20 @@ export class InvalidOperationError extends UserError {
     }
 }
 
+export class ConflictError extends UserError {
+    constructor(message?: string) {
+        super(message);
+        this.name = 'ConflictError';
+    }
+}
+
+export class NotFoundError extends Error {
+    constructor(message?: string) {
+        super(message);
+        this.name = 'NotFoundError';
+    }
+}
+
 export class InvalidFieldError extends UserError {
     public fieldName: string;
     constructor(message: string, fieldName: string) {

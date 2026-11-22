@@ -177,7 +177,7 @@ describe('User Registration Domain Whitelist & Email Activation', () => {
             session: {},
             body: { username: 'test_user', password: 'ExamplePass2026!' }
         };
-        const resMissing: any = { status: jest.fn().mockReturnThis(), send: jest.fn() };
+        const resMissing: any = { setHeader: jest.fn(), status: jest.fn().mockReturnThis(), send: jest.fn() };
         userController.createUser(reqMissing, resMissing, jest.fn());
         await flushAsync();
         expect(resMissing.status).toHaveBeenCalledWith(400);
@@ -192,7 +192,7 @@ describe('User Registration Domain Whitelist & Email Activation', () => {
                 password: 'ExamplePass2026!'
             }
         };
-        const resMismatch: any = { status: jest.fn().mockReturnThis(), send: jest.fn() };
+        const resMismatch: any = { setHeader: jest.fn(), status: jest.fn().mockReturnThis(), send: jest.fn() };
         userController.createUser(reqMismatch, resMismatch, jest.fn());
         await flushAsync();
         expect(resMismatch.status).toHaveBeenCalledWith(400);
@@ -213,6 +213,7 @@ describe('User Registration Domain Whitelist & Email Activation', () => {
             }
         };
         const res: any = {
+            setHeader: jest.fn(),
             status: jest.fn().mockReturnThis(),
             send: jest.fn()
         };
@@ -239,6 +240,7 @@ describe('User Registration Domain Whitelist & Email Activation', () => {
             accepts: jest.fn().mockReturnValue('html')
         };
         const browserRes: any = {
+            setHeader: jest.fn(),
             redirect: jest.fn(),
             status: jest.fn().mockReturnThis(),
             send: jest.fn()
@@ -254,6 +256,7 @@ describe('User Registration Domain Whitelist & Email Activation', () => {
             accepts: jest.fn().mockReturnValue('json')
         };
         const jsonRes: any = {
+            setHeader: jest.fn(),
             redirect: jest.fn(),
             status: jest.fn().mockReturnThis(),
             send: jest.fn()

@@ -1,11 +1,10 @@
-
 import { errors, ITask } from 'pg-promise';
 import _ from 'lodash';
 
 import db from '../../db';
 import { allAttributesConfig, buildingUserAttributesConfig } from '../config/dataFields';
 import { BaseBuilding, BuildingAttributes, BuildingUserAttributes } from '../models/building';
-import { ArgumentError, DatabaseError } from '../errors';
+import { ArgumentError, DatabaseError, NotFoundError } from '../errors';
 
 export async function getBuildingData(
     buildingId: number,
@@ -18,14 +17,14 @@ export async function getBuildingData(
             `SELECT * FROM buildings WHERE lokalizacja_id_budynku = $1${lockForUpdate ? ' FOR UPDATE' : ''};`,
             [buildingId]
         );
-    } catch (error) {
+    } catch (error: any) {
         if (
             error instanceof errors.QueryResultError &&
             error.code === errors.queryResultErrorCode.noData
         ) {
-            throw new ArgumentError(`Building ID ${buildingId} does not exist`, 'buildingId');
+            throw new NotFoundError(`Building ID ${buildingId} does not exist`);
         }
-        throw new DatabaseError(error);
+        throw new DatabaseError(error?.message);
     }
 
     return buildingData;
@@ -50,8 +49,8 @@ export async function insertEditHistoryRevision(
         );
 
         return log_id;
-    } catch (error) {
-        throw new DatabaseError(error);
+    } catch (error: any) {
+        throw new DatabaseError(error?.message);
     }
 }
 
@@ -107,8 +106,8 @@ export async function updateBuildingData(
         delete buildingRow.revision_id;
 
         return buildingRow as BuildingAttributes;
-    } catch (error) {
-        throw new DatabaseError(error);
+    } catch (error: any) {
+        throw new DatabaseError(error?.message);
     }
 }
 
@@ -122,18 +121,18 @@ async function ensureBuildingUserRecord(buildingId: number, userId: string, t: I
             `SELECT * FROM building_user_attributes WHERE lokalizacja_id_budynku = $1 AND user_id = $2;`,
             [buildingId, userId]
         );
-    } catch (error) {
+    } catch (error: any) {
         if (error.code === errors.queryResultErrorCode.noData) {
             try {
                 await t.none(
                     'INSERT INTO building_user_attributes (lokalizacja_id_budynku, user_id) VALUES ($1, $2);',
                     [buildingId, userId]
                 );
-            } catch (error) {
-                throw new DatabaseError(error);
+            } catch (insertError: any) {
+                throw new DatabaseError(insertError?.message);
             }
         } else {
-            throw new DatabaseError(error);
+            throw new DatabaseError(error?.message);
         }
     }
 }
@@ -180,8 +179,8 @@ export async function updateBuildingUserData(
         delete buildingUserRow.user_id;
 
         return buildingUserRow;
-    } catch (error) {
-        throw new DatabaseError(error);
+    } catch (error: any) {
+        throw new DatabaseError(error?.message);
     }
 }
 
@@ -226,15 +225,15 @@ export async function getBuildingUserData(
             if (await buildingExists(buildingId, t)) {
                 return makeDefaultUserData();
             } else {
-                throw new ArgumentError(`Building ID ${buildingId} does not exist`, 'buildingId');
+                throw new NotFoundError(`Building ID ${buildingId} does not exist`);
             }
         }
 
-    } catch (error) {
-        if (error instanceof ArgumentError) {
+    } catch (error: any) {
+        if (error instanceof NotFoundError || error instanceof ArgumentError) {
             throw error;
         }
-        throw new DatabaseError(error);
+        throw new DatabaseError(error?.message);
     }
 }
 
@@ -259,9 +258,9 @@ export async function selectBuildingsAtPoint(lng: number, lat: number): Promise<
                 )`,
             [lng, lat]
         );
-    } catch (error) {
-        console.error('Error in selectBuildingsAtPoint:', error);
-        return undefined;
+    } catch (error: any) {
+        console.error('Error in selectBuildingsAtPoint:', error?.code || 'UNKNOWN', error?.message || 'Unexpected error');
+        throw new DatabaseError(error?.message);
     }
 }
 
@@ -294,4 +293,3 @@ export async function selectBuildingBBOX(buildingId: number): Promise<BuildingBB
         [buildingId]
     );
 }
-

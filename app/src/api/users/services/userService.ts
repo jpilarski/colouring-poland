@@ -38,6 +38,14 @@ export interface CreateUserResult {
     requires_activation?: boolean;
     message?: string;
     error?: string;
+    statusCode?: 400 | 409 | 500 | 503;
+}
+
+export interface AuthUserResult {
+    user_id?: string;
+    error?: string;
+    statusCode?: 401 | 403 | 429;
+    retryAfterSeconds?: number;
 }
 
 function getActivationEmail(email: string, rawToken: string, siteOrigin: string): nodemailer.SendMailOptions {
@@ -92,7 +100,10 @@ async function createUser(user: any, siteOrigin: string): Promise<CreateUserResu
     );
 
     if (inserted.error || !inserted.user_id) {
-        return { error: inserted.error || 'Database error' };
+        return {
+            error: inserted.error || 'Database error',
+            statusCode: inserted.conflict ? 409 : 500
+        };
     }
 
     try {
@@ -106,7 +117,10 @@ async function createUser(user: any, siteOrigin: string): Promise<CreateUserResu
                 cleanupErr?.message || 'Unexpected error'
             );
         });
-        return { error: 'Nie udało się wysłać wiadomości aktywacyjnej. Spróbuj ponownie później.' };
+        return {
+            error: 'Nie udało się wysłać wiadomości aktywacyjnej. Spróbuj ponownie później.',
+            statusCode: 503
+        };
     }
 
     return {
@@ -130,22 +144,25 @@ async function activateUser(rawToken: string): Promise<{ success?: boolean; user
     return { success: true, user_id: userId };
 }
 
-async function authUser(username: string, password: string): Promise<{ user_id?: string; error?: string }> {
+async function authUser(username: string, password: string): Promise<AuthUserResult> {
     if (typeof username !== 'string' || typeof password !== 'string' || username.length === 0 || password.length === 0) {
-        return { error: INVALID_CREDENTIALS_ERROR };
+        return { error: INVALID_CREDENTIALS_ERROR, statusCode: 401 };
     }
     const user = await selectUserAuthData(username, password);
     if (user == undefined) {
         await verifyDummyPassword(password);
-        return { error: INVALID_CREDENTIALS_ERROR };
+        return { error: INVALID_CREDENTIALS_ERROR, statusCode: 401 };
     }
     if (user.lockout_until != null) {
         const lockoutExpiresAt = new Date(user.lockout_until).getTime();
         const nowMs = Date.now();
         if (lockoutExpiresAt > nowMs) {
+            const remainingSeconds = Math.max(1, Math.ceil((lockoutExpiresAt - nowMs) / 1000));
             const remainingMinutes = Math.max(1, Math.ceil((lockoutExpiresAt - nowMs) / 60000));
             return {
-                error: `Konto zostało tymczasowo zablokowane z powodu zbyt wielu nieudanych prób logowania. Spróbuj ponownie za ${remainingMinutes} min.`
+                error: `Konto zostało tymczasowo zablokowane z powodu zbyt wielu nieudanych prób logowania. Spróbuj ponownie za ${remainingMinutes} min.`,
+                statusCode: 429,
+                retryAfterSeconds: remainingSeconds
             };
         }
     }
@@ -155,17 +172,22 @@ async function authUser(username: string, password: string): Promise<{ user_id?:
         if (attemptState.lockout_until != null && new Date(attemptState.lockout_until).getTime() > Date.now()) {
             await revokeAllUserSessions(user.user_id);
             return {
-                error: `Przekroczono limit ${MAX_FAILED_LOGIN_ATTEMPTS} nieudanych prób logowania. Konto zostało zablokowane na ${ACCOUNT_LOCKOUT_MINUTES} minut.`
+                error: `Przekroczono limit ${MAX_FAILED_LOGIN_ATTEMPTS} nieudanych prób logowania. Konto zostało zablokowane na ${ACCOUNT_LOCKOUT_MINUTES} minut.`,
+                statusCode: 429,
+                retryAfterSeconds: ACCOUNT_LOCKOUT_MINUTES * 60
             };
         }
-        return { error: INVALID_CREDENTIALS_ERROR };
+        return { error: INVALID_CREDENTIALS_ERROR, statusCode: 401 };
     }
     if (!user.is_active) {
-        return { error: ACCOUNT_NOT_ACTIVATED_ERROR };
+        return { error: ACCOUNT_NOT_ACTIVATED_ERROR, statusCode: 403 };
     }
     if (user.is_blocked) {
         await revokeAllUserSessions(user.user_id);
-        return { error: `Account temporarily blocked.${user.blocked_reason == undefined ? '' : ' Reason: ' + user.blocked_reason}` };
+        return {
+            error: `Account temporarily blocked.${user.blocked_reason == undefined ? '' : ' Reason: ' + user.blocked_reason}`,
+            statusCode: 403
+        };
     }
     await recordSuccessfulLogin(user.user_id);
     return { user_id: user.user_id };

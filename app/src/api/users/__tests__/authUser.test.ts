@@ -43,27 +43,27 @@ describe('User Authentication & Brute-Force Protection (authUser)', () => {
     });
 
     it('rejects empty or non-string credentials without hitting the database', async () => {
-        expect(await authUser('', 'ExamplePass2026!')).toEqual({ error: INVALID_CREDENTIALS_ERROR });
-        expect(await authUser('test_user', '')).toEqual({ error: INVALID_CREDENTIALS_ERROR });
-        expect(await authUser(undefined as any, 'ExamplePass2026!')).toEqual({ error: INVALID_CREDENTIALS_ERROR });
+        expect(await authUser('', 'ExamplePass2026!')).toEqual({ error: INVALID_CREDENTIALS_ERROR, statusCode: 401 });
+        expect(await authUser('test_user', '')).toEqual({ error: INVALID_CREDENTIALS_ERROR, statusCode: 401 });
+        expect(await authUser(undefined as any, 'ExamplePass2026!')).toEqual({ error: INVALID_CREDENTIALS_ERROR, statusCode: 401 });
 
         expect(mockedUserDA.selectUserAuthData).not.toHaveBeenCalled();
         expect(mockedUserDA.verifyDummyPassword).not.toHaveBeenCalled();
     });
 
-    it('runs dummy password verification and returns uniform error when user does not exist', async () => {
+    it('runs dummy password verification and returns uniform 401 error when user does not exist', async () => {
         mockedUserDA.selectUserAuthData.mockResolvedValue(undefined);
         mockedUserDA.verifyDummyPassword.mockResolvedValue(undefined);
 
         const result = await authUser('nonexistent_user', 'WrongPass123!');
 
         expect(mockedUserDA.verifyDummyPassword).toHaveBeenCalledWith('WrongPass123!');
-        expect(result).toEqual({ error: INVALID_CREDENTIALS_ERROR });
+        expect(result).toEqual({ error: INVALID_CREDENTIALS_ERROR, statusCode: 401 });
         expect(mockedUserDA.recordFailedLoginAttempt).not.toHaveBeenCalled();
         expect(mockedUserDA.recordSuccessfulLogin).not.toHaveBeenCalled();
     });
 
-    it('increments failed attempts and returns uniform error on failed attempts 1..4', async () => {
+    it('increments failed attempts and returns uniform 401 error on failed attempts 1..4', async () => {
         mockedUserDA.selectUserAuthData.mockResolvedValue({
             user_id: '00000000-0000-4000-8000-000000000001',
             auth_ok: false,
@@ -84,12 +84,12 @@ describe('User Authentication & Brute-Force Protection (authUser)', () => {
             MAX_FAILED_LOGIN_ATTEMPTS,
             ACCOUNT_LOCKOUT_MINUTES
         );
-        expect(result).toEqual({ error: INVALID_CREDENTIALS_ERROR });
+        expect(result).toEqual({ error: INVALID_CREDENTIALS_ERROR, statusCode: 401 });
         expect(mockedUserDA.recordSuccessfulLogin).not.toHaveBeenCalled();
         expect(mockedUserDA.revokeAllUserSessions).not.toHaveBeenCalled();
     });
 
-    it('locks account for 15 minutes on the 5th consecutive failed attempt', async () => {
+    it('locks account for 15 minutes with 429 and retryAfterSeconds on the 5th consecutive failed attempt', async () => {
         const lockoutUntil = new Date(Date.now() + 15 * 60 * 1000);
         mockedUserDA.selectUserAuthData.mockResolvedValue({
             user_id: '00000000-0000-4000-8000-000000000001',
@@ -114,11 +114,13 @@ describe('User Authentication & Brute-Force Protection (authUser)', () => {
         );
         expect(mockedUserDA.revokeAllUserSessions).toHaveBeenCalledWith('00000000-0000-4000-8000-000000000001');
         expect(result.user_id).toBeUndefined();
+        expect(result.statusCode).toBe(429);
+        expect(result.retryAfterSeconds).toBe(15 * 60);
         expect(result.error).toContain('Przekroczono limit 5 nieudanych prób logowania');
         expect(result.error).toContain('15 minut');
     });
 
-    it('blocks login during active temporary lockout even if password is valid', async () => {
+    it('blocks login during active temporary lockout with 429 and retryAfterSeconds even if password is valid', async () => {
         const activeLockout = new Date(Date.now() + 10 * 60 * 1000);
         mockedUserDA.selectUserAuthData.mockResolvedValue({
             user_id: '00000000-0000-4000-8000-000000000001',
@@ -132,6 +134,9 @@ describe('User Authentication & Brute-Force Protection (authUser)', () => {
         const result = await authUser('test_user', 'ExamplePass2026!');
 
         expect(result.user_id).toBeUndefined();
+        expect(result.statusCode).toBe(429);
+        expect(result.retryAfterSeconds).toBeGreaterThanOrEqual(590);
+        expect(result.retryAfterSeconds).toBeLessThanOrEqual(600);
         expect(result.error).toContain('Konto zostało tymczasowo zablokowane');
         expect(mockedUserDA.recordSuccessfulLogin).not.toHaveBeenCalled();
         expect(mockedUserDA.recordFailedLoginAttempt).not.toHaveBeenCalled();
@@ -155,7 +160,7 @@ describe('User Authentication & Brute-Force Protection (authUser)', () => {
         expect(result).toEqual({ user_id: '00000000-0000-4000-8000-000000000001' });
     });
 
-    it('blocks login for unactivated account only after password verification succeeds', async () => {
+    it('blocks login for unactivated account with 403 only after password verification succeeds', async () => {
         mockedUserDA.selectUserAuthData.mockResolvedValue({
             user_id: '00000000-0000-4000-8000-000000000003',
             auth_ok: true,
@@ -167,11 +172,11 @@ describe('User Authentication & Brute-Force Protection (authUser)', () => {
 
         const result = await authUser('test_user', 'ExamplePass2026!');
 
-        expect(result).toEqual({ error: ACCOUNT_NOT_ACTIVATED_ERROR });
+        expect(result).toEqual({ error: ACCOUNT_NOT_ACTIVATED_ERROR, statusCode: 403 });
         expect(mockedUserDA.recordSuccessfulLogin).not.toHaveBeenCalled();
     });
 
-    it('returns uniform credentials error when unactivated account receives wrong password', async () => {
+    it('returns uniform 401 credentials error when unactivated account receives wrong password', async () => {
         mockedUserDA.selectUserAuthData.mockResolvedValue({
             user_id: '00000000-0000-4000-8000-000000000003',
             auth_ok: false,
@@ -187,10 +192,10 @@ describe('User Authentication & Brute-Force Protection (authUser)', () => {
 
         const result = await authUser('test_user', 'WrongPass123!');
 
-        expect(result).toEqual({ error: INVALID_CREDENTIALS_ERROR });
+        expect(result).toEqual({ error: INVALID_CREDENTIALS_ERROR, statusCode: 401 });
     });
 
-    it('blocks administratively blocked account after valid password without resetting attempts', async () => {
+    it('blocks administratively blocked account with 403 after valid password without resetting attempts', async () => {
         mockedUserDA.selectUserAuthData.mockResolvedValue({
             user_id: '00000000-0000-4000-8000-000000000001',
             auth_ok: true,
@@ -207,6 +212,7 @@ describe('User Authentication & Brute-Force Protection (authUser)', () => {
 
         expect(mockedUserDA.revokeAllUserSessions).toHaveBeenCalledWith('00000000-0000-4000-8000-000000000001');
         expect(result.user_id).toBeUndefined();
+        expect(result.statusCode).toBe(403);
         expect(result.error).toBe('Account temporarily blocked. Reason: Policy violation');
         expect(mockedUserDA.recordSuccessfulLogin).not.toHaveBeenCalled();
     });

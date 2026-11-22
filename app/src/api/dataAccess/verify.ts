@@ -14,8 +14,8 @@ export async function getBuildingVerifiedAttributes(buildingId: number): Promise
             `,
             [buildingId]
         );
-    } catch (error) {
-        throw new DatabaseError(error.detail);
+    } catch (error: any) {
+        throw new DatabaseError(error?.detail || error?.message);
     }
 }
 
@@ -34,16 +34,16 @@ export async function getBuildingUserVerifiedAttributes(buildingId: number, user
             `,
             [buildingId, userId]
         );
-        return asVerified(verifications)
-    } catch (error) {
-        throw new DatabaseError(error.detail);
+        return asVerified(verifications);
+    } catch (error: any) {
+        throw new DatabaseError(error?.detail || error?.message);
     }
 }
 
 function asVerified(verifications) {
     const user_verified = {};
     for (const item of verifications) {
-        user_verified[item.attribute] = item.verified_value
+        user_verified[item.attribute] = item.verified_value;
     }
     return user_verified;
 }
@@ -72,13 +72,17 @@ export async function updateBuildingUserVerifiedAttribute(buildingId: number, us
                 [buildingId, userId, attribute, value]
             );
         }
-    } catch (error) {
-        console.error(error)
-        if (error.detail?.includes('already exists')) {
-            const msg = 'User already verified that attribute for this building'
+    } catch (error: any) {
+        console.error(
+            'Error in updateBuildingUserVerifiedAttribute:',
+            error?.code || 'UNKNOWN',
+            error?.message || 'Unexpected error'
+        );
+        if (error?.code === '23505' || error?.detail?.includes('already exists')) {
+            const msg = 'User already verified that attribute for this building';
             throw new InvalidOperationError(msg);
         } else {
-            throw new DatabaseError(error.detail);
+            throw new DatabaseError(error?.detail || error?.message);
         }
     }
 }
@@ -95,7 +99,7 @@ export async function removeBuildingUserVerifiedAttribute(buildingId: number, us
             `,
             [buildingId, userId, attribute]
         );
-    } catch (error) {
-        throw new DatabaseError(error.detail);
+    } catch (error: any) {
+        throw new DatabaseError(error?.detail || error?.message);
     }
 }

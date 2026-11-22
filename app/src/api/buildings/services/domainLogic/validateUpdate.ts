@@ -13,7 +13,7 @@ addFormats(ajv);
 const compiledSchemas = _.mapValues(fieldSchemaConfig, (val) => ajv.compile(val));
 
 function isDefined(key: string) {
-    return allAttributesConfig[key] !== undefined;
+    return Object.prototype.hasOwnProperty.call(allAttributesConfig, key);
 }
 
 function canEdit(key: string, allowDerived: boolean = false) {
@@ -34,7 +34,7 @@ export function validateFieldChange(field: string, value: any, isExternal: boole
         throw new InvalidFieldError('Field is not editable', field);
     }
 
-    if (field in compiledSchemas) {
+    if (Object.prototype.hasOwnProperty.call(compiledSchemas, field)) {
         if (!compiledSchemas[field](value)) {
             console.log('Invalid format of data sent', field, value);
             throw new FieldTypeError('Invalid format of data sent', field);

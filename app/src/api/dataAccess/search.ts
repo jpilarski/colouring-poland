@@ -1,4 +1,5 @@
 import db from '../../db';
+import { DatabaseError } from '../errors';
 
 export interface LocationSearchResult {
     search_str: string;
@@ -24,9 +25,8 @@ export async function selectLocationsBySearchTerm(term: string, limit: number = 
             LIMIT $2;`,
             [term, limit]
         );
-    } catch (error) {
-        console.error(error);
-        return undefined;
+    } catch (error: any) {
+        console.error('Error in selectLocationsBySearchTerm:', error?.code || 'UNKNOWN', error?.message || 'Unexpected error');
+        throw new DatabaseError(error?.message);
     }
 }
-

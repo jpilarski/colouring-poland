@@ -1,4 +1,5 @@
 import db from '../../db';
+import { DatabaseError } from '../errors';
 
 export interface LeaderboardRow {
     username: string;
@@ -27,9 +28,9 @@ export async function selectLeadersWithTimeLimit(timeLimit: number, numberLimit:
             LIMIT $2`,
             [timeLimit, numberLimit]
         );
-    } catch (error) {
-        console.error('Error in selectLeadersWithTimeLimit:', error);
-        return [];
+    } catch (error: any) {
+        console.error('Error in selectLeadersWithTimeLimit:', error?.code || 'UNKNOWN', error?.message || 'Unexpected error');
+        throw new DatabaseError(error?.message);
     }
 }
 
@@ -52,8 +53,8 @@ export async function selectLeadersAllTime(numberLimit: number): Promise<Leaderb
             LIMIT $1`,
             [numberLimit]
         );
-    } catch (error) {
-        console.error('Error in selectLeadersAllTime:', error);
-        return [];
+    } catch (error: any) {
+        console.error('Error in selectLeadersAllTime:', error?.code || 'UNKNOWN', error?.message || 'Unexpected error');
+        throw new DatabaseError(error?.message);
     }
 }

@@ -1,14 +1,16 @@
 import express from 'express';
 
-import { ApiUserError, UserError } from '../../errors';
+import { ApiUserError, ConflictError, InvalidOperationError, NotFoundError, UserError } from '../../errors';
 import { parsePositiveIntParam, processParam } from '../../common/parameters';
+import { setNoStoreHeaders } from '../../common/securityHeadersConfig';
 import asyncController from '../../common/asyncController';
 import * as buildingService from '../services/base';
 
 // GET building attributes (and values) as verified by user
 const getUserVerifiedAttributes = asyncController(async (req: express.Request, res: express.Response) => {
+    setNoStoreHeaders(res);
     if (!req.session.user_id) {
-        return res.send({ error: 'Not logged in' });
+        return res.status(401).send({ error: 'Not logged in' });
     }
 
     const buildingId = processParam(req.params, 'lokalizacja_id_budynku', parsePositiveIntParam, true);
@@ -17,6 +19,9 @@ const getUserVerifiedAttributes = asyncController(async (req: express.Request, r
         const verifiedAttributes = await buildingService.getUserVerifiedAttributes(buildingId, req.session.user_id);
         res.send(verifiedAttributes);
     } catch (error) {
+        if (error instanceof NotFoundError || error instanceof ConflictError || error instanceof InvalidOperationError) {
+            throw error;
+        }
         if (error instanceof UserError) {
             throw new ApiUserError(error.message, error);
         }
@@ -26,8 +31,9 @@ const getUserVerifiedAttributes = asyncController(async (req: express.Request, r
 
 // POST update to verify building attribute
 const verifyBuildingAttributes = asyncController(async (req: express.Request, res: express.Response) => {
+    setNoStoreHeaders(res);
     if (!req.session.user_id) {
-        return res.send({ error: 'Must be logged in' });
+        return res.status(401).send({ error: 'Must be logged in' });
     }
 
     const buildingId = processParam(req.params, 'lokalizacja_id_budynku', parsePositiveIntParam, true);
@@ -37,6 +43,9 @@ const verifyBuildingAttributes = asyncController(async (req: express.Request, re
         const success = await buildingService.verifyBuildingAttributes(buildingId, req.session.user_id, verifiedAttributes);
         res.send(success);
     } catch (error) {
+        if (error instanceof NotFoundError || error instanceof ConflictError || error instanceof InvalidOperationError) {
+            throw error;
+        }
         if (error instanceof UserError) {
             throw new ApiUserError(error.message, error);
         }

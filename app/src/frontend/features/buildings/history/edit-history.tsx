@@ -17,23 +17,32 @@ const EditHistory: React.FunctionComponent<EditHistoryProps> = (props) => {
     const [history, setHistory] = useState<EditHistoryEntry[] | undefined>(undefined);
 
     useEffect(() => {
+        let isMounted = true;
         const fetchData = async () => {
-            const { history } = await apiGet(`/api/buildings/${props.building.lokalizacja_id_budynku}/history.json`);
-
-            setHistory(history);
+            try {
+                const data = await apiGet(`/api/buildings/${props.building.lokalizacja_id_budynku}/history.json`);
+                if (!isMounted) return;
+                setHistory(Array.isArray(data?.history) ? data.history : []);
+            } catch (err) {
+                console.error(err);
+                if (isMounted) setHistory([]);
+            }
         };
 
-        if (props.building != undefined) { // only call fn if there is a building provided
-            fetchData(); // define and call, because effect cannot return anything and an async fn always returns a Promise
+        if (props.building != undefined) {
+            fetchData();
         }
-    }, [props.building]); // only re-run effect on building prop change
+        return () => {
+            isMounted = false;
+        };
+    }, [props.building]);
 
     return (
         <>
             <ContainerHeader title="Edit history" backLink='.' cat='edit-history' />
 
             <ul className="edit-history-list">
-                {history && history.map(entry => (
+                {Array.isArray(history) && history.map(entry => (
                     <li key={`${entry.revision_id}`} className="edit-history-list-element">
                         <BuildingEditSummary historyEntry={entry} />
                     </li>

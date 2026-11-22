@@ -36,8 +36,8 @@ export function getHistoryAfterId(id: string, count: number, filterDeletions: bo
             ) AS result_asc ORDER BY revision_id DESC`,
             [id, count]
         );
-    } catch (err) {
-        throw new DatabaseError(err);
+    } catch (err: any) {
+        throw new DatabaseError(err?.message);
     }
 }
 
@@ -62,8 +62,8 @@ export function getHistoryBeforeId(id: string, count: number, filterDeletions: b
                 LIMIT $2
             `, [id, count]);
         }
-    } catch (err) {
-        throw new DatabaseError(err);
+    } catch (err: any) {
+        throw new DatabaseError(err?.message);
     }
 }
 
@@ -76,8 +76,8 @@ export async function getIdOlderThan(id: string): Promise<string> {
         `, [id]);
 
         return result?.revision_id;
-    } catch (err) {
-        throw new DatabaseError(err);
+    } catch (err: any) {
+        throw new DatabaseError(err?.message);
     }
 }
 
@@ -90,8 +90,8 @@ export async function getIdNewerThan(id: string): Promise<string> {
         `, [id]);
 
         return result?.revision_id;
-    } catch (err) {
-        throw new DatabaseError(err);
+    } catch (err: any) {
+        throw new DatabaseError(err?.message);
     }
 }
 
@@ -105,9 +105,9 @@ export async function selectLatestRevisionId(): Promise<string> {
             `SELECT MAX(log_id) from logs`
         );
         return data == undefined ? undefined : data.max;
-    } catch (err) {
-        console.error('Error in selectLatestRevisionId:', err);
-        return undefined;
+    } catch (err: any) {
+        console.error('Error in selectLatestRevisionId:', err?.code || 'UNKNOWN', err?.message || 'Unexpected error');
+        throw new DatabaseError(err?.message);
     }
 }
 
@@ -130,8 +130,8 @@ export async function selectBuildingEditHistory(id: number): Promise<EditHistory
             ORDER BY log_timestamp DESC`,
             [id]
         );
-    } catch (error) {
-        console.error('Error in selectBuildingEditHistory:', error);
-        return [];
+    } catch (error: any) {
+        console.error('Error in selectBuildingEditHistory:', error?.code || 'UNKNOWN', error?.message || 'Unexpected error');
+        throw new DatabaseError(error?.message);
     }
 }

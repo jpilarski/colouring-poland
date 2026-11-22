@@ -28,6 +28,7 @@ function createMockRes() {
     const res: any = {
         statusCode: 200,
         body: undefined,
+        setHeader: jest.fn(),
         clearCookie: jest.fn(),
         status: jest.fn(),
         send: jest.fn()

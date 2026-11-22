@@ -6,23 +6,18 @@ import * as dataExtractService from './dataExtractService';
 
 
 const getAllDataExtracts = asyncController(async function (req: express.Request, res: express.Response) {
-    try {
-        const dataExtracts = await dataExtractService.listDataExtracts();
-        res.send({ extracts: dataExtracts });
-    } catch (err) {
-        res.send({ error: 'Database error' });
-    }
+    const dataExtracts = await dataExtractService.listDataExtracts();
+    res.send({ extracts: dataExtracts });
 });
 
 const getDataExtract = asyncController(async function (req: express.Request, res: express.Response) {
     const extractId = processParam(req.params, 'extract_id', parsePositiveIntParam, true);
 
-    try {
-        const extract = await dataExtractService.getDataExtractById(extractId);
-        res.send({ extract: extract });
-    } catch (err) {
-        res.send({ error: 'Database error' });
+    const extract = await dataExtractService.getDataExtractById(extractId);
+    if (!extract) {
+        return res.status(404).send({ error: 'Data extract not found' });
     }
+    res.send({ extract: extract });
 });
 
 export default {

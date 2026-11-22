@@ -65,3 +65,8 @@ export function permissionsPolicyMiddleware(
     res.setHeader('Permissions-Policy', PERMISSIONS_POLICY_VALUE);
     next();
 }
+
+export function setNoStoreHeaders(res: express.Response): void {
+    res.setHeader('Cache-Control', 'no-store');
+    res.setHeader('Pragma', 'no-cache');
+}

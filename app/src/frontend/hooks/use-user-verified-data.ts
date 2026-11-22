@@ -3,38 +3,49 @@ import { useCallback, useEffect, useState } from 'react';
 import { UserVerified } from '../models/building';
 import { apiGet } from '../api';
 
-export function useUserVerifiedData(buildingId: number, preloadedData: UserVerified): [UserVerified, (updatedBuilding: UserVerified) => void, () => void] {
+export function useUserVerifiedData(
+    buildingId: number,
+    preloadedData: UserVerified,
+    isAuthenticated: boolean = false
+): [UserVerified, (updatedBuilding: UserVerified) => void, () => void] {
     const [userVerifyData, setUserVerifyData] = useState<UserVerified>(preloadedData);
-    const [isOld, setIsOld] = useState<boolean>(preloadedData == undefined);
+    const [isOld, setIsOld] = useState<boolean>(isAuthenticated && preloadedData == undefined);
 
     const fetchData = useCallback(async () => {
-        if (buildingId == undefined) {
-            setUserVerifyData(undefined);
+        if (!isAuthenticated || buildingId == undefined) {
+            setUserVerifyData({});
             setIsOld(false);
             return;
         }
         try {
             const userVerify = await apiGet(`/api/buildings/${buildingId}/verify.json`);
-
-            setUserVerifyData(userVerify);
+            if (!userVerify || (userVerify as any).error) {
+                setUserVerifyData({});
+            } else {
+                setUserVerifyData(userVerify);
+            }
         } catch (error) {
             console.error(error);
-            // TODO: add UI for API errors
+            setUserVerifyData({});
         }
         setIsOld(false);
-    }, [buildingId]);
+    }, [buildingId, isAuthenticated]);
 
     useEffect(() => {
+        if (!isAuthenticated) {
+            setUserVerifyData({});
+            setIsOld(false);
+        }
         return () => {
             setIsOld(true);
-        }
-    }, [buildingId]);
+        };
+    }, [buildingId, isAuthenticated]);
 
     useEffect(() => {
         if (isOld) {
             fetchData();
         }
-    }, [isOld])
+    }, [isOld, fetchData]);
 
     return [userVerifyData, setUserVerifyData, () => setIsOld(true)];
 }

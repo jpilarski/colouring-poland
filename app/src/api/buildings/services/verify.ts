@@ -2,17 +2,22 @@ import { buildingAttributesConfig } from '../../config/dataFields';
 import { BaseBuilding } from '../../models/building';
 import * as buildingDataAccess from '../../dataAccess/building';
 import * as verifyDataAccess from '../../dataAccess/verify';
-import { DatabaseError } from '../../errors';
+import { ConflictError, DatabaseError, NotFoundError, UserError } from '../../errors';
 
-function canVerify(key: string) {
-    return buildingAttributesConfig[key].verify === true;
+function canVerify(key: string): boolean {
+    return Object.prototype.hasOwnProperty.call(buildingAttributesConfig, key) &&
+        buildingAttributesConfig[key].verify === true;
 }
 
 export async function verifyBuildingAttributes(buildingId: number, userId: string, patch: object) {
+    if (!patch || typeof patch !== 'object' || Array.isArray(patch)) {
+        throw new UserError('Invalid verification payload');
+    }
+
     // get current building attribute values for comparison
     const building = await buildingDataAccess.getBuildingData(buildingId);
     // keep track of attributes and values verified
-    const verified = {}
+    const verified = {};
 
     // loop through attribute => value pairs to mark as verified
     for (let [key, value] of Object.entries(patch)) {
@@ -23,12 +28,11 @@ export async function verifyBuildingAttributes(buildingId: number, userId: strin
                 try {
                     await verifyDataAccess.updateBuildingUserVerifiedAttribute(buildingId, userId, key, building[key]);
                     verified[key] = building[key];
-                } catch (error) {
-                    // possible reasons:
-                    // - not a building
-                    // - not a user
-                    // - user already verified this attribute for this building
-                    throw new DatabaseError(error);
+                } catch (error: any) {
+                    if (error instanceof UserError || error instanceof NotFoundError || error instanceof DatabaseError) {
+                        throw error;
+                    }
+                    throw new DatabaseError(error?.message);
                 }
             } else {
                 if (value === null) {
@@ -36,13 +40,13 @@ export async function verifyBuildingAttributes(buildingId: number, userId: strin
                 } else {
                     // not verifying current value
                     const msg = `Attribute "${key}" with value "${value}" did not match latest saved value "${building[key]}"`;
-                    throw new DatabaseError(msg);
+                    throw new ConflictError(msg);
                 }
             }
         } else {
             // not a valid attribute
             const msg = `Attribute ${key} not recognised.`;
-            throw new DatabaseError(msg);
+            throw new UserError(msg);
         }
     }
     return verified;

@@ -64,7 +64,7 @@ export const ColouringMap: FC<ColouringMapProps> = ({
         async (e) => {
             const { lat, lng } = e.latlng;
             const data = await apiGet(`/api/buildings/locate?lat=${lat}&lng=${lng}`);
-            const building = data?.[0];
+            const building = Array.isArray(data) ? data[0] : undefined;
             onBuildingAction(building);
         },
         [onBuildingAction],

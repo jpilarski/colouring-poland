@@ -10,6 +10,7 @@ hydrate(
     <BrowserRouter>
         <App
             user={data.user}
+            authPreloaded={true}
             building={data.building}
             user_verified={data.user_verified}
             revisionId={data.latestRevisionId}

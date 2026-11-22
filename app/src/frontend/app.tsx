@@ -32,6 +32,7 @@ import {
 
 interface AppProps {
     user?: User;
+    authPreloaded?: boolean;
     building?: Building;
     user_verified?: UserVerified;
     revisionId: string;
@@ -55,7 +56,7 @@ export const App: React.FC<AppProps> = props => {
 
     return (
         <DisplayPreferencesProvider>
-            <AuthProvider preloadedUser={props.user}>
+            <AuthProvider preloadedUser={props.user} authPreloaded={props.authPreloaded}>
                 <Header animateLogo={false} />
                 <Switch>
                     <AuthRoute exact path="/login.html" component={Login} />

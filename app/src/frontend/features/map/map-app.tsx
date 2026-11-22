@@ -79,7 +79,7 @@ export const MapApp: React.FC<MapAppProps> = props => {
     const [selectedBuildingId, setSelectedBuildingId] = useUrlBuildingParam('view', displayCategory);
 
     const [building, updateBuilding, reloadBuilding] = useBuildingData(selectedBuildingId, props.building, user != undefined);
-    const [userVerified, updateUserVerified, reloadUserVerified] = useUserVerifiedData(selectedBuildingId, props.user_verified);
+    const [userVerified, updateUserVerified, reloadUserVerified] = useUserVerifiedData(selectedBuildingId, props.user_verified, user != undefined);
 
     const [revisionId, updateRevisionId] = useRevisionId(props.revisionId);
     useEffect(() => {

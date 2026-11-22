@@ -42,11 +42,13 @@ const noop = () => { };
 
 interface AuthProviderProps {
     preloadedUser?: User;
+    authPreloaded?: boolean;
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({
     children,
-    preloadedUser
+    preloadedUser,
+    authPreloaded = false
 }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(preloadedUser != undefined);
     const [user, setUser] = useState<User>(preloadedUser);
@@ -190,10 +192,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
         }
     }, [isAuthenticated]);
 
-    // update user data initially to check if already logged in
+    // update user data initially only when auth state was not preloaded by SSR
     useEffect(() => {
-        // if user state not preloaded
-        if (user == undefined) {
+        if (!authPreloaded && user == undefined) {
             updateUserData();
         }
     }, []);

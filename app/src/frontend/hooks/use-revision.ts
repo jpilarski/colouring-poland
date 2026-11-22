@@ -14,8 +14,10 @@ export function useRevisionId(initialRevisionId: string): [string, (newId: strin
     useEffect(() => {
         async function fetchLatestRevision() {
             try {
-                const { revision_id: latestRevisionId } = await apiGet(`/api/buildings/revision`);
-                updateRevisionId(latestRevisionId);
+                const data = await apiGet(`/api/buildings/revision`);
+                if (data && !data.error) {
+                    updateRevisionId(data.latestRevisionId);
+                }
             } catch (err) {
                 console.error(err);
             }

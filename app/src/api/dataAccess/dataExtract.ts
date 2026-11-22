@@ -1,4 +1,5 @@
 import db from '../../db';
+import { DatabaseError } from '../errors';
 
 export interface DataExtractRow {
     extract_id: number;
@@ -17,27 +18,27 @@ export async function selectAllDataExtracts(): Promise<DataExtractRow[]> {
             FROM bulk_extracts
             ORDER BY extracted_on DESC`
         );
-    } catch (err) {
-        console.error('Error in selectAllDataExtracts:', err);
-        return undefined;
+    } catch (err: any) {
+        console.error('Error in selectAllDataExtracts:', err?.code || 'UNKNOWN', err?.message || 'Unexpected error');
+        throw new DatabaseError(err?.message);
     }
 }
 
 /**
  * Pobiera metadane pojedynczej paczki danych po jej identyfikatorze
  */
-export async function selectDataExtractById(extractId: number): Promise<DataExtractRow> {
+export async function selectDataExtractById(extractId: number): Promise<DataExtractRow | undefined> {
     try {
-        return await db.one<DataExtractRow>(
-            `SELECT 
+        const row = await db.oneOrNone<DataExtractRow>(
+            `SELECT
                 extract_id, extracted_on, extract_path
             FROM bulk_extracts
             WHERE extract_id = $1`,
             [extractId]
         );
-    } catch (err) {
-        console.error('Error in selectDataExtractById:', err);
-        return undefined;
+        return row ?? undefined;
+    } catch (err: any) {
+        console.error('Error in selectDataExtractById:', err?.code || 'UNKNOWN', err?.message || 'Unexpected error');
+        throw new DatabaseError(err?.message);
     }
 }
-

@@ -17,21 +17,30 @@ const EditHistoryLatest: React.FunctionComponent<EditHistoryLatestProps> = (prop
     const [history, setHistory] = useState<EditHistoryEntry[] | undefined>(undefined);
 
     useEffect(() => {
+        let isMounted = true;
         const fetchData = async (building: Building) => {
-            const { history } = await apiGet(`/api/buildings/${building.lokalizacja_id_budynku}/history.json`);
-
-            setHistory(history);
+            try {
+                const data = await apiGet(`/api/buildings/${building.lokalizacja_id_budynku}/history.json`);
+                if (!isMounted) return;
+                setHistory(Array.isArray(data?.history) ? data.history : []);
+            } catch (err) {
+                console.error(err);
+                if (isMounted) setHistory([]);
+            }
         };
 
-        if (props.building != undefined) { // only call fn if there is a building provided
-            fetchData(props.building); // define and call, because effect cannot return anything and an async fn always returns a Promise
+        if (props.building != undefined) {
+            fetchData(props.building);
         }
-    }, [props.building]); // only re-run effect on building prop change
+        return () => {
+            isMounted = false;
+        };
+    }, [props.building]);
 
     return (
         <>
             <ul className="edit-history-first" id="first-only">
-                {history && history.map(entry => (
+                {Array.isArray(history) && history.map(entry => (
                     <li key={`${entry.revision_id}`} className="edit-history-list-element">
                         <BuildingEditLatest historyEntry={entry} />
                     </li>

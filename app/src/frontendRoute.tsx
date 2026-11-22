@@ -9,6 +9,8 @@ import {
     getLatestRevisionId,
     getUserVerifiedAttributes
 } from './api/buildings/services/base';
+import { setNoStoreHeaders } from './api/common/securityHeadersConfig';
+import { NotFoundError } from './api/errors';
 import { getUserById } from './api/users/services/userService';
 import { App } from './frontend/app';
 import { parseBuildingURL } from './parse';
@@ -24,20 +26,29 @@ const frontendRoute = asyncController(async (req: express.Request, res: express.
     context.status = 200;
 
     const userId = req.session.user_id;
+    if (userId) {
+        setNoStoreHeaders(res);
+    }
     const buildingId = parseBuildingURL(req.url);
     const isBuilding = (typeof (buildingId) !== 'undefined');
-    if (isBuilding && isNaN(buildingId)) {
+    const isValidBuildingId = isBuilding && !isNaN(buildingId);
+    if (isBuilding && !isValidBuildingId) {
         context.status = 404;
     }
 
     try {
         let [user, building, userVerified, latestRevisionId] = await Promise.all([
             userId ? getUserById(userId) : undefined,
-            isBuilding ? getBuildingById(
+            isValidBuildingId ? getBuildingById(
                 buildingId,
                 { userDataOptions: userId ? { userId, userAttributes: true } : null }
-            ) : undefined,
-            (isBuilding && userId) ? getUserVerifiedAttributes(buildingId, userId) : {},
+            ).catch(err => {
+                if (err instanceof NotFoundError) {
+                    return undefined;
+                }
+                throw err;
+            }) : undefined,
+            (isValidBuildingId && userId) ? getUserVerifiedAttributes(buildingId, userId) : {},
             getLatestRevisionId()
         ]);
 
@@ -49,8 +60,13 @@ const frontendRoute = asyncController(async (req: express.Request, res: express.
         data.user_verified = userVerified;
         data.latestRevisionId = latestRevisionId;
         renderHTML(context, data, req, res);
-    } catch (error) {
-        console.error(error);
+    } catch (error: any) {
+        console.error(
+            'Error in frontendRoute:',
+            error?.name || 'Error',
+            error?.code || 'UNKNOWN',
+            error?.message || 'Unexpected error'
+        );
         data.user = undefined;
         data.building = undefined;
         data.user_verified = {};
@@ -65,6 +81,7 @@ function renderHTML(context, data, req, res) {
         <StaticRouter context={context} location={req.url}>
             <App
                 user={data.user}
+                authPreloaded={true}
                 building={data.building}
                 revisionId={data.latestRevisionId}
                 user_verified={data.user_verified}

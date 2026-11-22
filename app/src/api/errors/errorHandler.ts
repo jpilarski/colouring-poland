@@ -1,7 +1,7 @@
 import express from 'express';
 
 import { ApiParamError, ApiUserError } from './api';
-import { DatabaseError } from './general';
+import { ConflictError, DatabaseError, InvalidOperationError, NotFoundError, UserError } from './general';
 
 /**
  * Global API Error Handling Middleware
@@ -18,21 +18,46 @@ export function apiErrorHandler(
     }
 
     if (err != undefined) {
-        if (err instanceof ApiUserError) {
-            let errorMessage: string;
+        if (err?.type === 'entity.parse.failed' || (err instanceof SyntaxError && (err as any).status === 400)) {
+            res.status(400).send({ error: 'Invalid JSON payload' });
+            return;
+        }
 
-            if (err instanceof ApiParamError) {
-                errorMessage = `Problem with parameter ${err.paramName}: ${err.message}`;
-            } else {
-                errorMessage = err.message;
-            }
+        if (err?.type === 'entity.too.large' || err?.status === 413) {
+            res.status(413).send({ error: 'Request payload too large' });
+            return;
+        }
+
+        if (err instanceof NotFoundError) {
+            res.status(404).send({ error: err.message || 'Resource not found' });
+            return;
+        }
+
+        if (err instanceof ConflictError || err instanceof InvalidOperationError) {
+            res.status(409).send({ error: err.message || 'Conflict' });
+            return;
+        }
+
+        if (err instanceof ApiUserError) {
+            const errorMessage = err instanceof ApiParamError
+                ? `Problem with parameter ${err.paramName}: ${err.message}`
+                : err.message;
 
             res.status(400).send({ error: errorMessage });
             return;
         }
 
-        // Log error only if it's not a user parameter error
-        console.log('Global error handler: ', err);
+        if (err instanceof UserError) {
+            res.status(400).send({ error: err.message || 'Invalid request' });
+            return;
+        }
+
+        console.error(
+            'Global error handler:',
+            err?.name || 'Error',
+            err?.code || 'UNKNOWN',
+            err?.message || 'Unexpected error'
+        );
 
         if (err instanceof DatabaseError) {
             res.status(500).send({ error: 'Database error' });

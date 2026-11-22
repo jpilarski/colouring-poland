@@ -4,11 +4,11 @@ import { Building, BuildingAttributeVerificationCounts } from '../models/buildin
 import { apiGet } from '../api';
 
 /**
- * 
+ *
  * @param buildingId Requested building ID
  * @param preloadedData Data preloaded through SSR, to return before the request is first sent
  * @param includeUserAttributes Should the building-user attributes be included in the result? This requires login session cookies to be present
- * @returns 
+ * @returns
  */
 export function useBuildingData(buildingId: number, preloadedData: Building, includeUserAttributes: boolean = false): [Building, (updatedBuilding: Building) => void, () => void] {
     const [buildingData, setBuildingData] = useState<Building>(preloadedData);
@@ -22,6 +22,11 @@ export function useBuildingData(buildingId: number, preloadedData: Building, inc
         }
         try {
             let building = await apiGet(`/api/buildings/${buildingId}.json${includeUserAttributes ? '?user_attributes=true' : ''}`);
+            if (!building || (building as any).error) {
+                setBuildingData(undefined);
+                setIsOld(false);
+                return;
+            }
 
             building = Object.assign(building, { ...building.user_attributes });
             delete building.user_attributes;
@@ -29,7 +34,7 @@ export function useBuildingData(buildingId: number, preloadedData: Building, inc
             setBuildingData(building);
         } catch (error) {
             console.error(error);
-            // TODO: add UI for API errors
+            setBuildingData(undefined);
         }
         setIsOld(false);
     }, [buildingId, includeUserAttributes]);

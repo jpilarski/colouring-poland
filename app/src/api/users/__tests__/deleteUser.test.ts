@@ -112,6 +112,10 @@ describe('User Soft-Delete & Session Revocation', () => {
             const res: any = {
                 statusCode: 200,
                 body: undefined,
+                headers: {} as Record<string, string>,
+                setHeader: jest.fn((name: string, value: string) => {
+                    res.headers[name.toLowerCase()] = value;
+                }),
                 clearCookie: jest.fn()
             };
             res.status = jest.fn((code: number) => {
@@ -127,7 +131,7 @@ describe('User Soft-Delete & Session Revocation', () => {
 
         const flushAsync = () => new Promise(resolve => setTimeout(resolve, 0));
 
-        it('returns Must be logged in when session has no user_id', async () => {
+        it('returns HTTP 401 Must be logged in when session has no user_id', async () => {
             const req: any = { session: {} };
             const res = createMockRes();
             const next = jest.fn();
@@ -135,6 +139,8 @@ describe('User Soft-Delete & Session Revocation', () => {
             userController.deleteCurrentUser(req, res, next);
             await flushAsync();
 
+            expect(res.statusCode).toBe(401);
+            expect(res.headers['cache-control']).toBe('no-store');
             expect(res.body).toEqual({ error: 'Must be logged in' });
         });
 
@@ -158,13 +164,34 @@ describe('User Soft-Delete & Session Revocation', () => {
                 sameSite: 'lax'
             });
             expect(res.statusCode).toBe(200);
+            expect(res.headers['cache-control']).toBe('no-store');
             expect(res.body).toEqual({ success: true });
 
             deleteSpy.mockRestore();
             logoutSpy.mockRestore();
         });
 
-        it('returns HTTP 500 and skips logout when deleteUser returns an error', async () => {
+        it('returns HTTP 404 and clears stale session when user is not found or already deleted', async () => {
+            const deleteSpy = jest.spyOn(userService, 'deleteUser').mockResolvedValue({ error: 'User not found or already deleted' });
+            const logoutSpy = jest.spyOn(userService, 'logout').mockResolvedValue(undefined);
+
+            const req: any = { session: { user_id: '00000000-0000-4000-8000-000000000099' } };
+            const res = createMockRes();
+            const next = jest.fn();
+
+            userController.deleteCurrentUser(req, res, next);
+            await flushAsync();
+
+            expect(res.statusCode).toBe(404);
+            expect(res.body).toEqual({ error: 'User not found or already deleted' });
+            expect(logoutSpy).toHaveBeenCalledWith(req.session);
+            expect(res.clearCookie).toHaveBeenCalled();
+
+            deleteSpy.mockRestore();
+            logoutSpy.mockRestore();
+        });
+
+        it('returns HTTP 500 and skips logout when deleteUser returns a database error', async () => {
             const deleteSpy = jest.spyOn(userService, 'deleteUser').mockResolvedValue({ error: 'Database error' });
             const logoutSpy = jest.spyOn(userService, 'logout').mockResolvedValue(undefined);
 

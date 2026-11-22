@@ -15,7 +15,7 @@ export const DataExtracts: React.FC = () => {
             try {
                 const data = await dataExtractsApi.getExtracts();
                 if (!isMounted) return;
-                const items = data.extracts;
+                const items = Array.isArray(data?.extracts) ? data.extracts : [];
                 setExtracts(items);
                 setLatestExtract(items[0]);
                 setPreviousExtracts(items.slice(1));

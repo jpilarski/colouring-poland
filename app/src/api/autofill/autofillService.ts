@@ -1,3 +1,5 @@
+import { ApiUserError } from '../errors';
+
 interface AutofillOption {
     id: string;
     value: string;
@@ -17,10 +19,12 @@ function tokenizeValue(value: string) {
 }
 
 export function getAutofillOptions(fieldName: string, fieldValue: any, allValues: boolean) {
-    const optionsFn = autofillFunctionMap[fieldName];
+    const optionsFn = Object.prototype.hasOwnProperty.call(autofillFunctionMap, fieldName)
+        ? autofillFunctionMap[fieldName]
+        : undefined;
 
     if (optionsFn == undefined) {
-        throw new Error(`Autofill options not available for field '${fieldName}'`);
+        throw new ApiUserError(`Autofill options not available for field '${fieldName}'`);
     }
 
     return optionsFn(fieldValue, allValues);
