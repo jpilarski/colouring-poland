@@ -1,7 +1,22 @@
-.modal.modal-show {
+.confirmation-modal.modal-show {
     display: block;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 4000;
 }
 
-.modal.modal-hide {
+.confirmation-modal.modal-hide {
     display: none;
+}
+
+.confirmation-modal .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.confirmation-modal .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
 }

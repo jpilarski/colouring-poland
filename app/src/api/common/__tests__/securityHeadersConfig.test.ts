@@ -43,6 +43,8 @@ describe('HTTP Security Headers Configuration (Helmet & CSP)', () => {
         const csp = String(headers['content-security-policy']);
         expect(csp).toContain("default-src 'self'");
         expect(csp).toContain("img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://*.openstreetmap.org https://*.tiles.mapbox.com");
+        expect(csp).toContain("worker-src 'self' blob:");
+        expect(csp).toContain("child-src 'self' blob:");
         expect(csp).toContain("frame-ancestors 'self'");
         expect(csp).toContain("object-src 'none'");
         expect(csp).toContain('upgrade-insecure-requests');
@@ -64,6 +66,8 @@ describe('HTTP Security Headers Configuration (Helmet & CSP)', () => {
         expect(csp).toContain('http://localhost:3001');
         expect(csp).toContain('ws://localhost:3001');
         expect(csp).toContain('https://tile.openstreetmap.org');
+        expect(csp).toContain("worker-src 'self' blob:");
+        expect(csp).toContain("child-src 'self' blob:");
         expect(csp).not.toContain('upgrade-insecure-requests');
     });
 

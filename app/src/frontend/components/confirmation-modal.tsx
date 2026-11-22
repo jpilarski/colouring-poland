@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import './confirmation-modal.css';
 
@@ -16,41 +16,60 @@ interface ConfirmationModalProps {
 const ConfirmationModal: React.FunctionComponent<ConfirmationModalProps> = ({
     confirmButtonText = 'OK',
     confirmButtonClass = 'btn-primary',
-    cancelButtonClass = '',
+    cancelButtonClass = 'btn-outline-secondary',
     ...props
 }) => {
-    const modalShowClass = props.show ? 'modal-show' : 'modal-hide';
+    const { show, onCancel } = props;
+
+    useEffect(() => {
+        if (!show) return;
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+                onCancel();
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [show, onCancel]);
+
+    const modalShowClass = show ? 'modal-show' : 'modal-hide';
     return (
-        <div className={`modal ${modalShowClass}`} tabIndex={-1} role="dialog">
-            <div className="modal-backdrop">
-                <div className="modal-dialog" role="document">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title">{props.title}</h5>
-                            <button
-                                type="button"
-                                className="close"
-                                aria-label="Close"
-                                onClick={() => props.onCancel()}
-                            >
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div className="modal-body">
-                            <p>{props.description}</p>
-                        </div>
-                        <div className="modal-footer">
-                            <button
-                                type="button"
-                                className={`btn btn-block ${confirmButtonClass}`}
-                                onClick={() => props.onConfirm()}
-                            >{confirmButtonText}</button>
-                            <button
-                                type="button"
-                                className={`btn btn-block ${cancelButtonClass}`}
-                                onClick={() => props.onCancel()}
-                            >Cancel</button>
-                        </div>
+        <div
+            className={`modal confirmation-modal ${modalShowClass}`}
+            tabIndex={-1}
+            role="dialog"
+            aria-modal="true"
+            onClick={event => {
+                if (event.target === event.currentTarget) {
+                    onCancel();
+                }
+            }}
+        >
+            <div className="modal-dialog modal-dialog-centered" role="document">
+                <div className="modal-content">
+                    <div className="modal-header">
+                        <h5 className="modal-title">{props.title}</h5>
+                        <button
+                            type="button"
+                            className="btn-close"
+                            aria-label="Close"
+                            onClick={() => onCancel()}
+                        />
+                    </div>
+                    <div className="modal-body">
+                        <p className="mb-0">{props.description}</p>
+                    </div>
+                    <div className="modal-footer">
+                        <button
+                            type="button"
+                            className={`btn ${cancelButtonClass}`}
+                            onClick={() => onCancel()}
+                        >Cancel</button>
+                        <button
+                            type="button"
+                            className={`btn ${confirmButtonClass}`}
+                            onClick={() => props.onConfirm()}
+                        >{confirmButtonText}</button>
                     </div>
                 </div>
             </div>

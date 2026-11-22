@@ -36,6 +36,8 @@ export function createHelmetOptions(isProduction: boolean): HelmetOptions {
                     'https://events.mapbox.com',
                     ...devConnectSources
                 ],
+                workerSrc: ["'self'", 'blob:'],
+                childSrc: ["'self'", 'blob:'],
                 frameAncestors: ["'self'"],
                 objectSrc: ["'none'"],
                 baseUri: ["'self'"],
