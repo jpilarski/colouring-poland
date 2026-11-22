@@ -202,15 +202,15 @@ CREATE TYPE historia_okres_dict AS ENUM (
 -- ----------------------------------------------------------------------------
 
 CREATE TYPE planowanie_typ_krajobrazu_dict AS ENUM (
-    '11. Wodnogospodarcze',
-    '12. Przemysłowe i energetyczne',
-    '14. Komunikacyjne',
     '2. Bagienno-łąkowe - głównie bezleśne',
     '3. Leśne',
     '6. Wiejskie',
     '7. Mozaikowe',
     '8. Podmiejskie i osadnicze',
-    '9. Miejskie'
+    '9. Miejskie',
+    '11. Wodnogospodarcze',
+    '12. Przemysłowe i energetyczne',
+    '14. Komunikacyjne'
 );
 
 -- ----------------------------------------------------------------------------

@@ -96,9 +96,8 @@ function getCurrentMenuLinks(username: string | undefined): MenuLink[][] {
                 external: true
             },
             {
-                to: "https://github.com/colouring-cities/manual/wiki/M3.2-Colouring-Britain:-Who's-Involved%3F",
-                text: "Who's Involved?",
-                external: true
+                to: "/contact.html",
+                text: "Who's Involved?"
             },
             {
                 to: "https://github.com/colouring-cities/manual/wiki/ETHICAL-FRAMEWORK",

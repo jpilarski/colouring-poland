@@ -605,21 +605,6 @@
     </Style>
     <Style name="planowanie_typ_krajobrazu">
         <Rule>
-            <Filter>[planowanie_typ_krajobrazu] = '11. Wodnogospodarcze'</Filter>
-            <PolygonSymbolizer fill="#1F78B4" />
-            <LineSymbolizer stroke="#1F78B4" stroke-width="2.0"/>
-        </Rule>
-        <Rule>
-            <Filter>[planowanie_typ_krajobrazu] = '12. Przemysłowe i energetyczne'</Filter>
-            <PolygonSymbolizer fill="#6E6E6E" />
-            <LineSymbolizer stroke="#6E6E6E" stroke-width="2.0"/>
-        </Rule>
-        <Rule>
-            <Filter>[planowanie_typ_krajobrazu] = '14. Komunikacyjne'</Filter>
-            <PolygonSymbolizer fill="#E31A1C" />
-            <LineSymbolizer stroke="#E31A1C" stroke-width="2.0"/>
-        </Rule>
-        <Rule>
             <Filter>[planowanie_typ_krajobrazu] = '2. Bagienno-łąkowe - głównie bezleśne'</Filter>
             <PolygonSymbolizer fill="#66C2A5" />
             <LineSymbolizer stroke="#66C2A5" stroke-width="2.0"/>
@@ -648,6 +633,21 @@
             <Filter>[planowanie_typ_krajobrazu] = '9. Miejskie'</Filter>
             <PolygonSymbolizer fill="#4D4D4D" />
             <LineSymbolizer stroke="#4D4D4D" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[planowanie_typ_krajobrazu] = '11. Wodnogospodarcze'</Filter>
+            <PolygonSymbolizer fill="#1F78B4" />
+            <LineSymbolizer stroke="#1F78B4" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[planowanie_typ_krajobrazu] = '12. Przemysłowe i energetyczne'</Filter>
+            <PolygonSymbolizer fill="#6E6E6E" />
+            <LineSymbolizer stroke="#6E6E6E" stroke-width="2.0"/>
+        </Rule>
+        <Rule>
+            <Filter>[planowanie_typ_krajobrazu] = '14. Komunikacyjne'</Filter>
+            <PolygonSymbolizer fill="#E31A1C" />
+            <LineSymbolizer stroke="#E31A1C" stroke-width="2.0"/>
         </Rule>
 
         <Rule>

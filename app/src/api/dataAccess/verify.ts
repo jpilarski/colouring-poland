@@ -49,7 +49,6 @@ function asVerified(verifications) {
 }
 
 export async function updateBuildingUserVerifiedAttribute(buildingId: number, userId: string, attribute: string, value: any): Promise<void> {
-    console.log(typeof value, value)
     try {
         if (typeof value === 'string') {
             // cast strings to text explicitly - otherwise Postgres fails to cast to jsonb directly

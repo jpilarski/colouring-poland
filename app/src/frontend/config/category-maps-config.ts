@@ -299,15 +299,15 @@ export const categoryMapsConfig: { [key in Category]: CategoryMapDefinition[] } 
             legend: {
                 title: 'Typ krajobrazu',
                 elements: [
-                    { color: "#1F78B4", text: "11. Wodnogospodarcze" },
-                    { color: "#6E6E6E", text: "12. Przemysłowe i energetyczne" },
-                    { color: "#E31A1C", text: "14. Komunikacyjne" },
                     { color: "#66C2A5", text: "2. Bagienno-łąkowe - głównie bezleśne" },
                     { color: "#228B22", text: "3. Leśne" },
                     { color: "#F2C94C", text: "6. Wiejskie" },
                     { color: "#984EA3", text: "7. Mozaikowe" },
                     { color: "#FDB462", text: "8. Podmiejskie i osadnicze" },
-                    { color: "#4D4D4D", text: "9. Miejskie" }
+                    { color: "#4D4D4D", text: "9. Miejskie" },
+                    { color: "#1F78B4", text: "11. Wodnogospodarcze" },
+                    { color: "#6E6E6E", text: "12. Przemysłowe i energetyczne" },
+                    { color: "#E31A1C", text: "14. Komunikacyjne" }
                 ]
             },
         },
@@ -368,7 +368,7 @@ export const categoryMapsConfig: { [key in Category]: CategoryMapDefinition[] } 
         {
             mapStyle: 'spoleczenstwo_percepcja_atrakcyjnosc',
             legend: {
-                title: 'Atrakcyjnosć',
+                title: 'Atrakcyjność',
                 elements: [
                     { color: "#59A14F", text: "5" },
                     { color: "#82BA7A", text: "4" },

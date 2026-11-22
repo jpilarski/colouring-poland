@@ -428,6 +428,7 @@ export const dataFields = { /* eslint-disable @typescript-eslint/camelcase */
     konstrukcja_detal_forma_typ_dachu: {
         category: Category.ConstructionDesign,
         title: "Typ dachu",
+        tooltip: "Pole wyliczane automatycznie.",
         example: "",
         items: [
             "Dach płaski",
@@ -457,15 +458,15 @@ export const dataFields = { /* eslint-disable @typescript-eslint/camelcase */
         title: "Typ krajobrazu",
         example: "",
         items: [
-            "11. Wodnogospodarcze",
-            "12. Przemysłowe i energetyczne",
-            "14. Komunikacyjne",
             "2. Bagienno-łąkowe - głównie bezleśne",
             "3. Leśne",
             "6. Wiejskie",
             "7. Mozaikowe",
             "8. Podmiejskie i osadnicze",
-            "9. Miejskie"
+            "9. Miejskie",
+            "11. Wodnogospodarcze",
+            "12. Przemysłowe i energetyczne",
+            "14. Komunikacyjne"
         ]
     },
     planowanie_krajobraz_priorytetowy: {
@@ -475,7 +476,7 @@ export const dataFields = { /* eslint-disable @typescript-eslint/camelcase */
     },
     zrownowazona_adaptacyjnosc_dostepnosc_niepelnosprawni: {
         category: Category.RetrofitCondition,
-        title: "Dostępność dla z niepełnosprawnościami",
+        title: "Dostępność dla osób z niepełnosprawnościami",
         example: false
     },
     zrownowazona_adaptacyjnosc_bariery_architektoniczne: {
