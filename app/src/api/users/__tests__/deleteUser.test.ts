@@ -111,7 +111,8 @@ describe('User Soft-Delete & Session Revocation', () => {
         function createMockRes() {
             const res: any = {
                 statusCode: 200,
-                body: undefined
+                body: undefined,
+                clearCookie: jest.fn()
             };
             res.status = jest.fn((code: number) => {
                 res.statusCode = code;
@@ -150,6 +151,12 @@ describe('User Soft-Delete & Session Revocation', () => {
 
             expect(deleteSpy).toHaveBeenCalledWith('00000000-0000-4000-8000-000000000001');
             expect(logoutSpy).toHaveBeenCalledWith(req.session);
+            expect(res.clearCookie).toHaveBeenCalledWith('cp.session', {
+                path: '/',
+                httpOnly: true,
+                secure: false,
+                sameSite: 'lax'
+            });
             expect(res.statusCode).toBe(200);
             expect(res.body).toEqual({ success: true });
 

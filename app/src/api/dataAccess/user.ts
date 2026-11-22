@@ -309,7 +309,11 @@ export async function purgeExpiredPasswordResetTokens(retentionDays: number = 7)
 export async function updateUserPassword(userId: string, newPassword: string): Promise<void> {
     await db.none(
         `UPDATE users
-        SET pass = crypt($1, gen_salt('bf', 10)), password_last_changed = now()
+        SET
+            pass = crypt($1, gen_salt('bf', 10)),
+            password_last_changed = now(),
+            failed_login_attempts = 0,
+            lockout_until = NULL
         WHERE user_id = $2::uuid`,
         [newPassword, userId]
     );

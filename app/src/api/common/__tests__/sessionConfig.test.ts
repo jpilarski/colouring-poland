@@ -1,7 +1,9 @@
 import session from 'express-session';
 import {
+    createSessionCookieClearOptions,
     createSessionOptions,
     getSessionSecret,
+    isProductionEnvironment,
     SESSION_COOKIE_NAME,
     SESSION_MAX_AGE_MS,
     SESSION_PRUNE_INTERVAL_SECONDS
@@ -66,6 +68,25 @@ describe('Session Configuration (cp.session)', () => {
             secure: true,
             sameSite: 'lax',
             maxAge: 12 * 60 * 60 * 1000
+        });
+    });
+
+    it('builds matching cookie clear options for dev and production', () => {
+        expect(isProductionEnvironment('production')).toBe(true);
+        expect(isProductionEnvironment('development')).toBe(false);
+        expect(isProductionEnvironment(undefined)).toBe(false);
+
+        expect(createSessionCookieClearOptions(false)).toEqual({
+            path: '/',
+            httpOnly: true,
+            secure: false,
+            sameSite: 'lax'
+        });
+        expect(createSessionCookieClearOptions(true)).toEqual({
+            path: '/',
+            httpOnly: true,
+            secure: true,
+            sameSite: 'lax'
         });
     });
 });

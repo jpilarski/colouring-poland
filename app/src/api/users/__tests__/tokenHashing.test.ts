@@ -113,23 +113,27 @@ describe('SHA-256 Hashing for API Keys and Password Reset Tokens', () => {
         expect(hashTokenSha256(tokenMatch![1])).toBe(savedTokenHash);
     });
 
-    it('hashes provided reset token before consuming and updates password', async () => {
+    it('hashes provided reset token before consuming, updates password, and revokes all user sessions', async () => {
         const rawToken = generatePasswordResetToken();
         mockedDA.consumePasswordResetToken.mockResolvedValue('00000000-0000-4000-8000-000000000001');
         mockedDA.updateUserPassword.mockResolvedValue(undefined);
+        mockedDA.revokeAllUserSessions.mockResolvedValue(3);
         mockedDA.purgeExpiredPasswordResetTokens.mockResolvedValue(1);
 
-        await resetPassword(rawToken, 'ExamplePass2026!');
+        const resetUserId = await resetPassword(rawToken, 'ExamplePass2026!');
 
+        expect(resetUserId).toBe('00000000-0000-4000-8000-000000000001');
         expect(mockedDA.consumePasswordResetToken).toHaveBeenCalledWith(hashTokenSha256(rawToken));
         expect(mockedDA.updateUserPassword).toHaveBeenCalledWith('00000000-0000-4000-8000-000000000001', 'ExamplePass2026!');
+        expect(mockedDA.revokeAllUserSessions).toHaveBeenCalledWith('00000000-0000-4000-8000-000000000001');
         expect(mockedDA.purgeExpiredPasswordResetTokens).toHaveBeenCalledTimes(1);
     });
 
-    it('throws TokenVerificationError for empty or unknown reset token', async () => {
+    it('throws TokenVerificationError for empty or unknown reset token without revoking sessions', async () => {
         await expect(resetPassword('', 'ExamplePass2026!')).rejects.toThrow(TokenVerificationError);
         mockedDA.consumePasswordResetToken.mockResolvedValue(undefined);
         await expect(resetPassword('invalid_token', 'ExamplePass2026!')).rejects.toThrow(TokenVerificationError);
+        expect(mockedDA.revokeAllUserSessions).not.toHaveBeenCalled();
     });
 
     it('delegates token cleanup to purgeExpiredPasswordResetTokens', async () => {

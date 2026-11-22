@@ -1,6 +1,11 @@
 import express from 'express';
 
 import asyncController from '../common/asyncController';
+import {
+    createSessionCookieClearOptions,
+    isProductionEnvironment,
+    SESSION_COOKIE_NAME
+} from '../common/sessionConfig';
 import { normalizeEmail } from '../common/validation';
 import { TokenVerificationError, ValidationError } from '../errors';
 import * as passwordResetService from './services/passwordResetService';
@@ -98,6 +103,10 @@ const deleteCurrentUser = asyncController(async (req: express.Request, res: expr
         }
 
         await userService.logout(req.session);
+        res.clearCookie(
+            SESSION_COOKIE_NAME,
+            createSessionCookieClearOptions(isProductionEnvironment(req.app?.get('env')))
+        );
         res.send({ success: true });
     } catch (err: any) {
         console.error('Error in deleteCurrentUser:', err?.code || 'UNKNOWN', err?.message || 'Unexpected error');
@@ -122,8 +131,9 @@ const resetPassword = asyncController(async function (req: express.Request, res:
         if (req.body.password == undefined) {
             return res.send({ error: 'Expected a new password' });
         }
+        let resetUserId: string;
         try {
-            await passwordResetService.resetPassword(req.body.token, req.body.password);
+            resetUserId = await passwordResetService.resetPassword(req.body.token, req.body.password);
         } catch (err) {
             if (err instanceof TokenVerificationError) {
                 return res.send({ error: 'Could not verify token' });
@@ -132,6 +142,20 @@ const resetPassword = asyncController(async function (req: express.Request, res:
             }
 
             throw err;
+        }
+
+        if (req.session.user_id && req.session.user_id === resetUserId) {
+            await userService.logout(req.session).catch(err => {
+                console.error(
+                    'Error clearing current session after password reset:',
+                    err?.code || 'UNKNOWN',
+                    err?.message || 'Unexpected error'
+                );
+            });
+            res.clearCookie(
+                SESSION_COOKIE_NAME,
+                createSessionCookieClearOptions(isProductionEnvironment(req.app?.get('env')))
+            );
         }
 
         return res.send({ success: true });

@@ -153,6 +153,7 @@ async function authUser(username: string, password: string): Promise<{ user_id?:
         console.error(`Authentication failed for user ${username}`);
         const attemptState = await recordFailedLoginAttempt(user.user_id, MAX_FAILED_LOGIN_ATTEMPTS, ACCOUNT_LOCKOUT_MINUTES);
         if (attemptState.lockout_until != null && new Date(attemptState.lockout_until).getTime() > Date.now()) {
+            await revokeAllUserSessions(user.user_id);
             return {
                 error: `Przekroczono limit ${MAX_FAILED_LOGIN_ATTEMPTS} nieudanych prób logowania. Konto zostało zablokowane na ${ACCOUNT_LOCKOUT_MINUTES} minut.`
             };
@@ -163,6 +164,7 @@ async function authUser(username: string, password: string): Promise<{ user_id?:
         return { error: ACCOUNT_NOT_ACTIVATED_ERROR };
     }
     if (user.is_blocked) {
+        await revokeAllUserSessions(user.user_id);
         return { error: `Account temporarily blocked.${user.blocked_reason == undefined ? '' : ' Reason: ' + user.blocked_reason}` };
     }
     await recordSuccessfulLogin(user.user_id);

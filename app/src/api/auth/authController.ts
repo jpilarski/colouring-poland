@@ -1,5 +1,10 @@
 import express from 'express';
 import asyncController from '../common/asyncController';
+import {
+    createSessionCookieClearOptions,
+    isProductionEnvironment,
+    SESSION_COOKIE_NAME
+} from '../common/sessionConfig';
 import { authUser, getNewUserAPIKey, logout } from '../users/services/userService';
 
 const login = asyncController(async (req: express.Request, res: express.Response) => {
@@ -22,10 +27,14 @@ const login = asyncController(async (req: express.Request, res: express.Response
 const logoutUser = asyncController(async (req: express.Request, res: express.Response) => {
     try {
         await logout(req.session);
+        res.clearCookie(
+            SESSION_COOKIE_NAME,
+            createSessionCookieClearOptions(isProductionEnvironment(req.app?.get('env')))
+        );
         res.send({ success: true });
-    } catch (err) {
-        console.error(err);
-        res.send({ error: 'Failed to end session' });
+    } catch (err: any) {
+        console.error('Error in logout controller:', err?.code || 'UNKNOWN', err?.message || 'Unexpected error');
+        res.status(500).send({ error: 'Failed to end session' });
     }
 });
 

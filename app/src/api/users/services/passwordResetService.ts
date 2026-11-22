@@ -10,6 +10,7 @@ import {
     insertPasswordResetToken,
     consumePasswordResetToken,
     purgeExpiredPasswordResetTokens,
+    revokeAllUserSessions,
     updateUserPassword
 } from '../../dataAccess/user';
 import { ccConfig as config } from '../../../config';
@@ -27,7 +28,7 @@ async function sendPasswordResetToken(email: string, siteOrigin: string): Promis
     await transporter.sendMail(getPasswordResetEmail(email, rawToken, siteOrigin));
 }
 
-async function resetPassword(passwordResetToken: string, newPassword: string): Promise<void> {
+async function resetPassword(passwordResetToken: string, newPassword: string): Promise<string> {
     validatePassword(newPassword);
     if (typeof passwordResetToken !== 'string' || passwordResetToken.trim().length === 0) {
         throw new TokenVerificationError('Password reset token could not be verified');
@@ -36,9 +37,11 @@ async function resetPassword(passwordResetToken: string, newPassword: string): P
     const userId = await consumePasswordResetToken(hashTokenSha256(passwordResetToken.trim()));
     if (userId != undefined) {
         await updateUserPassword(userId, newPassword);
+        await revokeAllUserSessions(userId);
         await purgeExpiredPasswordResetTokens().catch(err => {
             console.error('Error purging expired reset tokens:', err?.code || 'UNKNOWN', err?.message || 'Unexpected error');
         });
+        return userId;
     } else {
         throw new TokenVerificationError('Password reset token could not be verified');
     }

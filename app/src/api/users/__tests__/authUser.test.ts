@@ -85,6 +85,7 @@ describe('User Authentication & Brute-Force Protection (authUser)', () => {
         );
         expect(result).toEqual({ error: INVALID_CREDENTIALS_ERROR });
         expect(mockedUserDA.recordSuccessfulLogin).not.toHaveBeenCalled();
+        expect(mockedUserDA.revokeAllUserSessions).not.toHaveBeenCalled();
     });
 
     it('locks account for 15 minutes on the 5th consecutive failed attempt', async () => {
@@ -101,6 +102,7 @@ describe('User Authentication & Brute-Force Protection (authUser)', () => {
             failed_login_attempts: 5,
             lockout_until: lockoutUntil
         });
+        mockedUserDA.revokeAllUserSessions.mockResolvedValue(2);
 
         const result = await authUser('test_user', 'WrongPass123!');
 
@@ -109,6 +111,7 @@ describe('User Authentication & Brute-Force Protection (authUser)', () => {
             5,
             15
         );
+        expect(mockedUserDA.revokeAllUserSessions).toHaveBeenCalledWith('00000000-0000-4000-8000-000000000001');
         expect(result.user_id).toBeUndefined();
         expect(result.error).toContain('Przekroczono limit 5 nieudanych prób logowania');
         expect(result.error).toContain('15 minut');
@@ -197,8 +200,11 @@ describe('User Authentication & Brute-Force Protection (authUser)', () => {
             lockout_until: null
         });
 
+        mockedUserDA.revokeAllUserSessions.mockResolvedValue(1);
+
         const result = await authUser('test_user', 'ExamplePass2026!');
 
+        expect(mockedUserDA.revokeAllUserSessions).toHaveBeenCalledWith('00000000-0000-4000-8000-000000000001');
         expect(result.user_id).toBeUndefined();
         expect(result.error).toBe('Account temporarily blocked. Reason: Policy violation');
         expect(mockedUserDA.recordSuccessfulLogin).not.toHaveBeenCalled();
