@@ -62,7 +62,9 @@
     height: calc(100vh - 76px);
     display: block;
     overflow-y: auto;
-    transition: transform 0.3s;
+    visibility: visible;
+    pointer-events: auto;
+    transition: transform 0.3s, visibility 0s linear 0s;
     transform: translateY(0);
     background: #fff;
 }
@@ -79,6 +81,9 @@
 
 .navbar-collapse.collapse {
     transform: translateY(-100vh);
+    visibility: hidden;
+    pointer-events: none;
+    transition: transform 0.3s, visibility 0s linear 0.3s;
 }
 
 .navbar-collapse {

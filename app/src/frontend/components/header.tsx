@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 
 import './header.css';
@@ -183,7 +183,7 @@ const InternalNavLink: React.FC<{ to: string; onClick: () => void }> = ({ to, on
 );
 
 const ExternalNavLink: React.FC<{ to: string }> = ({ to, children }) => (
-    <a className="nav-link" href={to} target="_blank">
+    <a className="nav-link" href={to} target="_blank" rel="noopener noreferrer">
         {children}
     </a>
 );
@@ -199,6 +199,13 @@ export const Header: React.FC<{
     animateLogo: boolean;
 }> = ({ animateLogo }) => {
     const [collapseMenu, setCollapseMenu] = useState(true);
+    const navRef = useRef<HTMLElement>(null);
+
+    useEffect(() => {
+        if (!collapseMenu && navRef.current) {
+            navRef.current.scrollTop = 0;
+        }
+    }, [collapseMenu]);
 
     const toggleCollapse = () => setCollapseMenu(!collapseMenu);
     const handleNavigate = () => setCollapseMenu(true);
@@ -219,7 +226,11 @@ export const Header: React.FC<{
                     }
                 </button>
             </div>
-            <nav className={collapseMenu ? 'collapse navbar-collapse' : 'navbar-collapse'}>
+            <nav
+                ref={navRef}
+                aria-hidden={collapseMenu}
+                className={collapseMenu ? 'collapse navbar-collapse' : 'navbar-collapse'}
+            >
                 <Menu onNavigate={handleNavigate}></Menu>
             </nav>
         </header>

@@ -48,7 +48,7 @@ export const authApi = {
         apiGet<User & { error?: string }>('/api/users/me'),
 
     generateApiKey: (): Promise<AuthApiResponse> =>
-        apiPost<AuthApiResponse>('/api/api/key'),
+        apiPost<AuthApiResponse>('/api/key'),
 
     deleteAccount: (): Promise<AuthApiResponse> =>
         apiDelete<AuthApiResponse>('/api/users/me'),

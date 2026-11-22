@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { useAuth } from '../auth-context';
@@ -12,7 +12,17 @@ export const MyAccountPage: React.FC = () => {
 
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [generatedApiKey, setGeneratedApiKey] = useState<string | undefined>(undefined);
+    const [copiedApiKey, setCopiedApiKey] = useState(false);
     const [error, setError] = useState(undefined);
+    const copyResetTimerRef = useRef<number | undefined>(undefined);
+
+    useEffect(() => {
+        return () => {
+            if (copyResetTimerRef.current !== undefined) {
+                window.clearTimeout(copyResetTimerRef.current);
+            }
+        };
+    }, []);
 
     const handleLogout = useCallback((e) => {
         e.preventDefault();
@@ -22,11 +32,49 @@ export const MyAccountPage: React.FC = () => {
     const handleGenerateKey = useCallback(async (e) => {
         e.preventDefault();
         setError(undefined);
+        setCopiedApiKey(false);
         const newKey = await generateApiKey(setError);
         if (newKey) {
             setGeneratedApiKey(newKey);
         }
     }, [generateApiKey]);
+
+    const handleCopyApiKey = useCallback(async () => {
+        if (!generatedApiKey) return;
+        let copied = false;
+        try {
+            if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+                await navigator.clipboard.writeText(generatedApiKey);
+                copied = true;
+            }
+        } catch {
+            copied = false;
+        }
+        if (!copied) {
+            try {
+                const textarea = document.createElement('textarea');
+                textarea.value = generatedApiKey;
+                textarea.setAttribute('readonly', '');
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.select();
+                copied = document.execCommand('copy');
+                document.body.removeChild(textarea);
+            } catch {
+                copied = false;
+            }
+        }
+        if (copied) {
+            setCopiedApiKey(true);
+            if (copyResetTimerRef.current !== undefined) {
+                window.clearTimeout(copyResetTimerRef.current);
+            }
+            copyResetTimerRef.current = window.setTimeout(() => {
+                setCopiedApiKey(false);
+            }, 2500);
+        }
+    }, [generatedApiKey]);
 
     const handleDeleteAccount = useCallback(() => {
         setError(undefined);
@@ -89,8 +137,15 @@ export const MyAccountPage: React.FC = () => {
                     {generatedApiKey ? (
                         <div className="alert alert-warning" role="alert">
                             <strong>Skopiuj klucz API teraz – jest wyświetlany tylko jeden raz:</strong>
-                            <div className="mt-2">
+                            <div className="mt-2 d-flex flex-wrap align-items-center gap-2">
                                 <code style={{ wordBreak: 'break-all' }}>{generatedApiKey}</code>
+                                <button
+                                    type="button"
+                                    className="btn btn-sm btn-outline-dark"
+                                    onClick={handleCopyApiKey}
+                                >
+                                    {copiedApiKey ? 'Skopiowano ✓' : 'Kopiuj klucz'}
+                                </button>
                             </div>
                             <small className="d-block mt-2">
                                 Ze względów bezpieczeństwa w bazie przechowywany jest wyłącznie skrót kryptograficzny (SHA-256). Po opuszczeniu lub odświeżeniu strony klucz nie będzie już widoczny.

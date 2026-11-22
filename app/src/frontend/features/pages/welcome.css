@@ -29,13 +29,12 @@
     height: 4em;
 }
 
-.h3 {
+.welcome .h3 {
     font-size: 1.4rem;
     margin-bottom: 0.75rem;
 }
 
-p {
+.welcome p {
     font-size: 1rem;
-    word-spacing: -20%;
     line-height: 1.5;
 }

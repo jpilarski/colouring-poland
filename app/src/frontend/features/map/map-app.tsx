@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import loadable from '@loadable/component';
@@ -11,6 +12,7 @@ import {
     useUrlModeParam
 } from '../../hooks';
 import { BuildingView, Categories, EditHistory, MultiEdit, Sidebar } from '../buildings';
+import type { MultiEditStatus } from '../buildings/components/multi-edit';
 import { Building, UserVerified } from '../../models/building';
 import { Welcome } from '../pages';
 import { PrivateRoute } from '../auth/route';
@@ -90,6 +92,12 @@ export const MapApp: React.FC<MapAppProps> = props => {
     const viewEditMode = unless(mode, 'multi-edit');
 
     const [multiEditData, multiEditError] = useMultiEditData();
+    const [multiEditStatus, setMultiEditStatus] = useState<MultiEditStatus | undefined>(undefined);
+    const multiEditDataKey = multiEditData ? JSON.stringify(multiEditData) : undefined;
+
+    useEffect(() => {
+        setMultiEditStatus(undefined);
+    }, [multiEditDataKey, currentCategory]);
 
     const selectBuilding = useCallback((selectedBuilding: Building) => {
         const currentId = selectedBuildingId;
@@ -101,14 +109,40 @@ export const MapApp: React.FC<MapAppProps> = props => {
         const buildingId = building?.lokalizacja_id_budynku;
 
         if (buildingId != undefined && multiEditData != undefined && multiEditError == undefined) {
+            const entries = Object.entries(multiEditData);
+            const allMatchExisting = entries.length > 0 && entries.every(
+                ([key, value]) => Object.prototype.hasOwnProperty.call(building, key) && _.isEqual((building as any)[key], value)
+            );
+            if (allMatchExisting) {
+                setMultiEditStatus({
+                    type: 'info',
+                    message: `Budynek #${buildingId} posiada już wybrane wartości (brak zmian).`
+                });
+                return;
+            }
+
             try {
                 const updatedBuilding = await sendBuildingUpdate(buildingId, multiEditData);
                 updateRevisionId(updatedBuilding.revision_id);
-            } catch (error) {
-                console.error({ error });
+                setMultiEditStatus({
+                    type: 'info',
+                    message: `Zaktualizowano budynek #${buildingId}.`
+                });
+            } catch (error: any) {
+                if (error === 'No change provided' || error?.message === 'No change provided') {
+                    setMultiEditStatus({
+                        type: 'info',
+                        message: `Budynek #${buildingId} posiada już wybrane wartości (brak zmian).`
+                    });
+                    return;
+                }
+                const message = typeof error === 'string'
+                    ? error
+                    : (error?.message || 'Nie udało się zapisać zmian.');
+                setMultiEditStatus({ type: 'error', message });
             }
         }
-    }, [multiEditError, multiEditData, currentCategory]);
+    }, [multiEditError, multiEditData, currentCategory, updateRevisionId]);
 
     const handleBuildingUpdate = useCallback((buildingId: number, updatedData: Building) => {
         // only update current building data if the IDs match
@@ -143,7 +177,7 @@ export const MapApp: React.FC<MapAppProps> = props => {
                         <Welcome />
                     </Route>
                     <Route exact path="/multi-edit/:cat">
-                        <MultiEdit category={displayCategory} />
+                        <MultiEdit category={displayCategory} status={multiEditStatus} />
                     </Route>
                     <Route path="/:mode/:cat">
                         <Categories mode={mode || 'view'} lokalizacja_id_budynku={selectedBuildingId} />

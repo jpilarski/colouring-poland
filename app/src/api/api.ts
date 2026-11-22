@@ -16,7 +16,7 @@ const server = express.Router();
 server.use(bodyParser.json());
 
 // Trasy główne API (wszystkie montowane pod /api w server.tsx)
-server.use('/', authRouter);                 // POST /api/login, POST /api/logout, POST /api/api/key
+server.use('/', authRouter);                 // POST /api/login, POST /api/logout, POST /api/key
 server.use('/users', usersRouter);           // /api/users
 server.use('/buildings', buildingsRouter);   // /api/buildings
 server.use('/search', searchRouter);         // GET /api/search

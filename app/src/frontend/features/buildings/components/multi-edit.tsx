@@ -8,8 +8,14 @@ import { allFieldsConfig } from '../../../config/data-fields-config';
 
 import DataEntry from '../inputs/data-entry';
 
+export interface MultiEditStatus {
+    type: 'info' | 'error';
+    message: string;
+}
+
 interface MultiEditProps {
     category: string;
+    status?: MultiEditStatus;
 }
 
 const MultiEdit: React.FC<MultiEditProps> = (props) => {
@@ -26,6 +32,14 @@ const MultiEdit: React.FC<MultiEditProps> = (props) => {
                         error ?
                             <ErrorBox msg={error} /> :
                             <InfoBox msg='Click buildings one at a time to colour using the data below' />
+                    }
+                    {
+                        props.status?.type === 'error' &&
+                        <ErrorBox msg={props.status.message} />
+                    }
+                    {
+                        props.status?.type === 'info' &&
+                        <InfoBox msg={props.status.message} />
                     }
                     {
                         data &&
